@@ -1,4 +1,4 @@
-package com.lilong.lifecycle.application;
+package com.lilong.fragmenttest.application;
 
 import android.app.Activity;
 import android.app.Application;

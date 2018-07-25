@@ -7,7 +7,7 @@
     tools:context=".base.BaseActivity">
 
     <fragment
-        android:name="com.lilong.lifecycle.fragment.MainFragment"
+        android:name="com.lilong.fragmenttest.fragment.MainFragment"
         android:layout_width="300dp"
         android:layout_height="100dp"
         android:layout_alignParentTop="true"

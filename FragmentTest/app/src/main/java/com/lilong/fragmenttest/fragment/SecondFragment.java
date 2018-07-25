@@ -1,7 +1,7 @@
-package com.lilong.lifecycle.fragment;
+package com.lilong.fragmenttest.fragment;
 
-import com.lilong.lifecycle.R;
-import com.lilong.lifecycle.base.BaseFragment;
+import com.lilong.fragmenttest.R;
+import com.lilong.fragmenttest.base.BaseFragment;
 
 /**
  * Created by lilong on 18-7-18.

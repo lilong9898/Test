@@ -1,4 +1,4 @@
-package com.lilong.lifecycle.base;
+package com.lilong.fragmenttest.base;
 
 import android.app.Fragment;
 import android.content.Context;

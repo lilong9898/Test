@@ -1,14 +1,14 @@
-package com.lilong.lifecycle.activity;
+package com.lilong.fragmenttest.activity;
 
 import android.app.Fragment;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.lilong.lifecycle.R;
-import com.lilong.lifecycle.base.BaseActivity;
-import com.lilong.lifecycle.fragment.MainFragment;
-import com.lilong.lifecycle.fragment.SecondFragment;
+import com.lilong.fragmenttest.R;
+import com.lilong.fragmenttest.base.BaseActivity;
+import com.lilong.fragmenttest.fragment.MainFragment;
+import com.lilong.fragmenttest.fragment.SecondFragment;
 
 /**
  * Created by lilong on 18-7-18.
