@@ -1,0 +1,18 @@
+# 过滤文件夹
+.idea/
+build/
+.gradle/
+captures/
+
+# 过滤文件类型
+*.rawproto
+*.iml
+*.*~
+*.py
+*.pyc
+*.tmp
+
+# 过滤特定文件
+local.properties
+gradle.properties
+.rsync_exclude

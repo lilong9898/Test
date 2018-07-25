@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/containerFragment"
+        android:layout_width="300dp"
+        android:layout_height="100dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="100dp"
+        android:background="@android:color/holo_blue_dark"></FrameLayout>
+
+    <Button
+        android:id="@+id/btnAddMainFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/containerFragment"
+        android:layout_marginLeft="50dp"
+        android:text="addMainFragment"
+        android:textSize="20sp"/>
+
+    <Button
+        android:id="@+id/btnRemoveCurFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/btnAddMainFragment"
+        android:layout_below="@+id/btnAddMainFragment"
+        android:text="removeCurFragment"
+        android:textSize="20sp"/>
+</RelativeLayout>
