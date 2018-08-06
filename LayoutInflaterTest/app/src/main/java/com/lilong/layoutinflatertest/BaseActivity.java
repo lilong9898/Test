@@ -2,12 +2,22 @@ package com.lilong.layoutinflatertest;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Bundle;
+import android.view.LayoutInflater;
 
 /**
  * Created by lilong on 18-8-6.
  */
 
 public abstract class BaseActivity extends Activity {
+
+    public LayoutInflater inflater;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        inflater = LayoutInflater.from(this);
+    }
 
     public static final String TAG = "LayoutInflaterTest";
 

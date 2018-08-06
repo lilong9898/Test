@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,7 +14,6 @@ import android.widget.RelativeLayout;
 
 public class MainActivity extends BaseActivity {
 
-    private LayoutInflater inflater;
     private ViewGroup container;
 
     private MenuItem menuItemIncludeTagTest;
@@ -63,7 +61,6 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         container = (ViewGroup) findViewById(R.id.container);
-        inflater = LayoutInflater.from(this);
 
         // vg_test1.xml按照默认layoutParams添加
         // 结果：会无视vg_test1.xml中的顶层的尺寸，按wrap_content来算(defaultLayoutParams)

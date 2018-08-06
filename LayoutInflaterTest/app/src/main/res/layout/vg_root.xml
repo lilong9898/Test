@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/vgRoot"
                 android:background="@android:color/holo_green_dark"
                 android:layout_width="300dp"
-                android:layout_height="10dp">
+                android:layout_height="300dp">
 </RelativeLayout>
