@@ -1,32 +1,45 @@
 package com.lilong.layoutinflatertest;
 
-import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
-public class MainActivity extends Activity {
-
-    private static final String TAG = "LayoutInflaterTest";
+public class MainActivity extends BaseActivity {
 
     private LayoutInflater inflater;
     private ViewGroup container;
 
-    public static final int dipToPixel(Context context, int dip) {
-        final float scale = context.getResources().getDisplayMetrics().density;
-        return (int) (dip * scale + 0.5f);
+    private MenuItem menuItemIncludeTagTest;
+    private MenuItem menuItemMergeTagTest;
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.cur_menu, menu);
+        menuItemIncludeTagTest = menu.findItem(R.id.includeTagTest);
+        menuItemMergeTagTest = menu.findItem(R.id.mergeTagTest);
+        return true;
     }
 
-    public static final int pixelToDip(Context context, int pixel) {
-        final float scale = context.getResources().getDisplayMetrics().density;
-        return (int) (pixel / scale + 0.5f);
-   }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item == menuItemIncludeTagTest){
+            Intent intent = new Intent(this, IncludeTagTestActivity.class);
+            startActivity(intent);
+        }else if(item == menuItemMergeTagTest){
+            Intent intent = new Intent(this, MergeTagTestActivity.class);
+            startActivity(intent);
+        }
+        return true;
+    }
 
     public static void printLayoutParams(Context context, View v, String viewName) {
         String strLayoutParamsHeight = "";
@@ -81,7 +94,8 @@ public class MainActivity extends Activity {
         // vg_test5.xml添加时被new出来的vgRoot3做root，且attachToRoot
         // 结果：vg_test5被inflate返回的实际上是它attach的root vgRoot3
         // vg_test5的尺寸按vg_test5.xml的顶层尺寸来算，而它attach的root vgRoot3的尺寸为null，在被add到根布局后为wrap_content
-        ViewGroup vgRoot3 = new FrameLayout(this);
+        ViewGroup vgRoot3 = new RelativeLayout(this);
+        vgRoot3.setBackgroundColor(Color.BLUE);
         ViewGroup vgTest5 = (ViewGroup) inflater.inflate(R.layout.vg_test5, vgRoot3, true);
         printLayoutParams(this, vgTest5.getChildAt(0), "real vgTest5");
         printLayoutParams(this, vgTest5, "vgTest5");

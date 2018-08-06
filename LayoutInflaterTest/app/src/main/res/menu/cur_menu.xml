@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" 
+    xmlns:app="http://schemas.android.com/apk/res-auto" >
+    <item android:id="@+id/includeTagTest"
+          android:title="includeTagTest"
+          android:showAsAction="always"
+          android:visible="true"/>
+    <item android:id="@+id/mergeTagTest"
+        android:title="mergeTagTest"
+        android:showAsAction="always"
+        android:visible="true"/>
+</menu>
