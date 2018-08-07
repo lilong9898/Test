@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--后写的控件覆盖在先写的上面-->
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.lilong.constraintlayouttest.MainActivity">
+
+    <!--相对于parent居中-->
+    <TextView
+        android:id="@+id/tv1"
+        style="@style/tvStyle"
+        android:background="@android:color/holo_green_light"
+        android:text="tv1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <!--无任何约束时位于左上角-->
+    <TextView
+        android:id="@+id/tv2"
+        style="@style/tvStyle"
+        android:text="tv2"/>
+
+    <!--只约束左边时，水平方向约束成功，竖直方向上在最上面-->
+    <TextView
+        android:id="@+id/tv3"
+        style="@style/tvStyle"
+        android:text="tv3"
+        app:layout_constraintLeft_toLeftOf="@+id/tv1"/>
+
+    <!--只约束左边时，写两条相互矛盾的约束，
+    水平方向仍能约束成功，效果上是取均值，
+    竖直方向上在最上面-->
+    <TextView
+        android:id="@+id/tv4"
+        style="@style/tvStyle"
+        android:text="tv4"
+        app:layout_constraintLeft_toLeftOf="@+id/tv1"
+        app:layout_constraintRight_toLeftOf="@+id/tv1"/>
+
+    <!--要设置某个方向上的margin，则必须设置该方向上的约束才有效-->
+    <TextView
+        android:id="@+id/tv5"
+        style="@style/tvStyle"
+        android:layout_marginTop="100dp"
+        android:text="tv5"
+        app:layout_constraintTop_toTopOf="parent"/>
+</android.support.constraint.ConstraintLayout>
