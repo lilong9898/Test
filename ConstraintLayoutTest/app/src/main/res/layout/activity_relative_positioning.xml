@@ -6,7 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.lilong.constraintlayouttest.ActivityRelativePositioningTest">
+    tools:context="com.lilong.constraintlayouttest.ActivityRelativePositioning">
 
     <!--相对于parent居中-->
     <TextView
@@ -62,34 +62,12 @@
         app:layout_constraintLeft_toLeftOf="@+id/tv1"
         app:layout_constraintRight_toRightOf="@id/tv1"/>
 
-    <!--一个全局居中但gone的控件-->
+    <!--在居中的情况下，可通过bias来调整两侧比例，实现类似layout_weight的效果-->
     <TextView
         android:id="@+id/tv7"
         style="@style/tvStyle"
-        android:text="tv7"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
-
-    <!--当相对于gone的控件设置margin时，可以单独用goneMarginTop设置，跟marginTop不同-->
-    <!--如果其相对的控件不是gone，goneMarginTop跟marginTop起一样作用-->
-    <TextView
-        android:id="@+id/tv8"
-        style="@style/tvStyle"
-        android:text="tv8"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv7"
-        app:layout_goneMarginTop="50dp"/>
-
-    <!--在居中的情况下，可通过bias来调整两侧比例，实现类似layout_weight的效果-->
-    <TextView
-        android:id="@+id/tv9"
-        style="@style/tvStyle"
         android:layout_marginBottom="100dp"
-        android:text="tv9"
+        android:text="tv7"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" 
     xmlns:app="http://schemas.android.com/apk/res-auto" >
+    <item android:id="@+id/relativeToGoneWidgetPositioningTest"
+          android:title="relativeToGoneWidgetPositioning"
+          android:showAsAction="collapseActionView"
+          android:visible="true"/>
     <item android:id="@+id/circularPositioningTest"
-          android:title="circularPositioningTest"
-          android:showAsAction="ifRoom"
+          android:title="circularPositioning"
+          android:showAsAction="collapseActionView"
           android:visible="true"/>
 </menu>

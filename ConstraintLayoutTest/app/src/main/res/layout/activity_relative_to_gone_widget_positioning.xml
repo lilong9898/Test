@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.lilong.constraintlayouttest.ActivityRelativeToGoneWidgetPositioning">
+
+    <TextView
+        android:id="@+id/tv1place"
+        style="@style/tvStyle"
+        android:layout_marginLeft="100dp"
+        android:layout_marginTop="100dp"
+        android:background="@android:color/holo_blue_light"
+        android:text="tv1 place"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <!--一个离左上角左边和上边各100dp的控件，但visibility是gone-->
+    <TextView
+        android:id="@+id/tv1"
+        style="@style/tvStyle"
+        android:text="tv1"
+        android:visibility="gone"
+        app:layout_constraintLeft_toLeftOf="@id/tv1place"
+        app:layout_constraintTop_toTopOf="@id/tv1place"/>
+
+    <!--tv1 为gone，会被理解成一个点，它相对于其它控件(即tv1place)的约束仍然有效，
+    所以tv2是相对于tv1原位置左上角的点有个50dp的marginTop-->
+    <TextView
+        android:id="@+id/tv2"
+        style="@style/tvStyle"
+        android:layout_marginTop="50dp"
+        android:text="tv2"
+        app:layout_constraintLeft_toLeftOf="@id/tv1"
+        app:layout_constraintTop_toBottomOf="@id/tv1"/>
+
+    <TextView
+        android:id="@+id/tv3place"
+        style="@style/tvStyle"
+        android:layout_marginLeft="100dp"
+        android:layout_marginTop="300dp"
+        android:background="@android:color/holo_blue_light"
+        android:text="tv3place"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/tv3"
+        style="@style/tvStyle"
+        android:layout_marginLeft="100dp"
+        android:layout_marginTop="300dp"
+        android:text="tv3"
+        android:visibility="gone"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <!--tv3是gone，虽然其相对于其它控件(即parent)的约束有效，但margin会被视作零
+    所以tv3的因为gone等效成的点的位置就是在parent左上角，无margin了
+    故tv4的位置就是离parent左上角有个50dp的marginTop-->
+    <TextView
+        android:id="@+id/tv4"
+        style="@style/tvStyle"
+        android:text="tv4"
+        app:layout_constraintTop_toTopOf="@id/tv3"
+        app:layout_constraintLeft_toLeftOf="@id/tv3"
+        android:layout_marginTop="50dp"/>
+
+    <!--针对上面的因为gone而忽略其margin的情况，其它控件可以用goneMarginTop来给相对于gone控件的控件，单独设置个goneMargin-->
+    <!--使用goneMargin的控件如果是相对于非gone的控件，则goneMargin无效-->
+    <TextView
+        android:id="@+id/tv5"
+        style="@style/tvStyle"
+        android:text="tv5"
+        app:layout_constraintTop_toTopOf="@id/tv3"
+        app:layout_constraintLeft_toLeftOf="@id/tv3"
+        app:layout_goneMarginTop="300dp"/>
+
+</android.support.constraint.ConstraintLayout>
