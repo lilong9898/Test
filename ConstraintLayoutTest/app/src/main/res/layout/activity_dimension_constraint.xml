@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <!--宽度：固定-->
+            <TextView
+                android:id="@+id/tv1"
+                style="@style/tvStyle"
+                android:layout_width="300dp"
+                android:text="tv1"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <!--宽度：wrap content-->
+            <TextView
+                android:id="@+id/tv2"
+                style="@style/tvStyle"
+                android:layout_width="wrap_content"
+                android:layout_marginTop="100dp"
+                android:text="tv2"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <!--宽度：0dp，水平方向无约束，效果等同wrap content-->
+            <TextView
+                android:id="@+id/tv3"
+                style="@style/tvStyle"
+                android:layout_width="0dp"
+                android:layout_marginTop="200dp"
+                android:text="tv3"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <!--宽度：0dp，水平方向有约束，效果等同match parent-->
+            <TextView
+                android:id="@+id/tv4"
+                style="@style/tvStyle"
+                android:layout_width="0dp"
+                android:layout_marginTop="300dp"
+                android:text="tv4"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <!--宽度：0dp，水平方向有约束，效果等同match parent，左边加了margin-->
+            <TextView
+                android:id="@+id/tv5"
+                style="@style/tvStyle"
+                android:layout_width="0dp"
+                android:layout_marginLeft="100dp"
+                android:layout_marginTop="400dp"
+                android:text="tv5"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <!--宽度：match parent，水平方向无约束，效果等同于match parent-->
+            <TextView
+                android:id="@+id/tv6"
+                style="@style/tvStyle"
+                android:layout_width="match_parent"
+                android:layout_marginTop="500dp"
+                android:text="tv6"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+        </android.support.constraint.ConstraintLayout>
+    </ScrollView>
+</android.support.constraint.ConstraintLayout>

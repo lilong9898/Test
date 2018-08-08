@@ -11,8 +11,9 @@ import android.view.MenuItem;
  */
 public class ActivityRelativePositioning extends Activity {
 
-    private MenuItem menuItemRelativeToGoneWidgetPositioningTest;
-    private MenuItem menuItemCircularPositioningTest;
+    private MenuItem menuItemRelativeToGoneWidgetPositioning;
+    private MenuItem menuItemCircularPositioning;
+    private MenuItem menuItemDimensionConstraint;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,18 +25,22 @@ public class ActivityRelativePositioning extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.cur_menu, menu);
-        menuItemRelativeToGoneWidgetPositioningTest = menu.findItem(R.id.relativeToGoneWidgetPositioningTest);
-        menuItemCircularPositioningTest = menu.findItem(R.id.circularPositioningTest);
+        menuItemRelativeToGoneWidgetPositioning = menu.findItem(R.id.relativeToGoneWidgetPositioning);
+        menuItemCircularPositioning = menu.findItem(R.id.circularPositioning);
+        menuItemDimensionConstraint = menu.findItem(R.id.dimensionConstraint);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item == menuItemRelativeToGoneWidgetPositioningTest) {
+        if (item == menuItemRelativeToGoneWidgetPositioning) {
             Intent intent = new Intent(this, ActivityRelativeToGoneWidgetPositioning.class);
             startActivity(intent);
-        } else if (item == menuItemCircularPositioningTest) {
+        } else if (item == menuItemCircularPositioning) {
             Intent intent = new Intent(this, ActivityCircularPositioning.class);
+            startActivity(intent);
+        } else if (item == menuItemDimensionConstraint) {
+            Intent intent = new Intent(this, ActivityDimensionConstraint.class);
             startActivity(intent);
         }
         return true;

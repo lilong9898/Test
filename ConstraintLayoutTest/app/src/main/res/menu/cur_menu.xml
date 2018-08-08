@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" 
     xmlns:app="http://schemas.android.com/apk/res-auto" >
-    <item android:id="@+id/relativeToGoneWidgetPositioningTest"
+    <item android:id="@+id/relativeToGoneWidgetPositioning"
           android:title="relativeToGoneWidgetPositioning"
           android:showAsAction="collapseActionView"
           android:visible="true"/>
-    <item android:id="@+id/circularPositioningTest"
+    <item android:id="@+id/circularPositioning"
           android:title="circularPositioning"
+          android:showAsAction="collapseActionView"
+          android:visible="true"/>
+    <item android:id="@+id/dimensionConstraint"
+          android:title="dimensionConstraint"
           android:showAsAction="collapseActionView"
           android:visible="true"/>
 </menu>
