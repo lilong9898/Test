@@ -29,7 +29,7 @@
                 android:text="tv2"
                 app:layout_constraintTop_toTopOf="parent"/>
 
-            <!--宽度：0dp，水平方向无约束，效果等同wrap content-->
+            <!--宽度：0dp，水平方向无约束，效果等同wrap content（注意这是只有宽度为0dp的情况）-->
             <TextView
                 android:id="@+id/tv3"
                 style="@style/tvStyle"
@@ -38,7 +38,7 @@
                 android:text="tv3"
                 app:layout_constraintTop_toTopOf="parent"/>
 
-            <!--宽度：0dp，水平方向有约束，效果等同match parent-->
+            <!--宽度：0dp，水平方向有约束，效果等同match parent（注意这是只有宽度为0dp的情况）-->
             <TextView
                 android:id="@+id/tv4"
                 style="@style/tvStyle"
@@ -49,7 +49,7 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>
 
-            <!--宽度：0dp，水平方向有约束，效果等同match parent，左边加了margin-->
+            <!--宽度：0dp，水平方向有约束，效果等同match parent，左边加了margin（注意这是只有宽度为0dp的情况）-->
             <TextView
                 android:id="@+id/tv5"
                 style="@style/tvStyle"
@@ -61,15 +61,78 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>
 
-            <!--宽度：match parent，水平方向无约束，效果等同于match parent-->
+            <!--注意：constraint layout里没法靠一个维度上的0dp实现0dp效果，因为0dp会被它翻译成一种约束(match_constraint)而非具体尺寸值-->
+            <!--需要长宽都设为0dp才能真正实现0dp效果，像下面这个-->
+            <!--如果长宽都为0dp但是加了上下左右的约束，就会按约束来，具体按照这里的约束，就会实现长宽方向上都match_parent的效果，类似tv4-->
             <TextView
                 android:id="@+id/tv6"
                 style="@style/tvStyle"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
                 android:layout_marginTop="500dp"
-                android:text="tv6"
+                android:text="tv6"/>
+            <!--
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            -->
+            >
+
+            <!--宽度：match parent，水平方向无约束，效果等同于match parent-->
+            <TextView
+                android:id="@+id/tv7"
+                style="@style/tvStyle"
+                android:layout_width="match_parent"
+                android:layout_marginTop="600dp"
+                android:text="tv7"
                 app:layout_constraintTop_toTopOf="parent"/>
 
+            <!--百分比布局：类似linearLayout中的layout_weight
+            使用percent属性时，width必须是0dp，这个规则也与linearlayout类似-->
+            <TextView
+                android:id="@+id/tv8"
+                style="@style/tvStyle"
+                android:layout_width="0dp"
+                android:layout_marginTop="700dp"
+                android:text="tv8"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent="0.7"/>
+
+            <!--此控件占满tv7的占据70%后的剩余30%-->
+            <TextView
+                android:id="@+id/tv9"
+                style="@style/tvStyle"
+                android:layout_width="0dp"
+                android:background="@android:color/holo_green_light"
+                android:text="tv9"
+                app:layout_constraintLeft_toRightOf="@id/tv8"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tv7"/>
+
+            <!--设置宽高比为1:1，让高度根据这个比例设定-->
+            <TextView
+                android:id="@+id/tv10"
+                style="@style/tvStyle"
+                android:layout_width="100dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="800dp"
+                android:text="tv10"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <!--类似tv6的情况，长宽都为0dp，但设置约束，contraint layout会在满足约束的情况下按照宽高比决定大小-->
+            <TextView
+                android:id="@+id/tv11"
+                style="@style/tvStyle"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="1000dp"
+                android:text="tv11"
+                app:layout_constraintDimensionRatio="H, 1:0.1"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
         </android.support.constraint.ConstraintLayout>
     </ScrollView>
 </android.support.constraint.ConstraintLayout>
