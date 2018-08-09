@@ -5,6 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!--match_parent和wrap_content仍然有效，但是设置成这两个会导致无视约束-->
+    <!--同时新增了match_constraint(0dp)，
+    设置成0dp后，这个方向上有约束，就按符合约束的match_parent处理
+    设置成0dp后，这个方向上没约束，就按wrap_content处理-->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -62,6 +66,7 @@
                 app:layout_constraintTop_toTopOf="parent"/>
 
             <!--注意：constraint layout里没法靠一个维度上的0dp实现0dp效果，因为0dp会被它翻译成一种约束(match_constraint)而非具体尺寸值-->
+            <!--match_constraint表示在符合约束的条件下占尽可能多的空间（像match_parent，比如tv4 tv5）,如果没有约束，则按wrap_content处理(比如tv3)-->
             <!--需要长宽都设为0dp才能真正实现0dp效果，像下面这个-->
             <!--如果长宽都为0dp但是加了上下左右的约束，就会按约束来，具体按照这里的约束，就会实现长宽方向上都match_parent的效果，类似tv4-->
             <TextView
@@ -96,6 +101,7 @@
                 android:layout_width="0dp"
                 android:layout_marginTop="700dp"
                 android:text="tv8"
+                app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintWidth_percent="0.7"/>
 
@@ -108,7 +114,7 @@
                 android:text="tv9"
                 app:layout_constraintLeft_toRightOf="@id/tv8"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="@id/tv7"/>
+                app:layout_constraintTop_toTopOf="@id/tv8"/>
 
             <!--设置宽高比为1:1，让高度根据这个比例设定-->
             <TextView
@@ -133,6 +139,40 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>
+
+            <!--tv12占据了固定宽度的空间-->
+            <TextView
+                android:id="@+id/tv12"
+                style="@style/tvStyle"
+                android:layout_width="200dp"
+                android:layout_marginTop="1100dp"
+                android:text="tv12"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <!--tv13为match_constraint，在有约束有weight设定的情况下，表现类似linear layout的weight-->
+            <TextView
+                android:id="@+id/tv13"
+                style="@style/tvStyle"
+                android:layout_width="0dp"
+                android:background="@android:color/holo_green_light"
+                android:text="tv13"
+                app:layout_constraintHorizontal_weight="2"
+                app:layout_constraintLeft_toRightOf="@id/tv12"
+                app:layout_constraintRight_toLeftOf="@+id/tv14"
+                app:layout_constraintTop_toTopOf="@id/tv12"/>
+
+            <!--tv14为match_constraint，在有约束有weight设定的情况下，表现类似linear layout的weight-->
+            <TextView
+                android:id="@+id/tv14"
+                style="@style/tvStyle"
+                android:layout_width="0dp"
+                android:background="@android:color/holo_purple"
+                android:text="tv14"
+                app:layout_constraintHorizontal_weight="1"
+                app:layout_constraintLeft_toRightOf="@id/tv13"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tv12"/>
         </android.support.constraint.ConstraintLayout>
     </ScrollView>
 </android.support.constraint.ConstraintLayout>

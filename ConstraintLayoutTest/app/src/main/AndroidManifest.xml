@@ -19,6 +19,7 @@
         <activity android:name=".ActivityCircularPositioning"/>
         <activity android:name=".ActivityRelativeToGoneWidgetPositioning"/>
         <activity android:name=".ActivityDimensionConstraint"/>
+        <activity android:name=".ActivityChain"/>
     </application>
 
 </manifest>

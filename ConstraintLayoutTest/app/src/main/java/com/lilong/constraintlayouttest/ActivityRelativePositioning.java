@@ -14,6 +14,7 @@ public class ActivityRelativePositioning extends Activity {
     private MenuItem menuItemRelativeToGoneWidgetPositioning;
     private MenuItem menuItemCircularPositioning;
     private MenuItem menuItemDimensionConstraint;
+    private MenuItem menuItemChain;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +29,7 @@ public class ActivityRelativePositioning extends Activity {
         menuItemRelativeToGoneWidgetPositioning = menu.findItem(R.id.relativeToGoneWidgetPositioning);
         menuItemCircularPositioning = menu.findItem(R.id.circularPositioning);
         menuItemDimensionConstraint = menu.findItem(R.id.dimensionConstraint);
+        menuItemChain = menu.findItem(R.id.chain);
         return true;
     }
 
@@ -41,6 +43,9 @@ public class ActivityRelativePositioning extends Activity {
             startActivity(intent);
         } else if (item == menuItemDimensionConstraint) {
             Intent intent = new Intent(this, ActivityDimensionConstraint.class);
+            startActivity(intent);
+        } else if (item == menuItemChain) {
+            Intent intent = new Intent(this, ActivityChain.class);
             startActivity(intent);
         }
         return true;

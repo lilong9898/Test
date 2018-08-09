@@ -1,16 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android" 
-    xmlns:app="http://schemas.android.com/apk/res-auto" >
-    <item android:id="@+id/relativeToGoneWidgetPositioning"
-          android:title="relativeToGoneWidgetPositioning"
-          android:showAsAction="collapseActionView"
-          android:visible="true"/>
-    <item android:id="@+id/circularPositioning"
-          android:title="circularPositioning"
-          android:showAsAction="collapseActionView"
-          android:visible="true"/>
-    <item android:id="@+id/dimensionConstraint"
-          android:title="dimensionConstraint"
-          android:showAsAction="collapseActionView"
-          android:visible="true"/>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/relativeToGoneWidgetPositioning"
+        android:showAsAction="collapseActionView"
+        android:title="relativeToGoneWidgetPositioning"
+        android:visible="true"/>
+    <item
+        android:id="@+id/circularPositioning"
+        android:showAsAction="collapseActionView"
+        android:title="circularPositioning"
+        android:visible="true"/>
+    <item
+        android:id="@+id/dimensionConstraint"
+        android:showAsAction="collapseActionView"
+        android:title="dimensionConstraint"
+        android:visible="true"/>
+    <item
+        android:id="@+id/chain"
+        android:showAsAction="collapseActionView"
+        android:title="chain"
+        android:visible="true"/>
 </menu>
