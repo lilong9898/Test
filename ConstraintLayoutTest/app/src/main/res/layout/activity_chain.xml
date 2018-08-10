@@ -1,23 +1,204 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
 
+    <!--如果控件A中写自己的right和控件B的left约束在一起，控件B中写自己的left和控件A的right约束在一起
+    则A和B形成了一个chain，A是chain head，可以定义chain的布局模式-->
+    <!--如果B和C也满足这种互相约束的关系，则ABC形成一个chain，纵向上也一样道理-->
+
+    <!--activity_dimension_constraint.xml最后的tv13和tv14就构成了一个chain-->
+
+    <!--chain 1 chain head未规定chain style，使用默认的chain style:chain spread，chain中控件均匀分布
+    即控件与约束边界，控件与控件的间距都相等-->
     <TextView
         android:id="@+id/tv1"
         style="@style/tvStyle"
+        android:background="@android:color/holo_orange_light"
         android:text="tv1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
-        />
+        app:layout_constraintRight_toLeftOf="@+id/tv2"
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
         android:id="@+id/tv2"
         style="@style/tvStyle"
+        android:background="@android:color/holo_green_light"
         android:text="tv2"
-        />
+        app:layout_constraintLeft_toRightOf="@id/tv1"
+        app:layout_constraintRight_toLeftOf="@+id/tv3"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/tv3"
+        style="@style/tvStyle"
+        android:background="@android:color/holo_blue_light"
+        android:text="tv3"
+        app:layout_constraintLeft_toRightOf="@+id/tv2"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <!--chain 2 : chain style=chain spread inside，chain中头尾控件与约束边界的距离为零，控件与控件距离都相等-->
+    <TextView
+        android:id="@+id/tv4"
+        style="@style/tvStyle"
+        android:layout_marginTop="100dp"
+        android:background="@android:color/holo_orange_light"
+        android:text="tv4"
+        app:layout_constraintHorizontal_chainStyle="spread_inside"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/tv5"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/tv5"
+        style="@style/tvStyle"
+        android:background="@android:color/holo_green_light"
+        android:text="tv5"
+        app:layout_constraintLeft_toRightOf="@id/tv4"
+        app:layout_constraintRight_toLeftOf="@+id/tv6"
+        app:layout_constraintTop_toTopOf="@id/tv4"/>
+
+    <TextView
+        android:id="@+id/tv6"
+        style="@style/tvStyle"
+        android:background="@android:color/holo_blue_light"
+        android:text="tv6"
+        app:layout_constraintLeft_toRightOf="@+id/tv5"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tv4"/>
+
+    <!--chain 3 : chain style = pack, chain中控件会紧挨在一起-->
+    <TextView
+        android:id="@+id/tv7"
+        style="@style/tvStyle"
+        android:layout_marginTop="200dp"
+        android:background="@android:color/holo_orange_light"
+        android:text="tv7"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/tv8"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/tv8"
+        style="@style/tvStyle"
+        android:background="@android:color/holo_green_light"
+        android:text="tv8"
+        app:layout_constraintLeft_toRightOf="@id/tv7"
+        app:layout_constraintRight_toLeftOf="@+id/tv9"
+        app:layout_constraintTop_toTopOf="@id/tv7"/>
+
+    <TextView
+        android:id="@+id/tv9"
+        style="@style/tvStyle"
+        android:background="@android:color/holo_blue_light"
+        android:text="tv9"
+        app:layout_constraintLeft_toRightOf="@+id/tv8"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tv7"/>
+
+    <!--chain 4 : chain style = pack并带bias-->
+    <TextView
+        android:id="@+id/tv10"
+        style="@style/tvStyle"
+        android:layout_marginTop="300dp"
+        android:background="@android:color/holo_orange_light"
+        android:text="tv10"
+        app:layout_constraintHorizontal_bias="0.3"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/tv11"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/tv11"
+        style="@style/tvStyle"
+        android:background="@android:color/holo_green_light"
+        android:text="tv11"
+        app:layout_constraintLeft_toRightOf="@id/tv10"
+        app:layout_constraintRight_toLeftOf="@+id/tv12"
+        app:layout_constraintTop_toTopOf="@id/tv10"/>
+
+    <TextView
+        android:id="@+id/tv12"
+        style="@style/tvStyle"
+        android:background="@android:color/holo_blue_light"
+        android:text="tv12"
+        app:layout_constraintLeft_toRightOf="@+id/tv11"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tv10"/>
+
+    <!--chain 5 : chain style = spread并带weight，类似linearlayout的layout_weight-->
+    <!--要weight生效，这个方向上的尺寸必须是match_constraint(即0dp)-->
+    <!--不写weight的话都按1算，这样效果就是等分所有可用空间-->
+    <TextView
+        android:id="@+id/tv13"
+        style="@style/tvStyle"
+        android:layout_width="0dp"
+        android:layout_marginTop="400dp"
+        android:background="@android:color/holo_orange_light"
+        android:text="tv13"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/tv14"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/tv14"
+        style="@style/tvStyle"
+        android:layout_width="0dp"
+        android:background="@android:color/holo_green_light"
+        android:text="tv14"
+        app:layout_constraintLeft_toRightOf="@id/tv13"
+        app:layout_constraintRight_toLeftOf="@+id/tv15"
+        app:layout_constraintTop_toTopOf="@id/tv13"/>
+
+    <TextView
+        android:id="@+id/tv15"
+        style="@style/tvStyle"
+        android:layout_width="0dp"
+        android:background="@android:color/holo_blue_light"
+        android:text="tv15"
+        app:layout_constraintLeft_toRightOf="@+id/tv14"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tv13"/>
+
+    <!--chain 6 : chain style = spread并带weight，并显式指定了weight-->
+    <TextView
+        android:id="@+id/tv16"
+        style="@style/tvStyle"
+        android:layout_width="0dp"
+        android:layout_marginTop="500dp"
+        android:background="@android:color/holo_orange_light"
+        android:text="tv16"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintHorizontal_weight="3"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/tv17"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+        android:id="@+id/tv17"
+        style="@style/tvStyle"
+        android:layout_width="0dp"
+        android:background="@android:color/holo_green_light"
+        android:text="tv17"
+        app:layout_constraintHorizontal_weight="2"
+        app:layout_constraintLeft_toRightOf="@id/tv16"
+        app:layout_constraintRight_toLeftOf="@+id/tv18"
+        app:layout_constraintTop_toTopOf="@id/tv16"/>
+
+    <TextView
+        android:id="@+id/tv18"
+        style="@style/tvStyle"
+        android:layout_width="0dp"
+        android:background="@android:color/holo_blue_light"
+        android:text="tv18"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintLeft_toRightOf="@+id/tv17"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tv16"/>
 </android.support.constraint.ConstraintLayout>
