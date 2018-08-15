@@ -15,6 +15,13 @@ buildscript {
     }
 }
 
+ext {
+    compileSdkVersion = 25
+    minSdkVersion = 15
+    targetSdkVersion = 25
+
+}
+
 allprojects {
     repositories {
         google()

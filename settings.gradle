@@ -1,3 +1,8 @@
 include ':app'
 include ':Algorithm'
 include ':ConstraintLayoutTest'
+include ':DesignPattern'
+include ':FragmentTest'
+include ':IPCClient'
+include ':IPCServer'
+include ':LayoutInflaterTest'
