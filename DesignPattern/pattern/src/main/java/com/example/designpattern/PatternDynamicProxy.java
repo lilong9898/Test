@@ -1,4 +1,4 @@
-package com.example.designpattern;
+package com.lilong.designpattern;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;

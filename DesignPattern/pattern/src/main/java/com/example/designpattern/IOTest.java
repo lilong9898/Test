@@ -1,4 +1,4 @@
-package com.example.designpattern;
+package com.lilong.designpattern;
 
 import java.io.File;
 import java.io.FileInputStream;

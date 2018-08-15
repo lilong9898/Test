@@ -1,4 +1,4 @@
-package com.example.designpattern;
+package com.lilong.designpattern;
 
 /**
  * 中介者模式, 是观察者模式的变种

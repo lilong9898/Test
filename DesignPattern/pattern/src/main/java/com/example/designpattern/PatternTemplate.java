@@ -1,4 +1,4 @@
-package com.example.designpattern;
+package com.lilong.designpattern;
 
 /**
  * 模板模式
