@@ -1,5 +1,8 @@
 package com.lilong.ipc.client;
 
+import com.lilong.ipc.ICalculate;
+import com.lilong.ipc.R;
+
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -13,9 +16,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.lilong.ipc.ICalculate;
-import com.lilong.ipc.R;
-
 public class MainActivity extends Activity {
 
     private EditText editNumber1;
@@ -27,10 +27,10 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        editNumber1 = findViewById(R.id.editNumber1);
-        editNumber2 = findViewById(R.id.editNumber2);
-        btnCalculate = findViewById(R.id.btnCalculate);
-        tvResult = findViewById(R.id.tvResult);
+        editNumber1 = (EditText) findViewById(R.id.editNumber1);
+        editNumber2 = (EditText) findViewById(R.id.editNumber2);
+        btnCalculate = (Button) findViewById(R.id.btnCalculate);
+        tvResult = (TextView) findViewById(R.id.tvResult);
         btnCalculate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

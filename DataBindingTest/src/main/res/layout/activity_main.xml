@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="dataObj"
+            type="com.lilong.databindingtest.data.DataObj"/>
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+
+        <!--dataObj对象中的public类变量-->
+        <TextView
+            android:id="@+id/tv1"
+            style="@style/tvStyle"
+            android:layout_alignParentTop="true"
+            android:text="@{dataObj.STR_STATIC}"/>
+
+        <!--dataObj对象的public成员变量-->
+        <TextView
+            android:id="@+id/tv2"
+            style="@style/tvStyle"
+            android:layout_below="@+id/tv1"
+            android:text="@{dataObj.str1}"/>
+
+        <!--dataObj对象的private成员变量，但有public getMethod-->
+        <!--databinding不能访问数据源对象的private变量-->
+        <TextView
+            android:id="@+id/tv3"
+            style="@style/tvStyle"
+            android:layout_below="@+id/tv2"
+            android:text="@{dataObj.str2}"/>
+
+        <!--@{}中的表达式可以使用一些java中的操作符，比如这里的三目运算符-->
+        <TextView
+            android:id="@+id/tv4"
+            style="@style/tvStyle"
+            android:layout_below="@+id/tv3"
+            android:text="str3"/>
+    </RelativeLayout>
+</layout>

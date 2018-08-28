@@ -24,7 +24,7 @@ public class MergeTagTestActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_merge_tag_test);
-        container = findViewById(R.id.container);
+        container = (ViewGroup) findViewById(R.id.container);
         setTitle("Merge Tag Test");
         ViewGroup vgRoot = (ViewGroup) LayoutInflater.from(this).inflate(R.layout.vg_root, new FrameLayout(this), false);
         inflater.inflate(R.layout.to_be_merged, vgRoot);
