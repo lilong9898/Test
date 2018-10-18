@@ -39,7 +39,7 @@ import java.util.List;
 import static com.lilong.broadcasttest.service.TestJobService.KEY_ACTION;
 import static com.lilong.broadcasttest.service.TestJobService.KEY_IS_EXPLICIT;
 
-public class TestActivity extends Activity {
+public class MainActivity extends Activity {
 
     public static final String TAG = "BroadcastTest";
     public static final String ACTION_STATIC_REGISTERED_TEST = "action_static_registered_test";
@@ -175,7 +175,7 @@ public class TestActivity extends Activity {
                         int delaySeconds = Integer.parseInt(edtBroadcastSendDelaySeconds.getText().toString());
                         alarmManager.setExact(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + delaySeconds * SECOND, pendingIntent);
                     } else {
-                        Toast.makeText(TestActivity.this, "Android版本低于" + getAndroidVersionName(Build.VERSION_CODES.KITKAT) + ", 不支持此方式", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "Android版本低于" + getAndroidVersionName(Build.VERSION_CODES.KITKAT) + ", 不支持此方式", Toast.LENGTH_SHORT).show();
                     }
                 }
                 // 延时发出（通过JobScheduler）
@@ -197,7 +197,7 @@ public class TestActivity extends Activity {
                         jobScheduler.schedule(info);
 
                     } else {
-                        Toast.makeText(TestActivity.this, "Android版本低于" + getAndroidVersionName(Build.VERSION_CODES.LOLLIPOP) + ", 不支持此方式", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "Android版本低于" + getAndroidVersionName(Build.VERSION_CODES.LOLLIPOP) + ", 不支持此方式", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -228,6 +228,7 @@ public class TestActivity extends Activity {
             switch (intent.getAction()) {
                 case ACTION_STATIC_REGISTERED_TEST:
                     Log.i(TAG, "test broadcast received, action = " + ACTION_STATIC_REGISTERED_TEST);
+                    Toast.makeText(TestApplication.getInstance(), "received : " + ACTION_STATIC_REGISTERED_TEST, Toast.LENGTH_SHORT).show();
                     break;
                 default:
                     break;
@@ -249,6 +250,7 @@ public class TestActivity extends Activity {
             switch (intent.getAction()) {
                 case ACTION_DYNAMIC_REGISTERED_TEST:
                     Log.i(TAG, "test broadcast received, action = " + ACTION_DYNAMIC_REGISTERED_TEST);
+                    Toast.makeText(TestApplication.getInstance(), "received : " + ACTION_DYNAMIC_REGISTERED_TEST, Toast.LENGTH_SHORT).show();
                     break;
                 default:
                     break;

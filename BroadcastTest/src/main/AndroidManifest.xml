@@ -8,13 +8,13 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.TestActivity">
+        <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <receiver android:name=".activity.TestActivity$StaticRegisteredTestReceiver">
+        <receiver android:name=".activity.MainActivity$StaticRegisteredTestReceiver">
             <intent-filter>
                 <action android:name="action_static_registered_test"/>
             </intent-filter>

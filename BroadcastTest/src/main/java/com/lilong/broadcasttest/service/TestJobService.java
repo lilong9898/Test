@@ -9,7 +9,7 @@ import android.util.Log;
 
 import com.lilong.broadcasttest.application.TestApplication;
 
-import static com.lilong.broadcasttest.activity.TestActivity.TAG;
+import static com.lilong.broadcasttest.activity.MainActivity.TAG;
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 public class TestJobService extends JobService {
