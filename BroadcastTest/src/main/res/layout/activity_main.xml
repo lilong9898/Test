@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.lilong.broadcasttest.activity.TestActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="通用广播监听器接收测试"
+                android:textSize="15sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="从列表中选择一个action的广播，发出后，用断点检测是否收到"
+                android:textSize="15sp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="广播类型："
+                android:textSize="15sp"/>
+
+            <RadioGroup
+                android:id="@+id/rgBroadcastExplicitOrImplicit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+
+                <RadioButton
+                    android:id="@+id/rbtnExplicit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="显式(intent带本包包名)"
+                    android:textSize="15sp"/>
+
+                <RadioButton
+                    android:id="@+id/rbtnImplicit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="隐式(intent不带包名)"
+                    android:textSize="15sp"/>
+            </RadioGroup>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="发送广播的时机："
+                android:textSize="15sp"/>
+
+            <RadioGroup
+                android:id="@+id/rgBroadcastSendNowOrLater"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+
+                <RadioButton
+                    android:id="@+id/rbtnSendNow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="立刻发送"
+                    android:textSize="15sp"/>
+
+                <RadioButton
+                    android:id="@+id/rbtnSendLaterByAlarmManager"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="稍后发送(通过AlarmManager延时)"
+                    android:textSize="15sp"/>
+
+                <RadioButton
+                    android:id="@+id/rbtnSendLaterByJobScheduler"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="稍后发送(通过JobScheduler延时)"
+                    android:textSize="15sp"/>
+            </RadioGroup>
+
+            <LinearLayout
+                android:id="@+id/layoutBroadcastDelaySeconds"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingTop="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="延时"
+                    android:textSize="15sp"/>
+
+                <EditText
+                    android:id="@+id/edtBroadcastDelaySeconds"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:hint="5"
+                    android:inputType="number"
+                    android:maxLength="3"
+                    android:numeric="integer"
+                    android:singleLine="true"
+                    android:text="5"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:text="秒"
+                    android:textSize="15sp"/>
+            </LinearLayout>
+
+            <ListView
+                android:id="@+id/lvBroadcastsTest"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="10dp"
+                android:background="#dddddd"
+                android:divider="@drawable/divider_line_nopadding"/>
+
+            <Button
+                android:id="@+id/btnSendBroadCast"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="测试!"/>
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>
