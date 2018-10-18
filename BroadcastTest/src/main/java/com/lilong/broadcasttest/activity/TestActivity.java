@@ -9,6 +9,7 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -51,6 +52,10 @@ public class TestActivity extends Activity {
             ACTION_DYNAMIC_REGISTERED_TEST,
     };
 
+    private RadioGroup rgBroadcastDynamicRegisterOrNot;
+    private RadioButton rbtnBroadcastDynamicRegister;
+    private RadioButton rbtnBroadcastDynamicUnregister;
+
     private RadioGroup rgBroadcastExplicitOrImplicit;
     private RadioButton rbtnBroadcastExplicit;
     private RadioButton rbtnBroadcastImplicit;
@@ -67,14 +72,41 @@ public class TestActivity extends Activity {
     private BroadcastTestLvAdapter mBroadcastTestLvAdapter;
     private Button mBtnSendBroadcast;
 
+    private DynamicRegisteredTestReceiver mDynamicReceiver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mDynamicReceiver = new DynamicRegisteredTestReceiver();
         setContentView(R.layout.activity_main);
         initView();
     }
 
-    private void initView(){
+    private void initView() {
+
+        rgBroadcastDynamicRegisterOrNot = findViewById(R.id.rgBroadcastDynamicRegisterOrNot);
+        rbtnBroadcastDynamicRegister = findViewById(R.id.rbtnDynamicRegister);
+        rbtnBroadcastDynamicUnregister = findViewById(R.id.rbtnDynamicUnregister);
+
+        rbtnBroadcastDynamicRegister.setChecked(true);
+        registerDynamicReceiver();
+
+        rgBroadcastDynamicRegisterOrNot.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.rbtnDynamicRegister:
+                        registerDynamicReceiver();
+                        break;
+                    case R.id.rbtnDynamicUnregister:
+                        unregisterDynamicReceiver();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+
         rgBroadcastExplicitOrImplicit = (RadioGroup) findViewById(R.id.rgBroadcastExplicitOrImplicit);
         rbtnBroadcastExplicit = (RadioButton) findViewById(R.id.rbtnExplicit);
         rbtnBroadcastImplicit = (RadioButton) findViewById(R.id.rbtnImplicit);
@@ -172,16 +204,28 @@ public class TestActivity extends Activity {
         });
     }
 
-    /** 静态注册的接收器*/
+    private void registerDynamicReceiver() {
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ACTION_DYNAMIC_REGISTERED_TEST);
+        registerReceiver(mDynamicReceiver, intentFilter);
+    }
+
+    private void unregisterDynamicReceiver() {
+        unregisterReceiver(mDynamicReceiver);
+    }
+
+    /**
+     * 静态注册的接收器
+     */
     public static class StaticRegisteredTestReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
 
-            if(intent == null || TextUtils.isEmpty(intent.getAction())){
+            if (intent == null || TextUtils.isEmpty(intent.getAction())) {
                 return;
             }
 
-            switch (intent.getAction()){
+            switch (intent.getAction()) {
                 case ACTION_STATIC_REGISTERED_TEST:
                     Log.i(TAG, "test broadcast received, action = " + ACTION_STATIC_REGISTERED_TEST);
                     break;
@@ -191,16 +235,18 @@ public class TestActivity extends Activity {
         }
     }
 
-    /** 静态注册的接收器*/
+    /**
+     * 静态注册的接收器
+     */
     public static class DynamicRegisteredTestReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
 
-            if(intent == null || TextUtils.isEmpty(intent.getAction())){
+            if (intent == null || TextUtils.isEmpty(intent.getAction())) {
                 return;
             }
 
-            switch (intent.getAction()){
+            switch (intent.getAction()) {
                 case ACTION_DYNAMIC_REGISTERED_TEST:
                     Log.i(TAG, "test broadcast received, action = " + ACTION_DYNAMIC_REGISTERED_TEST);
                     break;
@@ -279,10 +325,12 @@ public class TestActivity extends Activity {
         public CheckBox cbBroadcastItem;
     }
 
-    /** 获取某个sdk_int的android版本的名字*/
-    public static String getAndroidVersionName(int sdkInt){
+    /**
+     * 获取某个sdk_int的android版本的名字
+     */
+    public static String getAndroidVersionName(int sdkInt) {
         String androidVersionName = "unknown";
-        switch (sdkInt){
+        switch (sdkInt) {
             case Build.VERSION_CODES.ICE_CREAM_SANDWICH:
                 androidVersionName = "4.0 ICE_CREAM_SANDWICH";
                 break;
@@ -316,13 +364,13 @@ public class TestActivity extends Activity {
             case Build.VERSION_CODES.N_MR1:
                 androidVersionName = "7.1 NOUGAT_MR1";
                 break;
-            case 26:
+            case Build.VERSION_CODES.O:
                 androidVersionName = "8.0 OREO";
                 break;
-            case 27:
+            case Build.VERSION_CODES.O_MR1:
                 androidVersionName = "8.1 OREO";
                 break;
-            case 28:
+            case Build.VERSION_CODES.P:
                 androidVersionName = "9.0 PIE";
                 break;
             default:
