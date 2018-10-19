@@ -77,6 +77,7 @@ public class MainActivity extends Activity {
     private DynamicRegisteredTestReceiver mDynamicReceiver;
 
     private MenuItem mMenuItemJumpToSecondActivity;
+    private MenuItem mMenuItemSendBroadcastForSecondActivityRegisteredReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,14 +91,18 @@ public class MainActivity extends Activity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.cur_menu, menu);
         mMenuItemJumpToSecondActivity = menu.findItem(R.id.jumpToSecondActivity);
+        mMenuItemSendBroadcastForSecondActivityRegisteredReceiver = menu.findItem(R.id.sendBroadcastForSecondActivityRegisteredReceiver);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if(item == mMenuItemJumpToSecondActivity){
+        if (item == mMenuItemJumpToSecondActivity) {
             Intent intent = new Intent(MainActivity.this, SecondActivity.class);
             startActivity(intent);
+        } else if (item == mMenuItemSendBroadcastForSecondActivityRegisteredReceiver) {
+            Intent intent = new Intent(SecondActivity.ACTION_DYNAMIC_RECEIVER_LIFECYCLE_TEST);
+            sendBroadcast(intent);
         }
         return true;
     }

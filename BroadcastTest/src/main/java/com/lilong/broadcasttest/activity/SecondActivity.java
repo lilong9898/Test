@@ -17,11 +17,12 @@ import static com.lilong.broadcasttest.activity.MainActivity.TAG;
 
 /**
  * 用来测试动态注册的广播监听器，其生命周期与注册时用的context的生命周期是否一致
+ * 结论：一致
  */
 
 public class SecondActivity extends Activity {
 
-    private static final String ACTION_DYNAMIC_RECEIVER_LIFECYCLE_TEST = "dynamic_receiver_lifecycle_test";
+    public static final String ACTION_DYNAMIC_RECEIVER_LIFECYCLE_TEST = "dynamic_receiver_lifecycle_test";
 
     private LifeCycleTestDynamicReceiver mLifeCycleTestDynamicReceiver;
     private Button mBtnSend;
