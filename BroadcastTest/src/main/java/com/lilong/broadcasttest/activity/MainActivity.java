@@ -16,6 +16,8 @@ import android.os.PersistableBundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -74,12 +76,30 @@ public class MainActivity extends Activity {
 
     private DynamicRegisteredTestReceiver mDynamicReceiver;
 
+    private MenuItem mMenuItemJumpToSecondActivity;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mDynamicReceiver = new DynamicRegisteredTestReceiver();
         setContentView(R.layout.activity_main);
         initView();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.cur_menu, menu);
+        mMenuItemJumpToSecondActivity = menu.findItem(R.id.jumpToSecondActivity);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item == mMenuItemJumpToSecondActivity){
+            Intent intent = new Intent(MainActivity.this, SecondActivity.class);
+            startActivity(intent);
+        }
+        return true;
     }
 
     private void initView() {

@@ -5,14 +5,36 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingLeft="15dp"
+    android:paddingRight="15dp"
     tools:context="com.lilong.broadcasttest.activity.MainActivity">
 
     <TextView
         android:id="@+id/tvHint"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="20dp"
         android:text="动态监听器在本页面onCreate的时候注册上，而且一直没反注册"
         android:textSize="15sp"/>
-    <TextView android:id="@+id/tvHint2"/>
+
+    <TextView
+        android:id="@+id/tvHint2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/tvHint"
+        android:layout_below="@id/tvHint"
+        android:layout_marginTop="10dp"
+        android:text="action = dynamic_receiver_lifecycle_test"
+        android:textSize="15sp"/>
+
+    <Button
+        android:id="@+id/btnSend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/tvHint2"
+        android:layout_below="@id/tvHint2"
+        android:layout_marginTop="10dp"
+        android:text="立即发广播"
+        android:textSize="15sp"/>
 </RelativeLayout>

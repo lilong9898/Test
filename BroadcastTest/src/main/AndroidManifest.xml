@@ -14,6 +14,8 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity android:name=".activity.SecondActivity"/>
+
         <receiver android:name=".activity.MainActivity$StaticRegisteredTestReceiver">
             <intent-filter>
                 <action android:name="action_static_registered_test"/>
