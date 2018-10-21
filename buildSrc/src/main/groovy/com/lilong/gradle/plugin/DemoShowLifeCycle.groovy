@@ -36,7 +36,7 @@ class DemoShowLifeCycle implements Plugin<Project> {
             project.logger.lifecycle "===project.afterEvaluate==="
         }
 
-        
+
         /**
          * 在afterEvaluate的closure之前执行，因为在config阶段中，evaluate操作会评估出所有的buildVariant
          * */
