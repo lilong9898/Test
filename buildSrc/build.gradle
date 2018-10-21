@@ -1,0 +1,18 @@
+// 这个build.gradle里可以不写任何东西，这样buildSrc里用到的类必须是gradle-api-xxx.jar里的，这个"gradle-api-xxx.jar"在external libraries里，不知道是谁引入的
+// dependencies里写了com.android.tools.build:gradle:x.x.x之后，可以用到里面有的，但gradle-api-xxx.jar包里没有的类，比如AppExtension类，Transform类等
+// 在不写dependencies的情况下，有些类点击后能打开其反编译字节码后得到的源码，比如AppExtension，不说明这个类实际可以用，这只是android studio从它安装目录的gradle/m2repository/中预装的gradle中找到的字节码
+// 这个类没写在dependencies里，gradle sync还是会失败
+apply plugin: 'groovy'
+apply plugin: 'java'
+
+repositories {
+    jcenter()
+    maven {
+        url 'https://maven.google.com/'
+        name 'Google'
+    }
+}
+
+dependencies {
+    implementation 'com.android.tools.build:gradle:3.0.1'
+}
