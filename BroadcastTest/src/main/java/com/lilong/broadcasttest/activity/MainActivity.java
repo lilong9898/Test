@@ -41,6 +41,27 @@ import java.util.List;
 import static com.lilong.broadcasttest.service.TestJobService.KEY_ACTION;
 import static com.lilong.broadcasttest.service.TestJobService.KEY_IS_EXPLICIT;
 
+/**
+ * 隐式广播：intent中不携带包名信息
+ * 显式广播：intent中通过setPackage或其它方法设置过接收广播的包名
+ * 隐式/显式与静态注册/动态注册是两个维度的概念，彼此无关
+ *
+ * 运行在android8.0系统上的应用，不管targetAPI是不是大于等于26，都会收到后台执行限制的影响：
+ * (1) 应用退到后台后超过一分钟，运行中的后台service会被stop，而且再调startService就会抛出异常，这时只能调startForegroundService并在服务创建后五秒内调startForeground方法（否则会anr)
+ * bindService方法不受此规则限制
+ * (2) androidManifest中注册（静态注册）的广播接收器，将收不到隐式广播(少数系统隐式广播除外)，可收到显式广播
+ * 动态注册的广播接收器，都可以正常收到
+ *
+ * 静态注册的广播接收器，收到显式广播时，如果应用进程死了，会调起进程，创建application，创建broadcastReceiver对象并调其onReceive方法
+ * [但广播能调起进程是有前提的]：进程必须是因为内存原因被系统杀死，或者被应用本身杀死（Process.killProcess），或者按back键退出后，被系统杀死才行
+ * 用户通过命令行或应用管理器强制停止进程的不行，这种情况广播是无法再调起进程的
+ *
+ * 静态注册的广播接收器，每次激活时都是不同的对象
+ *
+ *[广播接收器的同一个类，是可以同时注册多个实例的！]
+ * 如果静态注册了一个接收器(manifest中写了类A)，又动态注册了这个接收器(类A的实例)，则收到广播后两个都会onReceive!
+ * 其中静态注册的接收器会最先收到广播
+ * */
 public class MainActivity extends Activity {
 
     public static final String TAG = "BroadcastTest";
@@ -261,7 +282,7 @@ public class MainActivity extends Activity {
 
             switch (intent.getAction()) {
                 case ACTION_STATIC_REGISTERED_TEST:
-                    Log.i(TAG, "test broadcast received, action = " + ACTION_STATIC_REGISTERED_TEST);
+                    Log.i(TAG, "test broadcast received by " + StaticRegisteredTestReceiver.this + ", action = " + ACTION_STATIC_REGISTERED_TEST);
                     Toast.makeText(TestApplication.getInstance(), "received : " + ACTION_STATIC_REGISTERED_TEST, Toast.LENGTH_SHORT).show();
                     break;
                 default:
@@ -283,7 +304,7 @@ public class MainActivity extends Activity {
 
             switch (intent.getAction()) {
                 case ACTION_DYNAMIC_REGISTERED_TEST:
-                    Log.i(TAG, "test broadcast received, action = " + ACTION_DYNAMIC_REGISTERED_TEST);
+                    Log.i(TAG, "test broadcast received by " + DynamicRegisteredTestReceiver.this + ", action = " + ACTION_DYNAMIC_REGISTERED_TEST);
                     Toast.makeText(TestApplication.getInstance(), "received : " + ACTION_DYNAMIC_REGISTERED_TEST, Toast.LENGTH_SHORT).show();
                     break;
                 default:

@@ -1,6 +1,9 @@
 package com.lilong.broadcasttest.application;
 
 import android.app.Application;
+import android.util.Log;
+
+import static com.lilong.broadcasttest.activity.MainActivity.TAG;
 
 public class TestApplication extends Application {
 
@@ -10,6 +13,7 @@ public class TestApplication extends Application {
     public void onCreate() {
         super.onCreate();
         sInstance = this;
+        Log.i(TAG, "application is created");
     }
 
     public static Application getInstance(){
