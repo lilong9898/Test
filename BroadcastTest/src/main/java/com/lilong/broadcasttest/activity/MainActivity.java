@@ -73,6 +73,7 @@ public class MainActivity extends Activity {
     private ListView mLvBroadcastTest;
     private BroadcastTestLvAdapter mBroadcastTestLvAdapter;
     private Button mBtnSendBroadcast;
+    private Button mBtnKillAppProcess;
 
     private DynamicRegisteredTestReceiver mDynamicReceiver;
 
@@ -225,6 +226,14 @@ public class MainActivity extends Activity {
                         Toast.makeText(MainActivity.this, "Android版本低于" + getAndroidVersionName(Build.VERSION_CODES.LOLLIPOP) + ", 不支持此方式", Toast.LENGTH_SHORT).show();
                     }
                 }
+            }
+        });
+
+        mBtnKillAppProcess = findViewById(R.id.btnKillAppProcess);
+        mBtnKillAppProcess.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                android.os.Process.killProcess(android.os.Process.myPid());
             }
         });
     }
