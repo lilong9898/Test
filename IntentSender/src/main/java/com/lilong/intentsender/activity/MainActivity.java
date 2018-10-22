@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -21,7 +23,10 @@ import com.lilong.intentsender.R;
 import java.util.Arrays;
 import java.util.List;
 
-/** 本app为intent发送工具，可发送广播，启动service，启动activity*/
+/**
+ * 本app为intent发送工具，可发送广播，启动service，启动activity
+ */
+
 /** 发送广播的测试需要与com.lilong.broadcasttest包配合*/
 public class MainActivity extends Activity {
 
@@ -38,9 +43,11 @@ public class MainActivity extends Activity {
     private RadioButton rbtnBroadcastExplicit;
     private RadioButton rbtnBroadcastImplicit;
 
-    private ListView mLvBroadcastTest;
-    private BroadcastTestLvAdapter mBroadcastTestLvAdapter;
-    private Button mBtnSendBroadcast;
+    private ListView lvBroadcastTest;
+    private BroadcastTestLvAdapter broadcastTestLvAdapter;
+    private Button btnSendBroadcast;
+
+    private MenuItem menuItemJumpToCallActivityOrService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +61,7 @@ public class MainActivity extends Activity {
         rgBroadcastExplicitOrImplicit.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch (checkedId){
+                switch (checkedId) {
                     case R.id.rbtnExplicit:
                         rbtnBroadcastExplicit.requestFocus();
                         break;
@@ -67,15 +74,15 @@ public class MainActivity extends Activity {
         });
         rbtnBroadcastExplicit.setChecked(true);
 
-        mBroadcastTestLvAdapter = new BroadcastTestLvAdapter(this, Arrays.asList(actions));
-        mLvBroadcastTest = findViewById(R.id.lvBroadcastsTest);
-        mLvBroadcastTest.setAdapter(mBroadcastTestLvAdapter);
+        broadcastTestLvAdapter = new BroadcastTestLvAdapter(this, Arrays.asList(actions));
+        lvBroadcastTest = findViewById(R.id.lvBroadcastsTest);
+        lvBroadcastTest.setAdapter(broadcastTestLvAdapter);
 
-        mBtnSendBroadcast = findViewById(R.id.btnSendBroadCast);
-        mBtnSendBroadcast.setOnClickListener(new View.OnClickListener() {
+        btnSendBroadcast = findViewById(R.id.btnSendBroadCast);
+        btnSendBroadcast.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String broadcastAction = mBroadcastTestLvAdapter.getLastCheckedAction();
+                final String broadcastAction = broadcastTestLvAdapter.getLastCheckedAction();
                 final boolean isExplicit = rbtnBroadcastExplicit.isChecked();
 
                 // 立刻发出
@@ -123,10 +130,10 @@ public class MainActivity extends Activity {
         public View getView(final int position, View convertView, ViewGroup parent) {
             ViewHolder viewHolder = null;
             if (convertView == null) {
-                convertView = layoutInflater.inflate(R.layout.broadcast_test_item, parent, false);
+                convertView = layoutInflater.inflate(R.layout.choice_item, parent, false);
                 viewHolder = new ViewHolder();
-                viewHolder.tvBroadcastItem = convertView.findViewById(R.id.tvBroadcastTestItem);
-                viewHolder.cbBroadcastItem = convertView.findViewById(R.id.cbBroadcastTestItem);
+                viewHolder.tvBroadcastItem = convertView.findViewById(R.id.tvChoice);
+                viewHolder.cbBroadcastItem = convertView.findViewById(R.id.cbChoice);
                 convertView.setTag(viewHolder);
             } else {
                 viewHolder = (ViewHolder) convertView.getTag();
@@ -155,5 +162,21 @@ public class MainActivity extends Activity {
     static class ViewHolder {
         public TextView tvBroadcastItem;
         public CheckBox cbBroadcastItem;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.cur_menu, menu);
+        menuItemJumpToCallActivityOrService = menu.findItem(R.id.callActivityOrService);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item == menuItemJumpToCallActivityOrService) {
+            Intent intent = new Intent(this, CallActivityOrServiceActivity.class);
+            startActivity(intent);
+        }
+        return true;
     }
 }

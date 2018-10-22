@@ -178,10 +178,10 @@
                 android:text="选择广播的action："
                 android:textSize="15sp"/>
 
-            <ListView
+            <com.lilong.broadcasttest.widget.WrapContentListView
                 android:id="@+id/lvBroadcastsTest"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:background="#eeeeee"
                 android:divider="@drawable/divider_line_nopadding"/>

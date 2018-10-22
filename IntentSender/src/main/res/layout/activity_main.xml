@@ -12,8 +12,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingTop="15dp"
             android:paddingLeft="15dp"
+            android:paddingTop="15dp"
             android:paddingRight="15dp">
 
             <TextView
@@ -48,11 +48,11 @@
                     android:id="@+id/rbtnExplicit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:singleLine="true"
                     android:ellipsize="marquee"
                     android:focusable="true"
                     android:focusableInTouchMode="true"
                     android:marqueeRepeatLimit="marquee_forever"
+                    android:singleLine="true"
                     android:text="显式(intent带包名com.lilong.broadcasttest)"
                     android:textSize="15sp"/>
 
@@ -71,10 +71,10 @@
                 android:text="选择广播的action："
                 android:textSize="15sp"/>
 
-            <ListView
+            <com.lilong.intentsender.widget.WrapContentListView
                 android:id="@+id/lvBroadcastsTest"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:background="#eeeeee"
                 android:divider="@drawable/divider_line_nopadding"/>

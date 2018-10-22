@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="15dp"
+            android:paddingTop="15dp"
+            android:paddingRight="15dp">
+
+            <CheckBox
+                android:id="@+id/cbHaveAction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="包含action"
+                android:textSize="15sp"/>
+
+            <com.lilong.intentsender.widget.WrapContentListView
+                android:id="@+id/lvActions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="#eeeeee"
+                android:divider="@drawable/divider_line_nopadding"/>
+
+            <CheckBox
+                android:id="@+id/cbHaveCategory"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="包含category"
+                android:textSize="15sp"/>
+
+            <com.lilong.intentsender.widget.WrapContentListView
+                android:id="@+id/lvCategories"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="#eeeeee"
+                android:divider="@drawable/divider_line_nopadding"/>
+
+            <CheckBox
+                android:id="@+id/cbHaveComponentName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="包含component name"
+                android:textSize="15sp"/>
+
+            <LinearLayout
+                android:id="@+id/layoutComponentNames"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <com.lilong.intentsender.widget.WrapContentListView
+                    android:id="@+id/lvPackageNames"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight="1"
+                    android:background="#eeeeee"
+                    android:divider="@drawable/divider_line_nopadding"/>
+
+                <com.lilong.intentsender.widget.WrapContentListView
+                    android:id="@+id/lvComponentClassNames"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_weight="1"
+                    android:background="#eeeeee"
+                    android:divider="@drawable/divider_line_nopadding"/>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>
