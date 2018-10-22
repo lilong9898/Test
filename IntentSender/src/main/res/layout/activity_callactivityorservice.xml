@@ -79,6 +79,22 @@
                     android:background="#eeeeee"
                     android:divider="@drawable/divider_line_nopadding"/>
             </LinearLayout>
+
+            <Button
+                android:id="@+id/btnStartActivity"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="启动Activity"
+                android:textSize="15sp"/>
+
+            <Button
+                android:id="@+id/btnStartService"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="启动Service"
+                android:textSize="15sp"/>
         </LinearLayout>
     </ScrollView>
 
