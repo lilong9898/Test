@@ -59,23 +59,20 @@
                 android:id="@+id/layoutComponentNames"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
                 <com.lilong.intentsender.widget.WrapContentListView
                     android:id="@+id/lvPackageNames"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="10dp"
-                    android:layout_weight="1"
                     android:background="#eeeeee"
                     android:divider="@drawable/divider_line_nopadding"/>
 
                 <com.lilong.intentsender.widget.WrapContentListView
                     android:id="@+id/lvComponentClassNames"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_weight="1"
+                    android:layout_marginTop="10dp"
                     android:background="#eeeeee"
                     android:divider="@drawable/divider_line_nopadding"/>
             </LinearLayout>

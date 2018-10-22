@@ -23,7 +23,8 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * 发出intent启动activity
+ * 发出intent启动activity或service
+ * 需要与com.lilong.intentreceiver配合使用
  */
 public class CallActivityOrServiceActivity extends Activity {
 
@@ -31,21 +32,25 @@ public class CallActivityOrServiceActivity extends Activity {
 
     private CheckBox cbHaveAction;
     private ListView lvActions;
-    private static final String ACTION_SELF_DEFINED = "action_self_defined";
+    private static final String ACTION_CALL_INTENT_RECEIVER_SECOND_ACTIVITY = "action_call_intent_receiver_second_activity";
+    private static final String ACTION_CALL_INTENT_RECEIVER_THIRD_ACTIVITY = "action_call_intent_receiver_third_activity";
     private String[] actionChoices = {
+            ACTION_CALL_INTENT_RECEIVER_SECOND_ACTIVITY,
+            ACTION_CALL_INTENT_RECEIVER_THIRD_ACTIVITY,
             Intent.ACTION_VIEW,
             Intent.ACTION_MAIN,
-            ACTION_SELF_DEFINED,
     };
     private ChoiceAdapter actionChoiceAdapter;
 
-    private static final String CATEGORY_SELF_DEFINED = "category_self_defined";
+    private static final String CATEGORY_CALL_INTENT_RECEIVER_THIRD_ACTIVITY_1 = "category_call_intent_receiver_third_activity_1";
+    private static final String CATEGORY_CALL_INTENT_RECEIVER_THIRD_ACTIVITY_2 = "category_call_intent_receiver_third_activity_2";
     private CheckBox cbHaveCategory;
     private ListView lvCategories;
     private String[] categoryChoices = {
-            Intent.CATEGORY_LAUNCHER,
+            CATEGORY_CALL_INTENT_RECEIVER_THIRD_ACTIVITY_1,
+            CATEGORY_CALL_INTENT_RECEIVER_THIRD_ACTIVITY_2,
             Intent.CATEGORY_DEFAULT,
-            CATEGORY_SELF_DEFINED,
+            Intent.CATEGORY_LAUNCHER,
     };
     private ChoiceAdapter categoryChoiceAdapter;
 
@@ -53,11 +58,18 @@ public class CallActivityOrServiceActivity extends Activity {
     private ViewGroup layoutComponentNames;
     private ListView lvPackageNames;
     private ListView lvComponentClassNames;
+
+    private static final String INTENT_RECEIVER_PACKAGE_NAME = "com.lilong.intentreceiver";
+    private static final String INTENT_SENDER_PACKAGE_NAME = "com.lilong.intentsender";
     private String[] packageNames = {
-            "testPackage",
+            INTENT_SENDER_PACKAGE_NAME,
+            INTENT_RECEIVER_PACKAGE_NAME,
     };
+    private static final String INTENT_SENDER_MAIN_ACTIVITY_CLASS_NAME = ".activity.MainActivity";
+    private static final String INTENT_RECEIVER_SECOND_ACTIVITY_CLASS_NAME = ".activity.SecondActivity";
     private String[] componentClassNames = {
-            ".test.testActivity"
+            INTENT_SENDER_MAIN_ACTIVITY_CLASS_NAME,
+            INTENT_RECEIVER_SECOND_ACTIVITY_CLASS_NAME,
     };
     private ChoiceAdapter packageNameChoiceAdapter;
     private ChoiceAdapter componentClassNameChoiceAdapter;
