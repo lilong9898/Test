@@ -25,6 +25,7 @@ import java.util.List;
 /**
  * 发出intent启动activity或service
  * 需要与com.lilong.intentreceiver配合使用
+ * 通过ComponentName启动activity或service时，componentName中的类名必须是全名！
  */
 public class CallActivityOrServiceActivity extends Activity {
 
@@ -65,11 +66,14 @@ public class CallActivityOrServiceActivity extends Activity {
             INTENT_SENDER_PACKAGE_NAME,
             INTENT_RECEIVER_PACKAGE_NAME,
     };
-    private static final String INTENT_SENDER_MAIN_ACTIVITY_CLASS_NAME = ".activity.MainActivity";
-    private static final String INTENT_RECEIVER_SECOND_ACTIVITY_CLASS_NAME = ".activity.SecondActivity";
+    private static final String INTENT_SENDER_MAIN_ACTIVITY_CLASS_NAME = "com.lilong.intentsender.activity.MainActivity";
+    private static final String INTENT_RECEIVER_SECOND_ACTIVITY_CLASS_NAME = "com.lilong.intentreceiver.activity.SecondActivity";
+    private static final String INTENT_SENDER_THIRD_ACTIVITY_CLASS_NAME = "com.lilong.intentsender.activity.ThirdActivity";
+
     private String[] componentClassNames = {
             INTENT_SENDER_MAIN_ACTIVITY_CLASS_NAME,
             INTENT_RECEIVER_SECOND_ACTIVITY_CLASS_NAME,
+            INTENT_SENDER_THIRD_ACTIVITY_CLASS_NAME,
     };
     private ChoiceAdapter packageNameChoiceAdapter;
     private ChoiceAdapter componentClassNameChoiceAdapter;
