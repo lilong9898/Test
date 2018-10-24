@@ -3,6 +3,9 @@ package com.lilong.gradle.plugin
 import com.android.build.gradle.api.ApkVariant
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.Configuration
+import org.gradle.api.artifacts.Dependency
+import org.gradle.api.internal.artifacts.dependencies.DefaultSelfResolvingDependency
 
 class DemoShowInfo implements Plugin<Project> {
 
@@ -27,8 +30,25 @@ class DemoShowInfo implements Plugin<Project> {
         /** project的上级project的名字*/
         project.logger.lifecycle "===project.parent.name : ${project.parent.name}==="
 
+        /** 打印这个project所有dependency scope*/
+        project.configurations.each { Configuration configuration ->
+//            project.logger.lifecycle "===project.configurations contains ${configuration.toString()}"
+        }
+
+        project.afterEvaluate {
+            project.configurations.getByName("provided").dependencies.all { Dependency dependency ->
+                project.logger.lifecycle "===provided dependency scope contains depedencies : ${dependency}"
+                if (dependency instanceof DefaultSelfResolvingDependency) {
+                    DefaultSelfResolvingDependency defaultSelfResolvingDependency = (DefaultSelfResolvingDependency) dependency;
+                    defaultSelfResolvingDependency.resolve().each { File f ->
+                        project.logger.lifecycle "===which contains file : ${f.getName()}"
+                    }
+                }
+            };
+        }
+
         /** project的defaultTask名字*/
-        for (taskName in project.defaultTasks){
+        for (taskName in project.defaultTasks) {
             project.logger.lifecycle("===project.defaultTasks name : ${taskName}===")
         }
 
@@ -45,7 +65,7 @@ class DemoShowInfo implements Plugin<Project> {
         project.logger.lifecycle "===project.gradle.gradleHomeDir.absolutePath : ${project.gradle.gradleHomeDir.absolutePath}==="
 
         /**
-         *gradle用户目录，其包含上面的gradle执行目录，还包含其它的cache，编译后的gradle脚本等
+         * gradle用户目录，其包含上面的gradle执行目录，还包含其它的cache，编译后的gradle脚本等
          * 实际上是~/.gradle目录
          * */
         project.logger.lifecycle "===project.gradle.gradleUserHomeDir : ${project.gradle.gradleUserHomeDir}==="
@@ -55,7 +75,7 @@ class DemoShowInfo implements Plugin<Project> {
          * 所以每次build实际运行的动作都是：init->config->execute，其中execute仅包含要执行的这些task
          * 而startParamter.taskNames表示的就是这些task的名字
          * */
-        for(name in project.gradle.startParameter.taskNames){
+        for (name in project.gradle.startParameter.taskNames) {
             project.logger.lifecycle "===project.gradle.startParameter.taskName : ${name}==="
         }
 
@@ -65,14 +85,14 @@ class DemoShowInfo implements Plugin<Project> {
          * all方法的每次调用，都会把后面的closure加入到actionList里，具体是通过CollectionEventRegister的registerAddAction方法加入的
          * 所以多次调用project.android.applicationVariants.all传入的closure，会在触发时依次执行
          * */
-        project.android.applicationVariants.all {variant->
+        project.android.applicationVariants.all { variant ->
             project.logger.lifecycle "===project.android.applicationVariants.all operation 1"
         }
 
         /**
          * 输出每个applicationVariant有关的信息
          * */
-        project.android.applicationVariants.all {ApkVariant variant->
+        project.android.applicationVariants.all { ApkVariant variant ->
             project.logger.lifecycle "===project.android.applicationVariants.all operation 2"
             project.logger.lifecycle "---------------------printing info of applicationVariant--------------"
             project.logger.lifecycle "===applicationVariant.name : ${variant.name}==="
@@ -109,7 +129,7 @@ class DemoShowInfo implements Plugin<Project> {
             variant.buildConfigField "String", "BUILD_CONFIG_FIELD_COMMON", '"build_config_field_common"'
 
             // e.g.,只给buildType.name为release的variant添加buildConfigField
-            if(variant.buildType.name == "release"){
+            if (variant.buildType.name == "release") {
                 variant.buildConfigField "String", "BUILD_CONFIG_FIELD_RELEASE_ONLY", '"build_config_field_release_only"'
             }
         }

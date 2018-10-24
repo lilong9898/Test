@@ -6,13 +6,11 @@ apply plugin: 'groovy'
 apply plugin: 'java'
 
 repositories {
+    google()
+    mavenCentral()
     jcenter()
-    maven {
-        url 'https://maven.google.com/'
-        name 'Google'
-    }
 }
 
 dependencies {
-    implementation 'com.android.tools.build:gradle:3.0.1'
+    implementation 'com.android.tools.build:gradle:3.2.1'
 }
