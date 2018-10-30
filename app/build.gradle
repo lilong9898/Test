@@ -26,6 +26,8 @@ configurations {
     customCompile2.setTransitive(true)
     // 自定义一个configuration继承自compile，非常奇怪，必须写成${父类configuration}.extendsFrom${子类configuration}这样子才能实现configuration继承的效果
     compile.extendsFrom customCompile3
+    // 自定义一个configuration
+    customCompile4.setTransitive(true)
 }
 
 dependencies {
@@ -36,12 +38,19 @@ dependencies {
     customCompile1 "android.arch.core:common:1.1.1"
     customCompile2 "android.arch.core:runtime:1.1.1"
     customCompile3 "android.arch.lifecycle:common:1.1.1"
+    customCompile4 "com.android.support:design:28.0.0"
+}
+
+// configuration的dependencies方法不会触发依赖解析，所以返回的依赖信息只包括dependency{}块中直接规定的
+configurations.customCompile4.dependencies.each {Dependency dependency->
+    logger.lifecycle "${dependency.toString()}"
 }
 
 // depencies块结束，意味着我们已经规定完了要使用那些依赖，后面可以通过configuration获取依赖解析结果
 // configuration的asPath方法可以看它所包括的依赖，在解析完后实际需要的aar包或jar包的地址，这些地址实际上是gradle缓存目录中的，因为gradle就是从自己的缓存目录里获取依赖的aar包或jar包用于构建的
 // [依赖解析和查看结果的异步问题]
-// 注意！asPath方法会因为下载依赖而阻塞！如果asPath要输出的依赖在gradle缓存中没有，gradle需要去下载依赖，asPath方法会阻塞
+// 注意！asPath方法会因为下载依赖而阻塞！因为它会要求依赖解析/下载并返回结果
+// 如果asPath要输出的依赖在gradle缓存中没有，gradle需要去下载依赖，asPath方法会阻塞
 // 直到依赖下载完，会继续执行，所以，asPath总是能在依赖下载完解析完后输出结果
 logger.lifecycle "customCompile1's dependencies aar path :"
 logger.lifecycle "${configurations.customCompile1.asPath}"
