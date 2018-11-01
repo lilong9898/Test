@@ -8,6 +8,7 @@ import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
 import java.util.Arrays;
+import java.util.List;
 
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
@@ -17,7 +18,7 @@ import io.reactivex.disposables.Disposable;
 
 public class MainActivity extends Activity {
 
-    private static final String TAG = "RxJava";
+    private static final String TAG = "RxTag";
 
     // 观察者
     private Observer<String> observer = new Observer<String>() {
@@ -66,13 +67,24 @@ public class MainActivity extends Activity {
     };
 
     // 被观察者的数据源
-    private String[] sources = new String[]{"a", "b"};
+    private final List<String> sources = Arrays.asList(new String[]{
+            "a",
+            "b",
+    });
 
     // 被观察者
     private Observable<String> observable = Observable.create(new ObservableOnSubscribe<String>() {
         @Override
-        public void subscribe(ObservableEmitter<String> e) throws Exception {
-//            Arrays.asList(sources).forEach(
+        public void subscribe(ObservableEmitter<String> emitter) throws Exception {
+            try{
+                for(String str : sources){
+                    emitter.onNext(str);
+                }
+                // 调用完emitter.onComplete后，再调emitter.onNext也无反应了
+                emitter.onComplete();
+            }catch (Exception e){
+                emitter.onError(e);
+            }
         }
     });
 
@@ -80,5 +92,6 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        observable.subscribe(observer);
     }
 }

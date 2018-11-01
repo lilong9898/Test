@@ -31,7 +31,7 @@ configurations {
 }
 
 dependencies {
-    // compile和provided是两种内置的configuration
+    // compile(新版叫api)和provided(新版叫compileOnly)是两种内置的configuration
     compile fileTree(include: ['*.jar'], dir: 'libs')
     provided fileTree(include: ['*.jar'], dir: 'external-jars')
     // 使用自定义的两种configuration
