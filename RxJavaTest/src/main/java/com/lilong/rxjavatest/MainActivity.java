@@ -21,15 +21,27 @@ public class MainActivity extends Activity {
     private static final String TAG = "RxTag";
 
     // 观察者
-    private Observer<String> observer = new Observer<String>() {
+    class CustomObserver implements Observer<String> {
+
+        private Disposable disposable;
+
+        public Disposable getDisposable(){
+            return disposable;
+        }
+
         @Override
         public void onSubscribe(Disposable d) {
             Log.i(TAG, "onSubscribe " + d);
+            disposable = d;
         }
 
         @Override
         public void onNext(String s) {
             Log.i(TAG, "onNext " + s);
+            // observer收到一个事件后，调disposable.dispose方法中断接收（但observable还会发送事件）
+            if("a".equals(s)){
+                disposable.dispose();
+            }
         }
 
         @Override
@@ -44,7 +56,8 @@ public class MainActivity extends Activity {
     };
 
     // 另一种形式的观察者
-    private Subscriber<String> subscriber = new Subscriber<String>() {
+    class CustomSubscriber implements Subscriber<String> {
+
         @Override
         public void onSubscribe(Subscription s) {
             Log.i(TAG, "onSubscribe " + s);
@@ -79,8 +92,10 @@ public class MainActivity extends Activity {
             try{
                 for(String str : sources){
                     emitter.onNext(str);
+                    Log.i(TAG, "observable emits : " + str);
                 }
-                // 调用完emitter.onComplete后，再调emitter.onNext也无反应了
+                // 调用完emitter.onComplete后，再调emitter.onNext也无反应了，不会被接收了
+                // 调用完emitter.onError后也一样
                 emitter.onComplete();
             }catch (Exception e){
                 emitter.onError(e);
@@ -88,10 +103,14 @@ public class MainActivity extends Activity {
         }
     });
 
+    private CustomObserver customObserver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        observable.subscribe(observer);
+        customObserver = new CustomObserver();
+//        observable.subscribe(customObserver);
+        observable.subscribe();
     }
 }
