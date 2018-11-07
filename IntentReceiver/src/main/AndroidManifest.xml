@@ -13,6 +13,7 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <!--如果写了exported="true"但没有intent-filter，则只能被外部显式的调起（指定了包名和类名）-->
         <activity android:name=".activity.SecondActivity">
             <intent-filter>
                 <action android:name="action_call_intent_receiver_second_activity"/>
