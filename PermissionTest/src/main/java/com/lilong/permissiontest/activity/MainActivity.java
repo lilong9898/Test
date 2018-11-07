@@ -86,6 +86,14 @@ public class MainActivity extends Activity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // 请求权限后，弹出权限弹窗，点键后，
+        // onRequestPermissionsResult方法先触发
+        // onResume再触发
+    }
+
     /**
      * 检查应用是否被授予了某项权限
      */
