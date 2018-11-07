@@ -17,6 +17,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.lilong.intentsender.R;
+import com.lilong.intentsender.service.TestService1;
+import com.lilong.intentsender.service.TestService2;
+import com.lilong.intentsender.service.TestService3;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,10 +29,14 @@ import java.util.List;
  * 发出intent启动activity或service
  * 需要与com.lilong.intentreceiver配合使用
  * 通过ComponentName启动activity或service时，componentName中的类名必须是全名！
+ *
+ * 每个进程都有主线程，线程名字是"main"，优先级是5，线程组名字是"main"
+ * mainfest里配置成android:process=":xxx"的进程也是这样，也有它的主线程
+ * 只要是主线程就可以用来显示UI
  */
 public class CallActivityOrServiceActivity extends Activity {
 
-    private static final String TAG = "IntentSender";
+    public static final String TAG = "IntentSender";
 
     private CheckBox cbHaveAction;
     private ListView lvActions;
@@ -80,6 +87,13 @@ public class CallActivityOrServiceActivity extends Activity {
 
     private Button btnStartActivity;
     private Button btnStartService;
+
+    /** 启动一个在manifest中将process配置为:test的service*/
+    private Button btnStartPrivateProcessService;
+    /** 启动一个在manifest中将process配置为com.hehe.haha的service*/
+    private Button btnStartGlobalProcessService;
+    /** 启动一个在manifest中将process配置为com.hehe.isolated，且isolatedProcess设为true的service*/
+    private Button btnStartIsolatedProcessService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -173,6 +187,33 @@ public class CallActivityOrServiceActivity extends Activity {
                 } catch (Exception e) {
                     Log.i(TAG, "send failed " + Log.getStackTraceString(e));
                 }
+            }
+        });
+        btnStartPrivateProcessService = findViewById(R.id.btnStartPrivateProcessService);
+        btnStartPrivateProcessService.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i(TAG, "main process main thread = " + Thread.currentThread() + "@" + Integer.toHexString(Thread.currentThread().hashCode()));
+                Intent intent = new Intent(CallActivityOrServiceActivity.this, TestService1.class);
+                startService(intent);
+            }
+        });
+        btnStartGlobalProcessService = findViewById(R.id.btnStartGlobalProcessService);
+        btnStartGlobalProcessService.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i(TAG, "main process main thread = " + Thread.currentThread() + "@" + Integer.toHexString(Thread.currentThread().hashCode()));
+                Intent intent = new Intent(CallActivityOrServiceActivity.this, TestService2.class);
+                startService(intent);
+            }
+        });
+        btnStartIsolatedProcessService = findViewById(R.id.btnStartIsolatedProcessService);
+        btnStartIsolatedProcessService.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i(TAG, "main process main thread = " + Thread.currentThread() + "@" + Integer.toHexString(Thread.currentThread().hashCode()));
+                Intent intent = new Intent(CallActivityOrServiceActivity.this, TestService3.class);
+                startService(intent);
             }
         });
     }

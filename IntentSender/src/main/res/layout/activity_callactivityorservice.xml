@@ -92,6 +92,31 @@
                 android:layout_marginTop="10dp"
                 android:text="启动Service"
                 android:textSize="15sp"/>
+
+            <Button
+                android:id="@+id/btnStartPrivateProcessService"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="启动process配置为:test的service"
+                android:textSize="15sp"/>
+
+            <Button
+                android:id="@+id/btnStartGlobalProcessService"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="启动process配置为com.hehe.haha的service"
+                android:textSize="15sp"/>
+
+            <Button
+                android:id="@+id/btnStartIsolatedProcessService"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="启动process配置为com.hehe.isolated,且isolated=true的service"
+                android:textSize="15sp"/>
+
         </LinearLayout>
     </ScrollView>
 

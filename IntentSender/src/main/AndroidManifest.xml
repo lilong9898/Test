@@ -17,6 +17,17 @@
         <activity android:name=".activity.CallActivityOrServiceActivity"/>
         <activity android:name="com.lilong.intentsender.activity.ThirdActivity">
         </activity>
+
+        <service
+            android:name=".service.TestService1"
+            android:process=":test"/>
+        <service
+            android:name=".service.TestService2"
+            android:process="com.hehe.haha"/>
+        <service
+            android:name=".service.TestService3"
+            android:isolatedProcess="true"
+            android:process="com.hehe.isolated"/>
     </application>
 
 </manifest>
