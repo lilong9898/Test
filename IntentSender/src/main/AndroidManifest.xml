@@ -20,12 +20,15 @@
 
         <service
             android:name=".service.TestService1"
+            android:exported="false"
             android:process=":test"/>
         <service
             android:name=".service.TestService2"
+            android:exported="false"
             android:process="com.hehe.haha"/>
         <service
             android:name=".service.TestService3"
+            android:exported="false"
             android:isolatedProcess="true"
             android:process="com.hehe.isolated"/>
     </application>

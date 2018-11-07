@@ -23,8 +23,27 @@
         <activity android:name=".activity.ThirdActivity">
             <intent-filter>
                 <action android:name="action_call_intent_receiver_third_activity"/>
+
                 <category android:name="category_call_intent_receiver_third_activity_1"/>
                 <category android:name="category_call_intent_receiver_third_activity_2"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+
+        <service
+            android:name=".service.TestService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="action_call_intent_receiver_test_service"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </service>
+
+        <activity
+            android:name=".activity.FourthActivity"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="action_call_intent_receiver_fourth_activity"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
