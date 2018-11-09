@@ -1,4 +1,4 @@
-package com.lilong.rxjavatest.util;
+package com.lilong.rxjavatest.examples;
 
 import android.util.Log;
 
@@ -19,7 +19,7 @@ import io.reactivex.ObservableOnSubscribe;
 
 import static com.lilong.rxjavatest.activity.MainActivity.TAG;
 
-public class Util {
+public class ObservableExamples {
 
     public static final String EVENT_1 = "event_1";
     public static final String EVENT_2 = "event_2";
@@ -38,25 +38,25 @@ public class Util {
     });
 
     //-------------------------------------------------------------------------------------------
-    private static Observable<String> observableCustomClass;
+    private static Observable<String> observableFullDefined;
 
     /**
-     * 返回一个实现了{@link Observable}接口的被观察者
+     * 返回一个将{@link ObservableOnSubscribe}接口实例作为数据源的被观察者
      */
-    public static Observable<String> getObservableCustomClass() {
+    public static Observable<String> getObservableFullDefined() {
 
-        if (observableCustomClass == null) {
-            observableCustomClass = Observable.create(new ObservableOnSubscribe<String>() {
+        if (observableFullDefined == null) {
+            observableFullDefined = Observable.create(new ObservableOnSubscribe<String>() {
                 @Override
                 public void subscribe(ObservableEmitter<String> emitter) throws Exception {
                     try {
                         for (String str : EVENTS) {
-                            Log.i(TAG, "observableCustomClass emits : " + str);
+                            Log.i(TAG, "observableFullDefined emits : " + str);
                             emitter.onNext(str);
                         }
                         // 调用完emitter.onComplete后，再调emitter.onNext也无反应了，不会被接收了
                         // 调用完emitter.onError后也一样
-                        Log.i(TAG, "observableCustomClass onComplete");
+                        Log.i(TAG, "observableFullDefined onComplete");
                         emitter.onComplete();
                     } catch (Exception e) {
                         emitter.onError(e);
@@ -64,7 +64,7 @@ public class Util {
                 }
             });
         }
-        return observableCustomClass;
+        return observableFullDefined;
     }
 
     //-------------------------------------------------------------------------------------------
@@ -181,7 +181,7 @@ public class Util {
     /**
      * 属于observable from future情况的另一个例子，futureTask是Future接口的实现类，
      * 但get方法被实现成阻塞的，必须由线程池执行完futureTask后其get方法才能返回
-     *
+     * <p>
      * 注意：因为get方法是阻塞的，而且在subscribe方法里会被调到，所以在subscribe之前必须将futureTask提交到线程池运行！
      * 否则会阻塞整个线程，程序无法继续，后续即使有提交futureTask的动作也无法执行了，因为线程整个阻塞了
      */
@@ -201,5 +201,18 @@ public class Util {
             observableFromFutureTask = Observable.fromFuture(futureTask);
         }
         return observableFromFutureTask;
+    }
+
+    //-------------------------------------------------------------------------------------------
+    private static Observable<Long> observableInterval;
+
+    /**
+     * 返回一个以一定初始延时，一定时间间隔从0递增emit数字的被观察者，永不停止除非程序退出
+     * */
+    public static Observable<Long> getObservableInterval() {
+        if (observableInterval == null) {
+            observableInterval = Observable.interval(1000, 1000, TimeUnit.MILLISECONDS);
+        }
+        return observableInterval;
     }
 }
