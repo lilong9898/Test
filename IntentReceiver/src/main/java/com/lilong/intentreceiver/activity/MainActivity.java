@@ -11,7 +11,7 @@ import com.lilong.intentreceiver.R;
 /**
  * 测试工具，测试从com.lilong.intentsender发出隐式或显式intent调起本应用activity或service的情况
  * 隐式intent的情况：
- * (1) manifest中exported=false的情况，将无法调起，无崩溃，有报错
+ * (1) manifest中exported=false的情况，将无法从其它应用调起，无崩溃，有报错
  * (2) manifest中有intent filter的且不写exported的，相当于exported=true
  * (3) 对于非首页(action=main, category=launcher)的页面，[要被隐式调起，必须在intent filter中有category=default]
  * (4) intent中没写category的，会被系统认为category=default
@@ -22,6 +22,7 @@ import com.lilong.intentreceiver.R;
  * (9) 隐式intent启动activity时无需加packageName，可正常启动
  * (10) exported=false是禁止不同uid的进程发起的访问，一个manifest中注册的所有组件都属于同一个uid，即使service或receiver被配置成运行在不同进程
  * 所以exported=false无法阻止同一个manifest里注册的其它组件的访问，不管他们被配置成运行在什么进程里
+ * (11) exported=false但有intent-filter，用隐式调用，从应用内能调起，外界无法调起
  */
 public class MainActivity extends Activity {
 
