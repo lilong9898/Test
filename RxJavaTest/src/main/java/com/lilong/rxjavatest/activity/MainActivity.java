@@ -10,6 +10,9 @@ import com.lilong.rxjavatest.util.Util;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 
@@ -22,7 +25,7 @@ public class MainActivity extends Activity {
 
         private Disposable disposable;
 
-        public Disposable getDisposable(){
+        public Disposable getDisposable() {
             return disposable;
         }
 
@@ -36,7 +39,7 @@ public class MainActivity extends Activity {
         public void onNext(String s) {
             Log.i(TAG, "observer onNext " + s);
             // observer收到一个事件后，调disposable.dispose方法中断接收（但observable还会发送事件）
-            if("event_1".equals(s)){
+            if (Util.EVENT_1.equals(s)) {
                 disposable.dispose();
                 Log.i(TAG, "observer disposes");
             }
@@ -51,7 +54,9 @@ public class MainActivity extends Activity {
         public void onComplete() {
             Log.i(TAG, "observer onComplete");
         }
-    };
+    }
+
+    ;
 
     // 另一种形式的观察者
     class CustomSubscriber implements Subscriber<String> {
@@ -75,7 +80,9 @@ public class MainActivity extends Activity {
         public void onComplete() {
             Log.i(TAG, "subscriber onComplete");
         }
-    };
+    }
+
+    ;
 
     private CustomObserver customObserver;
 
@@ -84,9 +91,23 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         customObserver = new CustomObserver();
-        Util.getObservableCustomClass().subscribe(customObserver);
+
+//        Util.getObservableCustomClass().subscribe(customObserver);
         // 重复调用observable的subscribe方法，会重新执行其subscribe方法的内容（这里是发送事件）
-        Util.getObservableCustomClass().subscribe(customObserver);
+//        Util.getObservableCustomClass().subscribe(customObserver);
+
+//        Util.getObservableJust().subscribe(customObserver);
+
+//        Util.getObservableFromIterable().subscribe(customObserver);
+
+//        Util.getObservableFromArray().subscribe(customObserver);
+
+//        Util.getObservableFromCallable().subscribe(customObserver);
+
+//        Util.getObservableFromFuture().subscribe(customObserver);
+
+        Executors.newScheduledThreadPool(5).schedule(Util.getFutureTask(), 1500, TimeUnit.MILLISECONDS);
+        Util.getObservableFromFutureTask().subscribe(customObserver);
     }
 
 
