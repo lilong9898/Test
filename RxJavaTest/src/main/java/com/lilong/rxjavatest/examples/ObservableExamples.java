@@ -1,5 +1,6 @@
 package com.lilong.rxjavatest.examples;
 
+import android.os.Handler;
 import android.util.Log;
 
 import java.util.Arrays;
@@ -42,22 +43,38 @@ public class ObservableExamples {
 
     /**
      * 返回一个将{@link ObservableOnSubscribe}接口实例作为数据源的被观察者
+     * 每隔一秒发送一个消息
      */
     public static Observable<String> getObservableFullDefined() {
 
         if (observableFullDefined == null) {
             observableFullDefined = Observable.create(new ObservableOnSubscribe<String>() {
                 @Override
-                public void subscribe(ObservableEmitter<String> emitter) throws Exception {
+                public void subscribe(final ObservableEmitter<String> emitter) throws Exception {
+
+                    // onSubscribe方法运行在调用被观察者subscribe方法的线程里
+                    Handler handler = new Handler();
                     try {
-                        for (String str : EVENTS) {
-                            Log.i(TAG, "observableFullDefined emits : " + str);
-                            emitter.onNext(str);
+                        long delay = 0;
+                        for (final String str : EVENTS) {
+                            handler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Log.i(TAG, "observableFullDefined emits : " + str);
+                                    emitter.onNext(str);
+                                }
+                            }, delay);
+                            delay = delay + 1000;
                         }
                         // 调用完emitter.onComplete后，再调emitter.onNext也无反应了，不会被接收了
                         // 调用完emitter.onError后也一样
-                        Log.i(TAG, "observableFullDefined onComplete");
-                        emitter.onComplete();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                Log.i(TAG, "observableFullDefined emits : onComplete");
+                                emitter.onComplete();
+                            }
+                        }, delay);
                     } catch (Exception e) {
                         emitter.onError(e);
                     }
@@ -208,7 +225,7 @@ public class ObservableExamples {
 
     /**
      * 返回一个以一定初始延时，一定时间间隔从0递增emit数字的被观察者，永不停止除非程序退出
-     * */
+     */
     public static Observable<Long> getObservableInterval() {
         if (observableInterval == null) {
             observableInterval = Observable.interval(1000, 1000, TimeUnit.MILLISECONDS);

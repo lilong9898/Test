@@ -1,6 +1,8 @@
 include ':app'
 include ':Algorithm'
 include ':BroadcastTest'
+include ':ContentProvider'
+include ':ContentResolver'
 include ':ConstraintLayoutTest'
 include ':DataBindingTest'
 include ':DesignPattern'

@@ -1,26 +1,29 @@
 package com.lilong.rxjavatest.activity;
 
+import com.lilong.rxjavatest.R;
+import com.lilong.rxjavatest.examples.ObservableExamples;
+import com.lilong.rxjavatest.examples.ObserverExamples;
+
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.Handler;
 
-import com.lilong.rxjavatest.R;
-
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
+import io.reactivex.disposables.Disposable;
 
 public class MainActivity extends Activity {
 
     public static final String TAG = "RxTag";
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
         //----------------不同种类的被观察者------------------------
         // (1)
 //        ObservableExamples.getObservableFullDefined().subscribe(ObserverExamples.getObserverFullDefined());
@@ -73,15 +76,20 @@ public class MainActivity extends Activity {
         // (1) 没有观察者，只有被观察者开始发送事件，并最终发送onComplete
 //        ObservableExamples.getObservableFullDefined().subscribe();
 
-        // (2) 观察者是Consumer接口的实例
-//        ObservableExamples.getObservableFullDefined().subscribe(ObserverExamples.getObserverConsumer());
+        // (2) 观察者是Consumer接口的实例，这种情况subscribe方法会返回disposable
+        // 对比：观察者是Observer接口的实例时，会在其onSubscribe的参数里提供disposable，所以subscribe方法不需返回disposable，返回的是void
+        final Disposable disposable = ObservableExamples.getObservableFullDefined().subscribe(ObserverExamples.getObserverConsumer());
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                disposable.dispose();
+            }
+            // 延时500ms刚好是在Observable第一个event发出，而第二个event还没发出的时候dispose的
+            // 所以第二个event的accept不会触发
+        }, 500);
 
         // (3) 观察者是Observer接口的实例
 //        ObservableExamples.getObservableFullDefined().subscribe(ObserverExamples.getObserverFullDefined());
 
-        // (4) 观察者是Subscribe接口的实例
-
     }
-
-
 }

@@ -1,9 +1,9 @@
 package com.lilong.rxjavatest.examples;
 
-import android.util.Log;
-
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
+
+import android.util.Log;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
@@ -112,5 +112,6 @@ public class ObserverExamples {
         }
         return subscriberFullDefined;
     }
+
 
 }
