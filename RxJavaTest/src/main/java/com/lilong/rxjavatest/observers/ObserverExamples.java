@@ -1,4 +1,6 @@
-package com.lilong.rxjavatest.examples;
+package com.lilong.rxjavatest.observers;
+
+import com.lilong.rxjavatest.observables.observable.ObservableExamples;
 
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
@@ -8,6 +10,7 @@ import android.util.Log;
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.observers.DisposableObserver;
 
 import static com.lilong.rxjavatest.activity.MainActivity.TAG;
 
@@ -113,5 +116,63 @@ public class ObserverExamples {
         return subscriberFullDefined;
     }
 
+    //---------------------------------------------------------------
+    private static Observer<String> showThreadObserver;
+
+    /**
+     * 返回{@link Observer}接口的实例作为观察者，并显示其方法运行在哪个线程
+     */
+    public static Observer<String> getShowThreadObserver() {
+        if (showThreadObserver == null) {
+            showThreadObserver = new Observer<String>() {
+                @Override
+                public void onSubscribe(Disposable d) {
+                    Log.i(TAG, "observer onSubscribe, is in thread " + Thread.currentThread().getName());
+                }
+
+                @Override
+                public void onNext(String s) {
+                    Log.i(TAG, "observer onNext : " + s + " is in thread " + Thread.currentThread().getName());
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    Log.i(TAG, "observer onError, is in thread " + Thread.currentThread().getName());
+                }
+
+                @Override
+                public void onComplete() {
+                    Log.i(TAG, "observer onComplete, is in thread " + Thread.currentThread().getName());
+                }
+            };
+        }
+        return showThreadObserver;
+    }
+
+    //------------------------------------------------------
+    private static DisposableObserver<String> disposableObserver;
+
+    /** 返回一个DisposableObserver作为观察者，这个类有dispose方法可直接调用*/
+    public static DisposableObserver<String> getDisposableObserver() {
+        if (disposableObserver == null) {
+            disposableObserver = new DisposableObserver<String>() {
+                @Override
+                public void onNext(String s) {
+                    Log.i(TAG, "observer onNext : " + s);
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    Log.i(TAG, "observer onError : " + e);
+                }
+
+                @Override
+                public void onComplete() {
+                    Log.i(TAG, "observer onComplete");
+                }
+            };
+        }
+        return disposableObserver;
+    }
 
 }

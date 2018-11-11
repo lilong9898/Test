@@ -1,4 +1,4 @@
-package com.lilong.rxjavatest.examples;
+package com.lilong.rxjavatest.observables.observable;
 
 import android.os.Handler;
 import android.util.Log;
@@ -14,12 +14,26 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import io.reactivex.Completable;
+import io.reactivex.Flowable;
+import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Single;
 
 import static com.lilong.rxjavatest.activity.MainActivity.TAG;
 
+/**
+ * 被观察者其中的一类：Observable接口实现类
+ * 被观察者一共有几类：
+ * (1) {@link Observable} 实现类:发出0个或多个事件，最后发出完成或错误的信号
+ * (2) {@link Flowable} 实现类: 发出0个或多个事件，最后发出完成或错误的信号，带流量控制
+ * (3) {@link Single} 实现类: 发出1个事件或错误信号
+ * (4) {@link Maybe} 实现类：在耗时操作结束后发出一个maybe事件，最后发出完成或错误的信号
+ *      跟{@link #getObservableFromFutureTask()}有点像
+ * (5) {@link Completable} 实现类：在耗时操作结束后发出完成或错误的信号（不发出任何事件）
+ * */
 public class ObservableExamples {
 
     public static final String EVENT_1 = "event_1";
@@ -39,16 +53,16 @@ public class ObservableExamples {
     });
 
     //-------------------------------------------------------------------------------------------
-    private static Observable<String> observableFullDefined;
+    private static Observable<String> observableFromObservableOnSubscribe;
 
     /**
      * 返回一个将{@link ObservableOnSubscribe}接口实例作为数据源的被观察者
      * 每隔一秒发送一个消息
      */
-    public static Observable<String> getObservableFullDefined() {
+    public static Observable<String> getObservableFromObservableOnSubscribe() {
 
-        if (observableFullDefined == null) {
-            observableFullDefined = Observable.create(new ObservableOnSubscribe<String>() {
+        if (observableFromObservableOnSubscribe == null) {
+            observableFromObservableOnSubscribe = Observable.create(new ObservableOnSubscribe<String>() {
                 @Override
                 public void subscribe(final ObservableEmitter<String> emitter) throws Exception {
 
@@ -60,7 +74,7 @@ public class ObservableExamples {
                             handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Log.i(TAG, "observableFullDefined emits : " + str);
+                                    Log.i(TAG, "observableFromObservableOnSubscribe emits : " + str);
                                     emitter.onNext(str);
                                 }
                             }, delay);
@@ -71,7 +85,7 @@ public class ObservableExamples {
                         handler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                Log.i(TAG, "observableFullDefined emits : onComplete");
+                                Log.i(TAG, "observableFromObservableOnSubscribe emits : onComplete");
                                 emitter.onComplete();
                             }
                         }, delay);
@@ -81,7 +95,7 @@ public class ObservableExamples {
                 }
             });
         }
-        return observableFullDefined;
+        return observableFromObservableOnSubscribe;
     }
 
     //-------------------------------------------------------------------------------------------
@@ -231,5 +245,23 @@ public class ObservableExamples {
             observableInterval = Observable.interval(1000, 1000, TimeUnit.MILLISECONDS);
         }
         return observableInterval;
+    }
+
+    //------------------------------------------------------------
+    private static Observable showThreadObservable;
+
+    /** 返回一个{@link ObservableOnSubscribe}接口实例当数据源的被观察者，并显示方法所在线程*/
+    public static Observable getShowThreadObservable (){
+       if(showThreadObservable == null){
+           showThreadObservable = Observable.create(new ObservableOnSubscribe() {
+               @Override
+               public void subscribe(ObservableEmitter e) throws Exception {
+                   Log.i(TAG, "observable method subscribe, is in thread = " + Thread.currentThread().getName());
+                   Log.i(TAG, "observable emits : " + EVENT_1);
+                   e.onNext(EVENT_1);
+               }
+           });
+       }
+       return showThreadObservable;
     }
 }
