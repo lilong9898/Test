@@ -80,5 +80,8 @@ public class MainActivity extends Activity {
 
         // (6)
 //        ObserverTest.testObserverFromObserver();
+
+        //-----------------测试被观察者和观察者不在同个线程的情况----------------------
+//        MultiThreadTest.testObservableAndObserverInDifferentThread();
     }
 }

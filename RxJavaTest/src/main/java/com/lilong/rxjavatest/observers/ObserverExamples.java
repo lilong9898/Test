@@ -20,7 +20,7 @@ public class ObserverExamples {
     private static Consumer<String> consumer;
 
     /**
-     * 返回一个Consumer接口的实例作为观察者
+     * 返回一个Consumer接口的实例作为观察者，这种情况是观察者只关心Observable发出的onNext事件，其它不关心
      */
     public static Consumer<String> getObserverConsumer() {
         if (consumer == null) {

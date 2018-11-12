@@ -1,6 +1,7 @@
 package com.lilong.rxjavatest.observables.observable;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import java.util.Arrays;
@@ -31,9 +32,9 @@ import static com.lilong.rxjavatest.activity.MainActivity.TAG;
  * (2) {@link Flowable} 实现类: 发出0个或多个事件，最后发出完成或错误的信号，带流量控制
  * (3) {@link Single} 实现类: 发出1个事件或错误信号
  * (4) {@link Maybe} 实现类：在耗时操作结束后发出一个maybe事件，最后发出完成或错误的信号
- *      跟{@link #getObservableFromFutureTask()}有点像
+ * 跟{@link #getObservableFromFutureTask()}有点像
  * (5) {@link Completable} 实现类：在耗时操作结束后发出完成或错误的信号（不发出任何事件）
- * */
+ */
 public class ObservableExamples {
 
     public static final String EVENT_1 = "event_1";
@@ -63,10 +64,19 @@ public class ObservableExamples {
 
         if (observableFromObservableOnSubscribe == null) {
             observableFromObservableOnSubscribe = Observable.create(new ObservableOnSubscribe<String>() {
+
+                // onSubscribe方法运行在调用被观察者subscribe方法的线程里
                 @Override
                 public void subscribe(final ObservableEmitter<String> emitter) throws Exception {
 
-                    // onSubscribe方法运行在调用被观察者subscribe方法的线程里
+                    // 如果当前线程不是主线程，有可能looper是没有的，无法使用handler
+                    // 为了用handler，要检查当前线程的looper是否已准备好，如果没有，则要先Looper.prepare，执行完实际动作后再Looper.loop
+                    // 这个过程跟HandlerThread是一样的
+                    boolean isLooperPrepared = true;
+                    if (Looper.myLooper() == null) {
+                        isLooperPrepared = false;
+                        Looper.prepare();
+                    }
                     Handler handler = new Handler();
                     try {
                         long delay = 0;
@@ -74,7 +84,7 @@ public class ObservableExamples {
                             handler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    Log.i(TAG, "observableFromObservableOnSubscribe emits : " + str);
+                                    Log.i(TAG, "observableFromObservableOnSubscribe emits : " + str + ", in thread " + Thread.currentThread().getName());
                                     emitter.onNext(str);
                                 }
                             }, delay);
@@ -89,6 +99,9 @@ public class ObservableExamples {
                                 emitter.onComplete();
                             }
                         }, delay);
+                        if (!isLooperPrepared) {
+                            Looper.loop();
+                        }
                     } catch (Exception e) {
                         emitter.onError(e);
                     }
@@ -250,18 +263,20 @@ public class ObservableExamples {
     //------------------------------------------------------------
     private static Observable showThreadObservable;
 
-    /** 返回一个{@link ObservableOnSubscribe}接口实例当数据源的被观察者，并显示方法所在线程*/
-    public static Observable getShowThreadObservable (){
-       if(showThreadObservable == null){
-           showThreadObservable = Observable.create(new ObservableOnSubscribe() {
-               @Override
-               public void subscribe(ObservableEmitter e) throws Exception {
-                   Log.i(TAG, "observable method subscribe, is in thread = " + Thread.currentThread().getName());
-                   Log.i(TAG, "observable emits : " + EVENT_1);
-                   e.onNext(EVENT_1);
-               }
-           });
-       }
-       return showThreadObservable;
+    /**
+     * 返回一个{@link ObservableOnSubscribe}接口实例当数据源的被观察者，并显示方法所在线程
+     */
+    public static Observable getShowThreadObservable() {
+        if (showThreadObservable == null) {
+            showThreadObservable = Observable.create(new ObservableOnSubscribe() {
+                @Override
+                public void subscribe(ObservableEmitter e) throws Exception {
+                    Log.i(TAG, "observable method subscribe, is in thread = " + Thread.currentThread().getName());
+                    Log.i(TAG, "observable emits : " + EVENT_1 + ", is in thread = " + Thread.currentThread().getName());
+                    e.onNext(EVENT_1);
+                }
+            });
+        }
+        return showThreadObservable;
     }
 }
