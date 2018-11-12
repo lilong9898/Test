@@ -1,11 +1,11 @@
 package com.lilong.rxjavatest.observers;
 
+import android.util.Log;
+
 import com.lilong.rxjavatest.observables.observable.ObservableExamples;
 
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
-
-import android.util.Log;
 
 import io.reactivex.Observer;
 import io.reactivex.disposables.Disposable;
@@ -75,7 +75,7 @@ public class ObserverExamples {
     /**
      * 返回Observer接口的实例作为观察者
      */
-    public static Observer<String> getObserverFullDefined() {
+    public static Observer<String> getObserverFromObserver() {
         if (observerFullDefined == null) {
             observerFullDefined = new CustomObserver();
         }
