@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import com.lilong.rxjavatest.R;
+import com.lilong.rxjavatest.observables.observable.ObservableApiTest;
 import com.lilong.rxjavatest.observables.observable.ObservableExamples;
 
 import io.reactivex.Completable;
@@ -39,29 +40,31 @@ public class MainActivity extends Activity {
         //----------------测试不同种类的被观察者------------------------
 
         // (1)
-//        ObservableTest.testObservableFromObservableOnSubscribe();
+//        ObservableTypeTest.testObservableFromObservableOnSubscribe();
 
         // (2)
-//        ObservableTest.testObservableJust();
+//        ObservableTypeTest.testObservableJust();
 
         // (3)
-//        ObservableTest.testObservableFromIterable();
+//        ObservableTypeTest.testObservableFromIterable();
 
         // (4)
-//        ObservableTest.testObservableFromArray();
+//        ObservableTypeTest.testObservableFromArray();
 
         // (5)
-//        ObservableTest.testObservableFromCallable();
+//        ObservableTypeTest.testObservableFromCallable();
 
         // (6)
-//        ObservableTest.testObservableFromFuture();
+//        ObservableTypeTest.testObservableFromFuture();
 
         // (7)
-//        ObservableTest.testObservableFromFutureTask();
+//        ObservableTypeTest.testObservableFromFutureTask();
 
         // (8)
-//        ObservableTest.testObservableInterval();
+//        ObservableTypeTest.testObservableInterval();
 
+        //-------------------测试被观察者的不同方法------------------------
+        ObservableApiTest.testObservableMethodDoOnXXX();
         //-------------------测试不同种类的观察者--------------------------
         // (1)
 //        ObserverTest.testNoObserver();

@@ -1,8 +1,8 @@
 package com.lilong.rxjavatest.observables.observable;
 
-import com.lilong.rxjavatest.observers.ObserverExamples;
-
 import android.util.Log;
+
+import com.lilong.rxjavatest.observers.ObserverExamples;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
@@ -16,7 +16,10 @@ import io.reactivex.disposables.Disposable;
 
 import static com.lilong.rxjavatest.activity.MainActivity.TAG;
 
-public class ObservableTest {
+/**
+ * 测试不同种类的Observable数据源
+ */
+public class ObservableTypeTest {
 
     /**
      * 测试将{@link ObservableOnSubscribe}接口实例作为数据源的被观察者
@@ -71,8 +74,8 @@ public class ObservableTest {
 
     /**
      * 测试{@link Observable#interval(long, TimeUnit)}生成的被观察者
-     * */
-    public static void testObservableInterval(){
+     */
+    public static void testObservableInterval() {
         ObservableExamples.getObservableInterval().subscribe(new Observer<Long>() {
             @Override
             public void onSubscribe(Disposable d) {
