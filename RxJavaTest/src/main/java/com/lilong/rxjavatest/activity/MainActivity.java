@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import com.lilong.rxjavatest.R;
-import com.lilong.rxjavatest.observables.observable.ObservableApiTest;
+import com.lilong.rxjavatest.multithread.MultiThreadTest;
 import com.lilong.rxjavatest.observables.observable.ObservableExamples;
 
 import io.reactivex.Completable;
@@ -64,7 +64,7 @@ public class MainActivity extends Activity {
 //        ObservableTypeTest.testObservableInterval();
 
         //-------------------测试被观察者的不同方法------------------------
-        ObservableApiTest.testObservableMethodDoOnXXX();
+//        ObservableApiTest.testObservableMethodDoOnXXX();
         //-------------------测试不同种类的观察者--------------------------
         // (1)
 //        ObserverTest.testNoObserver();
@@ -86,5 +86,6 @@ public class MainActivity extends Activity {
 
         //-----------------测试被观察者和观察者不在同个线程的情况----------------------
 //        MultiThreadTest.testObservableAndObserverInDifferentThread();
+        MultiThreadTest.testObservableOnIoThreadAndObserverOnMainThread();
     }
 }
