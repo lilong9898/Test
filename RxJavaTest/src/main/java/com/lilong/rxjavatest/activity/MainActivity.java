@@ -4,8 +4,8 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import com.lilong.rxjavatest.R;
-import com.lilong.rxjavatest.multithread.MultiThreadTest;
 import com.lilong.rxjavatest.observables.observable.ObservableExamples;
+import com.lilong.rxjavatest.operator.OperatorTest;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
@@ -86,6 +86,9 @@ public class MainActivity extends Activity {
 
         //-----------------测试被观察者和观察者不在同个线程的情况----------------------
 //        MultiThreadTest.testObservableAndObserverInDifferentThread();
-        MultiThreadTest.testObservableOnIoThreadAndObserverOnMainThread();
+//        MultiThreadTest.testObservableOnIoThreadAndObserverOnMainThread();
+
+        //-----------------操作符测试----------------------------------------------
+        OperatorTest.testMapOperator();
     }
 }
