@@ -5,7 +5,6 @@ import android.os.Bundle;
 
 import com.lilong.rxjavatest.R;
 import com.lilong.rxjavatest.observables.observable.ObservableExamples;
-import com.lilong.rxjavatest.operator.OperatorTest;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
@@ -89,6 +88,7 @@ public class MainActivity extends Activity {
 //        MultiThreadTest.testObservableOnIoThreadAndObserverOnMainThread();
 
         //-----------------操作符测试----------------------------------------------
-        OperatorTest.testMapOperator();
+//        OperatorTest.testMapOperator();
+//        OperatorTest.testFlatMapOperator();
     }
 }
