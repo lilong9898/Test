@@ -20,6 +20,10 @@ public class MultiThreadTest {
     /**
      * 测试被观察者和观察者在不同线程的情况
      * 这里被观察者在工作线程，观察者在主线程
+     * 在RxJava中, 已经内置了很多线程选项供我们选择, 例如有
+     *      Schedulers.io() 代表io操作的线程, 通常用于网络,读写文件等io密集型的操作
+     *      Schedulers.computation() 代表CPU计算密集型的操作, 例如需要大量计算的操作
+     *      Schedulers.newThread() 代表一个常规的新线程
      */
     public static void testObservableAndObserverInDifferentThread() {
         ObservableExamples.getObservableFromObservableOnSubscribe()

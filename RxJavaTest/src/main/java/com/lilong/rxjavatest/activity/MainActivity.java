@@ -1,10 +1,10 @@
 package com.lilong.rxjavatest.activity;
 
-import android.app.Activity;
-import android.os.Bundle;
-
 import com.lilong.rxjavatest.R;
 import com.lilong.rxjavatest.observables.observable.ObservableExamples;
+
+import android.app.Activity;
+import android.os.Bundle;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;
@@ -64,6 +64,7 @@ public class MainActivity extends Activity {
 
         //-------------------测试被观察者的不同方法------------------------
 //        ObservableApiTest.testObservableMethodDoOnXXX();
+
         //-------------------测试不同种类的观察者--------------------------
         // (1)
 //        ObserverTest.testNoObserver();
