@@ -2,6 +2,7 @@ package com.lilong.rxjavatest.activity;
 
 import com.lilong.rxjavatest.R;
 import com.lilong.rxjavatest.observables.observable.ObservableExamples;
+import com.lilong.rxjavatest.operator.OperatorTest;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -91,5 +92,8 @@ public class MainActivity extends Activity {
         //-----------------操作符测试----------------------------------------------
 //        OperatorTest.testMapOperator();
 //        OperatorTest.testFlatMapOperator();
+//        OperatorTest.testFlapMapOperatorWithDifferentOrder();
+//        OperatorTest.testConcatMapOperatorWithDifferentOrder();
+        OperatorTest.testNestedOperationsUsingFlatMapOperator();
     }
 }
