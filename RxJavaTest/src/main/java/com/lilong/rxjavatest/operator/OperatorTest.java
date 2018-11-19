@@ -12,6 +12,7 @@ import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
@@ -226,12 +227,115 @@ public class OperatorTest {
                         return asyncOperationStep2;
                     }
                 })
-                .observeOn(AndroidSchedulers.mainThread())
+//                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<Object>() {
                     @Override
                     public void accept(Object s) {
                         Log.i(TAG, "observer receives : " + s);
                         Log.i(TAG, "observer currentThread = " + Thread.currentThread());
+                    }
+                });
+    }
+
+    /**
+     * 测试zip操作符实现不同Observable事件的合并
+     * observable1的每个事件会跟observable2的每个事件合并成一个新事件
+     * 注意，observable1和observable2都在各自的线程上发送事件，而且各自的事件流有1秒的发送间隔
+     * 这样才能保证线程调度时，observable1的某个序号的事件跟observable2的同序号的事件紧邻着发出并合并成新事件
+     * 否则只有足够observable1和observable2的事件都能收集到1个时，才会触发合并的动作并将合并后的事件发给下游观察者
+     */
+    public static void testZipOperator() {
+
+        Observable<Integer> observable1 = Observable.create(new ObservableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(ObservableEmitter<Integer> emitter) throws Exception {
+                Log.i(TAG, "observable 1 currentThread " + Thread.currentThread());
+
+                try {
+                    Thread.sleep(1000);
+                    Log.d(TAG, "observable1 emit 1");
+                    emitter.onNext(1);
+
+                    Thread.sleep(1000);
+                    Log.d(TAG, "observable1 emit 2");
+                    emitter.onNext(2);
+
+                    Thread.sleep(1000);
+                    Log.d(TAG, "observable1 emit 3");
+                    emitter.onNext(3);
+
+                    Thread.sleep(1000);
+                    Log.d(TAG, "observable1 emit 4");
+                    emitter.onNext(4);
+
+                    Log.d(TAG, "emit complete1");
+                    emitter.onComplete();
+                } catch (Exception e) {
+                }
+
+            }
+        }).subscribeOn(Schedulers.io());
+
+        Observable<String> observable2 = Observable.create(new ObservableOnSubscribe<String>() {
+            @Override
+            public void subscribe(ObservableEmitter<String> emitter) throws Exception {
+                Log.i(TAG, "observable 2 currentThread " + Thread.currentThread());
+
+                try {
+                    Thread.sleep(1000);
+                    Log.d(TAG, "observable2 emit a");
+                    emitter.onNext("a");
+
+                    Thread.sleep(1000);
+                    Log.d(TAG, "observable2 emit b");
+                    emitter.onNext("b");
+
+                    Thread.sleep(1000);
+                    Log.d(TAG, "observable2 emit c");
+                    emitter.onNext("c");
+
+                    // 如果两个observable的事件数量不一样多，则当较少的那个observable所有事件发送完毕后，
+                    // 整个流程就结束了，zip操作符发出complete信号
+                    // 因为合并要求两个observable都还有事件可发送
+//                Thread.sleep(1000);
+//                Log.d(TAG, "observable2 emit d");
+//                emitter.onNext("d");
+
+                    Log.d(TAG, "emit complete2");
+                    emitter.onComplete();
+                } catch (Exception e) {
+                }
+
+            }
+        }).subscribeOn(Schedulers.io());
+
+        Observable.zip(observable1, observable2, new BiFunction<Integer, String, Object>() {
+            @Override
+            public Object apply(Integer integer, String s) {
+                return integer.toString() + s;
+            }
+        })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Object>() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onNext(Object o) {
+                        Log.i(TAG, "observer currentThread = " + Thread.currentThread());
+                        Log.i(TAG, "observer onNext : " + o);
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.i(TAG, "observer onComplete");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
                     }
                 });
     }

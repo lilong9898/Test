@@ -94,6 +94,7 @@ public class MainActivity extends Activity {
 //        OperatorTest.testFlatMapOperator();
 //        OperatorTest.testFlapMapOperatorWithDifferentOrder();
 //        OperatorTest.testConcatMapOperatorWithDifferentOrder();
-        OperatorTest.testNestedOperationsUsingFlatMapOperator();
+//        OperatorTest.testNestedOperationsUsingFlatMapOperator();
+        OperatorTest.testZipOperator();
     }
 }

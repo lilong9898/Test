@@ -27,10 +27,11 @@ public class MultiThreadTest {
      * Schedulers.newThread() 代表一个常规的新线程
      * 这些线程里都是没有looper的!所以里面不能用new Handler()
      * <p>
-     * (2){@link Observable#observeOn(Scheduler)}方法的作用，不只是改变观察者所在的线程
-     * 实际上是[改变调用此方法后后续流程所有操作符和被观察者所在的线程]
+     * (2){@link Observable#observeOn(Scheduler)}方法的作用
+     * 是后续流程所有代码所在的线程
      * 所以此方法的调用位置会影响程序执行情况
-     * (3){@link Observable#subscribeOn(Scheduler)}方法的作用，是影响所有subscribe方法所执行的线程
+     * (3){@link Observable#subscribeOn(Scheduler)}方法的作用
+     * 是改变整个流程所有代码所执行的线程
      * 当然这个还要按第(2)条考虑{@link Observable#observeOn(Scheduler)}方法的影响
      * 所以此方法的调用位置不影响程序执行情况
      */
