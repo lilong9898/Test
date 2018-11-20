@@ -12,7 +12,7 @@ public class MainApplication extends Application {
         sApplication = this;
     }
 
-    public Application getInstance() {
+    public static Application getInstance() {
         return sApplication;
     }
 }
