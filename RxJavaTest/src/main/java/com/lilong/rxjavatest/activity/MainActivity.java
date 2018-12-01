@@ -101,6 +101,8 @@ public class MainActivity extends Activity {
         //-----------------back pressure测试--------------------------------------
 //        BackPressureTest.testObservableWithMaxFlowAndObserverInSameThread();
 //        BackPressureTest.testObservableWithMaxFlowAndObserverInDifferentThread();
-        BackPressureTest.testObservableWithMaxFlowAndObserverInDifferentThreadAndObserverSlow();
+//        BackPressureTest.testObservableWithMaxFlowAndObserverInDifferentThreadAndObserverSlow();
+//        BackPressureTest.testFlowableOnSameThread();
+        BackPressureTest.testFlowableOnDifferentThread();
     }
 }

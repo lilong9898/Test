@@ -10,6 +10,7 @@ import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
+import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.BiFunction;
@@ -34,6 +35,10 @@ import static com.lilong.rxjavatest.activity.MainActivity.TAG;
  * {@link Observable#blockingIterable(int)}
  * {@link Observable#blockingLast()}
  * {@link Observable#blockingLast(Object)}
+ *
+ * 注意：常用的切换线程用的api subscribeOn和observeOn实际上也是操作符！
+ * {@link Observable#observeOn(Scheduler)}
+ * {@link Observable#subscribeOn(Scheduler)}
  * .................so many more
  */
 public class OperatorTest {
