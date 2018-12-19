@@ -1,11 +1,11 @@
 package com.lilong.rxjavatest.activity;
 
+import android.app.Activity;
+import android.os.Bundle;
+
 import com.lilong.rxjavatest.R;
 import com.lilong.rxjavatest.backpressure.BackPressureTest;
 import com.lilong.rxjavatest.observables.observable.ObservableExamples;
-
-import android.app.Activity;
-import android.os.Bundle;
 
 import io.reactivex.Completable;
 import io.reactivex.Flowable;

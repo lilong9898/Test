@@ -1,10 +1,10 @@
 package com.lilong.rxjavatest.backpressure;
 
+import android.util.Log;
+
 import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
-
-import android.util.Log;
 
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
@@ -16,7 +16,7 @@ import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.functions.Consumer;
-import io.reactivex.internal.fuseable.SimplePlainQueue;
+import io.reactivex.internal.operators.flowable.FlowableObserveOn;
 import io.reactivex.internal.operators.observable.ObservableObserveOn;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.schedulers.Schedulers;
@@ -81,8 +81,8 @@ public class BackPressureTest {
     /**
      * 与{@link #testObservableWithMaxFlowAndObserverInDifferentThread()}基础上，把observer的接收速度降低
      * 于是Observable发送的事件会在rxJava内部的缓存区堆积起来得不到处理，内存会越用越多
-     * 这个所谓“缓存区”实际上是observeOn操作符生成的{@link ObservableObserveOn}内部订阅的观察者{@link ObservableObserveOn.ObserveOnObserver}的内部的一个{@link SpscLinkedArrayQueue}
-     * 而{@link ObservableObserveOn.ObserveOnObserver}会调用用户指定的最终观察者的onSubscribe和onNext等方法
+     * 这个所谓“缓存区”实际上是observeOn操作符生成的{@link ObservableObserveOn}内部订阅的观察者{@link ObserveOnObserver}的内部的一个{@link SpscLinkedArrayQueue}
+     * 而{@link ObserveOnObserver}会调用用户指定的最终观察者的onSubscribe和onNext等方法
      */
     public static void testObservableWithMaxFlowAndObserverInDifferentThreadAndObserverSlow() {
         Observable.create(new ObservableOnSubscribe<Integer>() {
@@ -121,17 +121,22 @@ public class BackPressureTest {
      * 观察者端：
      * {@link Subscriber}对应于{@link Observer}
      * <p>
-     * {@link Flowable}内部也有队列来实现backpressure功能所要求的事件缓存
-     * 但跟observeOn操作符生成的{@link ObservableObserveOn}内的缓存不同
-     * 前者是{@link FlowableEmitter}内的{@link SimplePlainQueue}
-     * 后者是{@link ObservableObserveOn.ObserveOnObserver}内的{@link SpscLinkedArrayQueue}
+     *
+     * Observable和Flowable的共同点是，如果通过各自的observeOn方法使得数据源和观察者不在同一个线程里，则会生成包含缓存区的中间环节Observer/Subscriber，
+     * 具体：
+     * Observable的observeOn方法产生的中间环节Observer是{@link ObservableObserveOn}内的{@link ObserveOnObserver}
+     * 其内部有一个{@link SpscLinkedArrayQueue}类型的缓存区
+     * Flowable的observeOn方法产生的中间环节Subscriber是{@link FlowableObserveOn}内的{@link ObserveOnSubscriber}
+     * 其内部有一个{@link SpscLinkedArrayQueue}类型的缓存区
+     *
      */
     public static void testFlowableOnSameThread() {
 
-        // 创建Flowable
+        // 创建Flowable，实际类型是FlowableCreate (extends Flowable)
         Flowable<Integer> upstream = Flowable.create(new FlowableOnSubscribe<Integer>() {
             @Override
             public void subscribe(FlowableEmitter<Integer> emitter) throws Exception {
+                // emitter实际类型是FlowableCreate$ErrorAsyncEmitter
                 Log.i(TAG, "emit 1");
                 emitter.onNext(1);
                 Log.i(TAG, "emit 2");
@@ -204,17 +209,20 @@ public class BackPressureTest {
             public void onSubscribe(Subscription s) {
                 Log.i(TAG, "Subscriber : onSubscribe");
                 subscription = s;
+                // 上一个例子的情况：
                 // 请求upstream flowable发送多少个事件
                 // 如果不调用此方法，意味着不向上游请求任何事件，上游flowable发出的事件不能及时处理
                 // [而且上下游工作在同个线程中（意味者不会有observeOn操作符创建的缓存）]时
                 // 会抛出MissingBackpressureException
+
+                // 这个例子的情况：
                 // 此例子上下游不工作在同一个线程，所以即使不调subscription.request，也不会抛出MissingBackpressureException
-                // 事件会存放在Flowable(实际上是FlowableOnCreate->Flowable)内部的缓存队列里
+                // 事件会存放在前面解释过的，observeOn操作符所产生的中间环节Subscriber的内部的缓存区里
 //                s.request(Long.MAX_VALUE);
                 // 下面演示subscription.request方法
                 // request方法要求取几个事件，Flowable就会发几个事件
                 try {
-                    subscription.request(5);
+//                    subscription.request(5);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
