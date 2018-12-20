@@ -7,6 +7,7 @@ import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.BackpressureStrategy;
+import io.reactivex.Emitter;
 import io.reactivex.Flowable;
 import io.reactivex.FlowableEmitter;
 import io.reactivex.FlowableOnSubscribe;
@@ -15,7 +16,9 @@ import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
+import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.functions.Consumer;
+import io.reactivex.internal.operators.flowable.FlowableCreate;
 import io.reactivex.internal.operators.flowable.FlowableObserveOn;
 import io.reactivex.internal.operators.observable.ObservableObserveOn;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
@@ -23,6 +26,24 @@ import io.reactivex.schedulers.Schedulers;
 
 import static com.lilong.rxjavatest.activity.MainActivity.TAG;
 
+/**
+ * 不同的{@link BackpressureStrategy}对应的不同{@link Emitter}:
+ *
+ * {@link BackpressureStrategy#MISSING} : {@link FlowableCreate.MissingEmitter}
+ * 无任何backpressure功能，不像其它策略那样考虑下游的响应式拉取（也就是{@link Subscription#request(long)}），立即向下游发送所有数据
+ * 如果无observeOn操作符制造的缓存区，而下游又不能及时处理，整个过程就会卡住，必须等下游处理完当前事件，才能继续发送下个事件
+ * 原理：MissingEmitter本身有计数器功能，调用Subscriber的onNext时只考虑事件是否发送完，不考虑/检查任何其它东西
+ * 
+ * {@link BackpressureStrategy#ERROR} : {@link FlowableCreate.ErrorAsyncEmitter}
+ * 当上游的数据无法被下游及时处理，也未通过observeOn操作符制造缓存区时，会触发Subscriber的onError，具体throwable是{@link MissingBackpressureException}
+ * 原理：ErrorAsyncEmitter本身有计数器功能，{@link Subscription#request(long)}会使计数器增加，{@link Emitter#onNext(Object)}会使计数器减少
+ * 当计数器减到零时，如果还有新事件通过onNext要发送，说明截止到这时，上游发出的总事件数量已经超过了下游拉取的数量，溢出了，立即触发Subscriber的onError=MissingBackpressureException
+ *
+ * {@link BackpressureStrategy#BUFFER} : {@link FlowableCreate.BufferAsyncEmitter}
+ * {@link BackpressureStrategy#DROP} : {@link FlowableCreate.DropAsyncEmitter}
+ * {@link BackpressureStrategy#LATEST} : {@link FlowableCreate.LatestAsyncEmitter}
+ *
+ * */
 public class BackPressureTest {
 
     /**
@@ -81,8 +102,8 @@ public class BackPressureTest {
     /**
      * 与{@link #testObservableWithMaxFlowAndObserverInDifferentThread()}基础上，把observer的接收速度降低
      * 于是Observable发送的事件会在rxJava内部的缓存区堆积起来得不到处理，内存会越用越多
-     * 这个所谓“缓存区”实际上是observeOn操作符生成的{@link ObservableObserveOn}内部订阅的观察者{@link ObserveOnObserver}的内部的一个{@link SpscLinkedArrayQueue}
-     * 而{@link ObserveOnObserver}会调用用户指定的最终观察者的onSubscribe和onNext等方法
+     * 这个所谓“缓存区”实际上是observeOn操作符生成的{@link ObservableObserveOn}内部订阅的观察者{@link ObservableObserveOn#ObserveOnObserver}的内部的一个{@link SpscLinkedArrayQueue}
+     * 而{@link ObservableObserveOn#ObserveOnObserver}会调用用户指定的最终观察者的onSubscribe和onNext等方法
      */
     public static void testObservableWithMaxFlowAndObserverInDifferentThreadAndObserverSlow() {
         Observable.create(new ObservableOnSubscribe<Integer>() {
@@ -124,13 +145,13 @@ public class BackPressureTest {
      *
      * Observable和Flowable的共同点是，如果通过各自的observeOn方法使得数据源和观察者不在同一个线程里，则会生成包含缓存区的中间环节Observer/Subscriber，
      * 具体：
-     * Observable的observeOn方法产生的中间环节Observer是{@link ObservableObserveOn}内的{@link ObserveOnObserver}
+     * Observable的observeOn方法产生的中间环节Observer是{@link ObservableObserveOn}内的{@link ObservableObserveOn#ObserveOnObserver}
      * 其内部有一个{@link SpscLinkedArrayQueue}类型的缓存区
-     * Flowable的observeOn方法产生的中间环节Subscriber是{@link FlowableObserveOn}内的{@link ObserveOnSubscriber}
+     * Flowable的observeOn方法产生的中间环节Subscriber是{@link FlowableObserveOn}内的{@link FlowableObserveOn#ObserveOnSubscriber}
      * 其内部有一个{@link SpscLinkedArrayQueue}类型的缓存区
      *
      */
-    public static void testFlowableOnSameThread() {
+    public static void testFlowableOnSameThreadWithStrategyError() {
 
         // 创建Flowable，实际类型是FlowableCreate (extends Flowable)
         Flowable<Integer> upstream = Flowable.create(new FlowableOnSubscribe<Integer>() {
@@ -181,7 +202,7 @@ public class BackPressureTest {
         upstream.subscribe(downstream);
     }
 
-    public static void testFlowableOnDifferentThread() {
+    public static void testFlowableOnDifferentThreadWithStrategyError() {
 
         // 创建Flowable
         Flowable<Integer> upstream = Flowable.create(new FlowableOnSubscribe<Integer>() {
@@ -248,5 +269,58 @@ public class BackPressureTest {
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.computation())
                 .subscribe(downstream);
+    }
+
+    public static void testFlowableOnSameThreadWithStrategyMissing() {
+
+        // 创建Flowable，实际类型是FlowableCreate (extends Flowable)
+        Flowable<Integer> upstream = Flowable.create(new FlowableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(FlowableEmitter<Integer> emitter) throws Exception {
+                // emitter实际类型是FlowableCreate$ErrorAsyncEmitter
+                Log.i(TAG, "emit 1");
+                emitter.onNext(1);
+                Log.i(TAG, "emit 2");
+                emitter.onNext(2);
+                Log.i(TAG, "emit 3");
+                emitter.onNext(3);
+                Log.i(TAG, "emit 4");
+                emitter.onNext(4);
+                Log.i(TAG, "emit onComplete");
+                emitter.onComplete();
+            }
+        }, BackpressureStrategy.MISSING);
+
+        // 创建Subscriber
+        Subscriber<Integer> downstream = new Subscriber<Integer>() {
+            @Override
+            public void onSubscribe(Subscription s) {
+                Log.i(TAG, "Subscriber : onSubscribe");
+                // 这种策略无视下游的响应式拉取，所以调不调s.request()都一样，这种策略的MissingEmitter无视这个
+            }
+
+            @Override
+            public void onNext(Integer integer) {
+                // 下游处理事件的卡顿会卡住上游的发送（如果是同一线程，中间没有observeOn操作符制造的缓存区的话）
+                try{
+                    Thread.sleep(1000);
+                }catch (Exception e){
+
+                }
+                Log.i(TAG, "Subscriber : onNext = " + integer);
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                Log.i(TAG, "Subscriber : onError = " + t);
+            }
+
+            @Override
+            public void onComplete() {
+                Log.i(TAG, "Subscriber : onComplete");
+            }
+        };
+
+        upstream.subscribe(downstream);
     }
 }
