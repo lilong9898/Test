@@ -1,5 +1,7 @@
 package com.lilong.rxjavatest.backpressure;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import org.reactivestreams.Publisher;
@@ -41,6 +43,20 @@ import static com.lilong.rxjavatest.activity.MainActivity.TAG;
  * 当计数器减到零时，如果还有新事件通过onNext要发送，说明截止到这时，上游发出的总事件数量已经超过了下游拉取的数量，溢出了，立即触发Subscriber的onError=MissingBackpressureException
  *
  * {@link BackpressureStrategy#BUFFER} : {@link FlowableCreate.BufferAsyncEmitter}
+ * BufferAsyncEmitter内部有缓存区，是SpscLinkedArrayQueue
+ * 每当上游发来一个事件时，这个事件会进入缓存区，然后按照下游响应式拉取的要求，将缓存区中的数据发给下游
+ * 所以如果用户定义的上下游在同一个线程里，则运行情况分三种情况：
+ * (1) 下游拉取的事件数量大于上游需要发送的，按照上游emitter.onNext->下游subscriber.onNext->emitter.onNext->下游subscriber.onNext...这样的顺序，这是个同步过程，上下游速度一致
+ * (2) 下游拉取的事件数量小于上游需要发送的，则(1)过程结束后，剩余的上游事件全部进入BufferAsyncEmitter的缓存区等待下游的再次拉取（此时发送过程已完成）
+ * (3) 下游从未拉取事件，则上游的所有事件进入BufferAsyncEmitter的缓存区等待（此时发送过程已完成）
+ *
+ * [注意]这种emitter里的缓存区跟observeOn操作符产生的中间件的缓存区不同
+ *
+ * 前者没有调度功能，只有存储功能，也就是前者不影响上下游速度（上下游速度一致），只能缓存下游拉取范围以外的事件
+ * [根本原因：emitter里的缓存区，装入数据和取出数据的操作在【相同线程】]
+ *
+ * 后者不仅能缓存上游发来的事件，向下游发送的速度跟上游发来事件的速度脱钩了，两者可以不同
+ * [根本原因：observeOn操作符产生的缓存，装入数据和取出数据的操作在【不同线程】]
  *
  * {@link BackpressureStrategy#DROP} : {@link FlowableCreate.DropAsyncEmitter}
  * {@link BackpressureStrategy#LATEST} : {@link FlowableCreate.LatestAsyncEmitter}
@@ -114,6 +130,9 @@ public class BackPressureTest {
             public void subscribe(ObservableEmitter<Integer> emitter) {
                 int eventNumber = 0;
                 while (true) {
+                    try{
+                        Thread.sleep(50);
+                    }catch (Exception e){}
                     eventNumber++;
                     Log.i(TAG, "observable emits : " + eventNumber);
                     emitter.onNext(eventNumber);
@@ -389,6 +408,72 @@ public class BackPressureTest {
         upstream
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.computation())
+                .subscribe(downstream);
+    }
+
+    /** -------为了避免observeOn操作符产生的中间件的行为对测试造成干扰，后面只测试上下游在同一个线程的情况--------------*/
+
+    /** 使用BUFFER策略，上下游运行在同一个线程*/
+    public static void testFlowableOnSameThreadWithStrategyBuffer() {
+
+        Flowable<Integer> upstream = Flowable.create(new FlowableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(FlowableEmitter<Integer> emitter) throws Exception {
+                // emitter实际类型是FlowableCreate$ErrorAsyncEmitter
+                Log.i(TAG, "emit 1 on thread " + Thread.currentThread().getName());
+                emitter.onNext(1);
+                Log.i(TAG, "emit 2 on thread " + Thread.currentThread().getName());
+                emitter.onNext(2);
+                Log.i(TAG, "emit 3 on thread " + Thread.currentThread().getName());
+                emitter.onNext(3);
+                Log.i(TAG, "emit 4 on thread " + Thread.currentThread().getName());
+                emitter.onNext(4);
+                Log.i(TAG, "emit onComplete on thread " + Thread.currentThread().getName());
+                emitter.onComplete();
+            }
+        }, BackpressureStrategy.BUFFER);
+
+        // 创建Subscriber
+        Subscriber<Integer> downstream = new Subscriber<Integer>() {
+            @Override
+            public void onSubscribe(final Subscription s) {
+                Log.i(TAG, "Subscriber : onSubscribe on thread " + Thread.currentThread().getName());
+                // 先拉取的3个事件，会按照发送1->接收1->发送2->接收2->发送3->接收3这样的顺序处理，上下游速度一致
+                // 然后发送4，超出了下游拉取的范围，进入emitter的缓存区等待，然后产生onComplete事件，也进入缓存区等待，到此发送过程完成
+                // 两秒后下游再次拉取事件，会收到onNext(事件4)和onComplete，这是从缓存区取出的
+                s.request(3);
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        s.request(2);
+                    }
+                }, 2000);
+            }
+
+            @Override
+            public void onNext(Integer integer) {
+                // 下游处理事件的卡顿会卡住上游的发送（如果是同一线程，中间没有observeOn操作符制造的缓存区的话）
+//                try{
+//                    Thread.sleep(1000);
+//                }catch (Exception e){
+//
+//                }
+                Log.i(TAG, "Subscriber : onNext = " + integer + " on thread " + Thread.currentThread().getName());
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                Log.i(TAG, "Subscriber : onError = " + t + " on thread " + Thread.currentThread().getName());
+            }
+
+            @Override
+            public void onComplete() {
+                Log.i(TAG, "Subscriber : onComplete" + " on thread " + Thread.currentThread().getName());
+            }
+        };
+
+        upstream.
+                subscribeOn(Schedulers.computation())
                 .subscribe(downstream);
     }
 }

@@ -89,6 +89,7 @@ public class MainActivity extends Activity {
         //-----------------测试被观察者和观察者不在同个线程的情况----------------------
 //        MultiThreadTest.testObservableAndObserverInDifferentThread();
 //        MultiThreadTest.testObservableOnIoThreadAndObserverOnMainThread();
+//        MultiThreadTest.testObservableAndObserverUsingSameScheduler();
 
         //-----------------操作符测试----------------------------------------------
 //        OperatorTest.testMapOperator();
@@ -105,6 +106,7 @@ public class MainActivity extends Activity {
 //        BackPressureTest.testFlowableOnSameThreadWithStrategyError();
 //        BackPressureTest.testFlowableOnDifferentThreadWithStrategyError();
 //        BackPressureTest.testFlowableOnSameThreadWithStrategyMissing();
-        BackPressureTest.testFlowableOnDifferentThreadWithStrategyMissing();
+//        BackPressureTest.testFlowableOnDifferentThreadWithStrategyMissing();
+        BackPressureTest.testFlowableOnSameThreadWithStrategyBuffer();
     }
 }
