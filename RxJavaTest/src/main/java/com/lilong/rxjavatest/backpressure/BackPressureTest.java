@@ -34,8 +34,13 @@ import static com.lilong.rxjavatest.activity.MainActivity.TAG;
  * Flowable的流程中，事件流动由下游Subscriber通过调用{@link Subscription#request(long)}发起
  *
  * [响应式拉取所针对的事件类型]
- * 如果BackPressure策略是BUFFER或者是LATEST，响应式拉取针对普通事件+onComplete+onError
- * 如果BackPressure策略是MISSING,ERROR或者是DROP，响应式拉取只针对普通事件，onComplete/onError事件会立即发送给下游，无视其有没拉取
+ * 响应式拉取针对的都是普通事件，onComplete事件的发送时机根据不同策略有不同：
+ *
+ * 如果BackPressure策略是BUFFER或者是LATEST，某一次下游要求的拉取结束后
+ * (1) 如果此时上游的下一个事件是onComplete/onError，则立即发送给下游
+ * (2) 如果此时上游的下一个事件是普通事件，后面才有onComplete/onError，则在下次拉取时发送给下游
+ *
+ * 如果BackPressure策略是MISSING,ERROR或者是DROP，上游产生onComplete/onError事件时，会立即发送给下游，不管其有没拉取
  * 原因是{@link FlowableCreate.BaseEmitter#onComplete()}方法是无视响应式拉取的
  * 但在{@link FlowableCreate.BufferAsyncEmitter#onComplete()}和{@link FlowableCreate.LatestAsyncEmitter#onError(Throwable)}中被覆盖成了考虑响应式拉取的
  *
@@ -465,7 +470,13 @@ public class BackPressureTest {
                 new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        s.request(2);
+                        s.request(1);
+                    }
+                }, 2000);
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        s.request(1);
                     }
                 }, 2000);
             }
@@ -579,7 +590,7 @@ public class BackPressureTest {
                 Log.i(TAG, "emit 4");
                 emitter.onNext(4);
                 Log.i(TAG, "emit onComplete");
-                emitter.onComplete();
+                emitter.onError(new Throwable());
             }
         }, BackpressureStrategy.LATEST);
 

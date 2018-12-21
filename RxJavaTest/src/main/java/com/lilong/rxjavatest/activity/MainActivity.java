@@ -107,8 +107,8 @@ public class MainActivity extends Activity {
 //        BackPressureTest.testFlowableOnDifferentThreadWithStrategyError();
 //        BackPressureTest.testFlowableOnSameThreadWithStrategyMissing();
 //        BackPressureTest.testFlowableOnDifferentThreadWithStrategyMissing();
-//        BackPressureTest.testFlowableOnSameThreadWithStrategyBuffer();
+        BackPressureTest.testFlowableOnSameThreadWithStrategyBuffer();
 //        BackPressureTest.testFlowableOnSameThreadWithStrategyDrop();
-        BackPressureTest.testFlowableOnSameThreadWithStrategyLatest();
+//        BackPressureTest.testFlowableOnSameThreadWithStrategyLatest();
     }
 }
