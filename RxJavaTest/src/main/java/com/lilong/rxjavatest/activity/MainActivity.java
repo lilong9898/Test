@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import com.lilong.rxjavatest.R;
-import com.lilong.rxjavatest.backpressure.BackPressureTest;
 import com.lilong.rxjavatest.observables.observable.ObservableExamples;
 
 import io.reactivex.Completable;
@@ -107,7 +106,7 @@ public class MainActivity extends Activity {
 //        BackPressureTest.testFlowableOnDifferentThreadWithStrategyError();
 //        BackPressureTest.testFlowableOnSameThreadWithStrategyMissing();
 //        BackPressureTest.testFlowableOnDifferentThreadWithStrategyMissing();
-        BackPressureTest.testFlowableOnSameThreadWithStrategyBuffer();
+//        BackPressureTest.testFlowableOnSameThreadWithStrategyBuffer();
 //        BackPressureTest.testFlowableOnSameThreadWithStrategyDrop();
 //        BackPressureTest.testFlowableOnSameThreadWithStrategyLatest();
     }
