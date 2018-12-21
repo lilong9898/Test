@@ -29,6 +29,19 @@ import io.reactivex.schedulers.Schedulers;
 import static com.lilong.rxjavatest.activity.MainActivity.TAG;
 
 /**
+ * reactive pull(响应式拉取)：Flowable按照响应式拉取的规则运作，这是它与Observable最根本的不同，backpressure功能的基础就是响应式拉取
+ * Observable的流程中，事件流动由上游Observable通过自身被下游subscribe时的回调内发起
+ * Flowable的流程中，事件流动由下游Subscriber通过调用{@link Subscription#request(long)}发起
+ *
+ * [响应式拉取所针对的事件类型]
+ * 如果BackPressure策略是BUFFER或者是LATEST，响应式拉取针对普通事件+onComplete+onError
+ * 如果BackPressure策略是MISSING,ERROR或者是DROP，响应式拉取只针对普通事件，onComplete/onError事件会立即发送给下游，无视其有没拉取
+ * 原因是{@link FlowableCreate.BaseEmitter#onComplete()}方法是无视响应式拉取的
+ * 但在{@link FlowableCreate.BufferAsyncEmitter#onComplete()}和{@link FlowableCreate.LatestAsyncEmitter#onError(Throwable)}中被覆盖成了考虑响应式拉取的
+ *
+ * backpressure功能是指某个时刻，上游需发送的事件数量超出了下游request的事件数量，上游多出来的事件的处理方法
+ * 共有5中处理方法，就是{@link BackpressureStrategy}中的五个不同枚举值
+ *
  * 不同的{@link BackpressureStrategy}对应的不同{@link Emitter}:
  *
  * {@link BackpressureStrategy#MISSING} : {@link FlowableCreate.MissingEmitter}
@@ -38,7 +51,7 @@ import static com.lilong.rxjavatest.activity.MainActivity.TAG;
  * 原理：MissingEmitter本身有计数器功能，调用Subscriber的onNext时只考虑事件是否发送完，不考虑/检查任何其它东西
  *
  * {@link BackpressureStrategy#ERROR} : {@link FlowableCreate.ErrorAsyncEmitter}
- * 当上游的数据无法被下游及时处理，也未通过observeOn操作符制造缓存区时，会触发Subscriber的onError，具体throwable是{@link MissingBackpressureException}
+ * 当上游的事件未被下游及时拉取，也未通过observeOn操作符制造缓存区时，会触发Subscriber的onError，具体throwable是{@link MissingBackpressureException}
  * 原理：ErrorAsyncEmitter本身有计数器功能，{@link Subscription#request(long)}会使计数器增加，{@link Emitter#onNext(Object)}会使计数器减少
  * 当计数器减到零时，如果还有新事件通过onNext要发送，说明截止到这时，上游发出的总事件数量已经超过了下游拉取的数量，溢出了，立即触发Subscriber的onError=MissingBackpressureException
  *
@@ -59,8 +72,18 @@ import static com.lilong.rxjavatest.activity.MainActivity.TAG;
  * [根本原因：observeOn操作符产生的缓存，装入数据和取出数据的操作在【不同线程】]
  *
  * {@link BackpressureStrategy#DROP} : {@link FlowableCreate.DropAsyncEmitter}
- * {@link BackpressureStrategy#LATEST} : {@link FlowableCreate.LatestAsyncEmitter}
+ * 上游需要发送的，未被下游及时拉取，则被抛弃
+ * 这个策略是ERROR策略的变形，即相当于不发出onError事件的ERROR策略
+ * [根本原因：这个策略用的DropAsyncEmitter和ERROR策略用的ErrorAsyncEmitter都是{@link FlowableCreate.NoOverflowBaseAsyncEmitter}的子类
+ *     前者将父类的{@link FlowableCreate.NoOverflowBaseAsyncEmitter#onOverflow()}覆盖成空实现
+ *     后者将这个方法覆盖成发出onError事件
+ * ]
+ * [onComplete/onError事件是上游出现后立即发送给下游]
  *
+ * {@link BackpressureStrategy#LATEST} : {@link FlowableCreate.LatestAsyncEmitter}
+ * 上游需要发送的，下游未及时拉取，则上游会保留最新的要发送的事件(指普通事件)，等下游再次拉取时，发送给下游
+ * [onComplete/onError事件是下游最终拉取完上游的最后一个事件后才发送给下游]
+ * [根本原因：LatestAsyncEmitter里有个引用一直指向上游最新的事件，这个引用所指向的事件没被发给下游，同时下游有新拉取时，这个引用所指向的事件就会发给下游]
  * */
 @SuppressWarnings("ALL")
 public class BackPressureTest {
@@ -300,7 +323,6 @@ public class BackPressureTest {
         Flowable<Integer> upstream = Flowable.create(new FlowableOnSubscribe<Integer>() {
             @Override
             public void subscribe(FlowableEmitter<Integer> emitter) throws Exception {
-                // emitter实际类型是FlowableCreate$ErrorAsyncEmitter
                 Log.i(TAG, "emit 1");
                 emitter.onNext(1);
                 Log.i(TAG, "emit 2");
@@ -361,7 +383,6 @@ public class BackPressureTest {
         Flowable<Integer> upstream = Flowable.create(new FlowableOnSubscribe<Integer>() {
             @Override
             public void subscribe(FlowableEmitter<Integer> emitter) throws Exception {
-                // emitter实际类型是FlowableCreate$ErrorAsyncEmitter
                 Log.i(TAG, "emit 1");
                 emitter.onNext(1);
                 Log.i(TAG, "emit 2");
@@ -419,7 +440,6 @@ public class BackPressureTest {
         Flowable<Integer> upstream = Flowable.create(new FlowableOnSubscribe<Integer>() {
             @Override
             public void subscribe(FlowableEmitter<Integer> emitter) throws Exception {
-                // emitter实际类型是FlowableCreate$ErrorAsyncEmitter
                 Log.i(TAG, "emit 1 on thread " + Thread.currentThread().getName());
                 emitter.onNext(1);
                 Log.i(TAG, "emit 2 on thread " + Thread.currentThread().getName());
@@ -469,6 +489,139 @@ public class BackPressureTest {
             @Override
             public void onComplete() {
                 Log.i(TAG, "Subscriber : onComplete" + " on thread " + Thread.currentThread().getName());
+            }
+        };
+
+        upstream.
+                subscribeOn(Schedulers.computation())
+                .subscribe(downstream);
+    }
+
+    /** DROP策略，上下游在相同线程*/
+    public static void testFlowableOnSameThreadWithStrategyDrop() {
+
+        Flowable<Integer> upstream = Flowable.create(new FlowableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(FlowableEmitter<Integer> emitter) throws Exception {
+                Log.i(TAG, "emit 1");
+                emitter.onNext(1);
+                Log.i(TAG, "emit 2");
+                emitter.onNext(2);
+                Log.i(TAG, "emit 3");
+                emitter.onNext(3);
+                Log.i(TAG, "emit 4");
+                emitter.onNext(4);
+                Log.i(TAG, "emit onComplete");
+                emitter.onComplete();
+            }
+        }, BackpressureStrategy.DROP);
+
+        // 创建Subscriber
+        Subscriber<Integer> downstream = new Subscriber<Integer>() {
+            @Override
+            public void onSubscribe(final Subscription s) {
+                Log.i(TAG, "Subscriber : onSubscribe");
+                // 分多次拉取
+                s.request(1);
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        s.request(1);
+                    }
+                }, 2000);
+//                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        s.request(2);
+//                    }
+//                }, 4000);
+            }
+
+            @Override
+            public void onNext(Integer integer) {
+                // 下游处理事件的卡顿会卡住上游的发送（如果是同一线程，中间没有observeOn操作符制造的缓存区的话）
+//                try{
+//                    Thread.sleep(1000);
+//                }catch (Exception e){
+//
+//                }
+                Log.i(TAG, "Subscriber : onNext = " + integer);
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                Log.i(TAG, "Subscriber : onError = " + t);
+            }
+
+            @Override
+            public void onComplete() {
+                Log.i(TAG, "Subscriber : onComplete");
+            }
+        };
+
+        upstream.
+                subscribeOn(Schedulers.computation())
+                .subscribe(downstream);
+    }
+
+    /** LATEST策略，上下游在相同线程*/
+    public static void testFlowableOnSameThreadWithStrategyLatest() {
+
+        Flowable<Integer> upstream = Flowable.create(new FlowableOnSubscribe<Integer>() {
+            @Override
+            public void subscribe(FlowableEmitter<Integer> emitter) throws Exception {
+                Log.i(TAG, "emit 1");
+                emitter.onNext(1);
+                Log.i(TAG, "emit 2");
+                emitter.onNext(2);
+                Log.i(TAG, "emit 3");
+                emitter.onNext(3);
+                Log.i(TAG, "emit 4");
+                emitter.onNext(4);
+                Log.i(TAG, "emit onComplete");
+                emitter.onComplete();
+            }
+        }, BackpressureStrategy.LATEST);
+
+        // 创建Subscriber
+        Subscriber<Integer> downstream = new Subscriber<Integer>() {
+            @Override
+            public void onSubscribe(final Subscription s) {
+                Log.i(TAG, "Subscriber : onSubscribe");
+                s.request(1);
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        s.request(1);
+                    }
+                }, 2000);
+//                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        s.request(2);
+//                    }
+//                }, 4000);
+            }
+
+            @Override
+            public void onNext(Integer integer) {
+                // 下游处理事件的卡顿会卡住上游的发送（如果是同一线程，中间没有observeOn操作符制造的缓存区的话）
+//                try{
+//                    Thread.sleep(1000);
+//                }catch (Exception e){
+//
+//                }
+                Log.i(TAG, "Subscriber : onNext = " + integer);
+            }
+
+            @Override
+            public void onError(Throwable t) {
+                Log.i(TAG, "Subscriber : onError = " + t);
+            }
+
+            @Override
+            public void onComplete() {
+                Log.i(TAG, "Subscriber : onComplete");
             }
         };
 
