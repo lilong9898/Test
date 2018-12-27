@@ -22,6 +22,8 @@ import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.Single;
+import io.reactivex.SingleEmitter;
+import io.reactivex.SingleOnSubscribe;
 
 import static com.lilong.rxjavatest.activity.MainActivity.TAG;
 
@@ -279,4 +281,11 @@ public class ObservableExamples {
         }
         return showThreadObservable;
     }
+
+    //--------------------------------------------------------------------------------------
+    //-----------------以下测试Observable的简化版本：Single Completable Maybe三种被观察者----------
+    //-----------------"简化"指这三种被观察者在被订阅后，只能处理一个事件，然后生命结束，除非重新订阅，适用于只需发射单个事件的而场景-------
+
+
+
 }

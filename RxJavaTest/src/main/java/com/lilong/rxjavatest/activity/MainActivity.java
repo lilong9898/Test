@@ -62,6 +62,9 @@ public class MainActivity extends Activity {
         // (8)
 //        ObservableTypeTest.testObservableInterval();
 
+        // (9)
+//        SingleTypeTest.testSingle();
+
         //-------------------测试被观察者的不同方法------------------------
 //        ObservableApiTest.testObservableMethodDoOnXXX();
 //        ObservableApiTest.testObservableMethodSubscribeOnNextConsumerAndOnErrorConsumer();
