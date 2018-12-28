@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import com.lilong.rxjavatest.R;
+import com.lilong.rxjavatest.observables.maybe.MaybeTypeTest;
 import com.lilong.rxjavatest.observables.observable.ObservableExamples;
 
 import io.reactivex.Completable;
@@ -64,10 +65,12 @@ public class MainActivity extends Activity {
 
         // (9)
 //        SingleTypeTest.testSingle();
-        
+
         // (10)
 //        CompletableTypeTest.testCompletable();
 
+        // (11)
+        MaybeTypeTest.testMaybe();
         //-------------------测试被观察者的不同方法------------------------
 //        ObservableApiTest.testObservableMethodDoOnXXX();
 //        ObservableApiTest.testObservableMethodSubscribeOnNextConsumerAndOnErrorConsumer();
