@@ -64,6 +64,9 @@ public class MainActivity extends Activity {
 
         // (9)
 //        SingleTypeTest.testSingle();
+        
+        // (10)
+//        CompletableTypeTest.testCompletable();
 
         //-------------------测试被观察者的不同方法------------------------
 //        ObservableApiTest.testObservableMethodDoOnXXX();

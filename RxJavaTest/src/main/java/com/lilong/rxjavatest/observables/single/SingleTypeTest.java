@@ -8,11 +8,11 @@ import io.reactivex.disposables.Disposable;
 
 import static com.lilong.rxjavatest.activity.MainActivity.TAG;
 
+/**
+ * 测试{@link Single}类型的被观察者
+ * */
 public class SingleTypeTest {
 
-    /**
-     * 测试{@link Single}类型的被观察者
-     * */
     public static void testSingle() {
         SingleExamples.getSingle().subscribe(new SingleObserver<String>() {
             @Override
