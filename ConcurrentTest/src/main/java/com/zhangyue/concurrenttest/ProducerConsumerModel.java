@@ -1,4 +1,4 @@
-package com.lilong.algorithm.multiThread;
+package com.zhangyue.concurrenttest;
 
 /**
  * 多线程的生产者消费者模型
