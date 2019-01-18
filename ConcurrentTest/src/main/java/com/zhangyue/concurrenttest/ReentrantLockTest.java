@@ -25,16 +25,22 @@ public class ReentrantLockTest {
         public int number = 0;
 
         public void increase(String name) {
-            lock.lock();
-            for (int i = 0; i < 5; i++) {
-                number = number + 1;
-                System.out.println("IncreaseThread " + name + ", number = " + number);
-                try {
-                    Thread.sleep(100);
-                } catch (Exception e) {
+            // lock方法获得锁
+            try {
+                lock.lock();
+                for (int i = 0; i < 5; i++) {
+                    number = number + 1;
+                    System.out.println("IncreaseThread " + name + ", number = " + number);
+                    try {
+                        Thread.sleep(100);
+                    } catch (Exception e) {
+                    }
                 }
+            } catch (Exception e) {
+            } finally {
+                // unlock方法释放锁
+                lock.unlock();
             }
-            lock.unlock();
         }
 
         public void decrease(String name) {
