@@ -3,6 +3,9 @@ package com.lilong.designpattern;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.security.ProtectionDomain;
+
+import sun.misc.ProxyGenerator;
 
 /**
  * 动态代理模式
@@ -10,6 +13,14 @@ import java.lang.reflect.Proxy;
  * 分为静态代理和动态代理
  * 静态代理:代理对象的代码运行前就存在,只能代理确定的某个接口
  * 动态代理:代理对象的代码运行时生成,能通过反射代理任意类型的接口
+ * [动态代理的原理]
+ * 关键在于代理类的生成过程：
+ * (1) {@link Proxy#newProxyInstance(ClassLoader, Class[], InvocationHandler)}方法内部调用->
+ * (2) ProxyClassFactory#apply内部调用->
+ * (3) {@link ProxyGenerator#generateProxyClass(String, Class[])}
+ * 它内部会将类的信息写入字节数组里
+ * (4)通过{@link ClassLoader#defineClass0(String, byte[], int, int, ProtectionDomain)}将字节数组转换成Class对象
+ * (5)最后通过反射实例化刚才的代理类的类对象，得到代理类的实例
  */
 
 public class PatternDynamicProxy {
