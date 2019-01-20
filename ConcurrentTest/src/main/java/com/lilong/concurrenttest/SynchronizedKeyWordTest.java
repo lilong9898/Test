@@ -1,4 +1,4 @@
-package com.zhangyue.concurrenttest;
+package com.lilong.concurrenttest;
 
 /**
  * synchronized关键字效果：

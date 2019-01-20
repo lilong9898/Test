@@ -1,4 +1,4 @@
-package com.zhangyue.concurrenttest;
+package com.lilong.concurrenttest;
 
 import java.util.concurrent.locks.ReentrantLock;
 
