@@ -22,10 +22,12 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.1.2'
     // Retrofit库
     compile 'com.squareup.retrofit2:retrofit:2.0.2'
+    // 可与Retrofit配合使用的rxjava库
+    compile 'io.reactivex.rxjava2:rxjava:2.1.1'
     // Retrofit库中不包含解析数据用的converter
-    // 这个库很小，只包括三个类，是将http返回数据呈现为字符串的转换器
+    // 这个库很小，只包括三个类，是将http返回数据呈现为字符串的解析器
     compile 'com.squareup.retrofit2:converter-scalars:2.0.0'
-    // 也只包括三个类，是将http返回数据呈现为json实体的转换器
+    // 也只包括三个类，是将http返回数据呈现为json实体的解析器
     compile 'com.squareup.retrofit2:converter-gson:2.0.2'
     // 其它一些转换器:
     // com.squareup.retrofit2:converter-jackson:2.0.2
@@ -33,5 +35,5 @@ dependencies {
     // com.squareup.retrofit2:converter-protobuf:2.0.2
     // com.squareup.retrofit2:converter-moshi:2.0.2
     // com.squareup.retrofit2:converter-wire:2.0.2
-
+    compile 'com.squareup.retrofit2:adapter-rxjava:2.1.0'
 }

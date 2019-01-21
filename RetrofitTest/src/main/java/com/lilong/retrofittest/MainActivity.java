@@ -9,14 +9,21 @@ import android.widget.Button;
 import com.lilong.retrofittest.bytes.ByteDataRequest;
 import com.lilong.retrofittest.json.JSONDataRequest;
 import com.lilong.retrofittest.json.JSONEntity;
+import com.lilong.retrofittest.rxjava2.ObservableDataRequest;
 import com.lilong.retrofittest.string.StringDataRequest;
 
+import io.reactivex.Observable;
+import io.reactivex.ObservableSource;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 
@@ -33,6 +40,7 @@ public class MainActivity extends Activity {
     private Button btnRequestResponseBody;
     private Button btnRequestStringData;
     private Button btnRequestJsonData;
+    private Button btnRequestJsonDataWithRxJava;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +67,13 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 requestJSONData();
+            }
+        });
+        btnRequestJsonDataWithRxJava = findViewById(R.id.btnRequestJsonDataWithRxJava);
+        btnRequestJsonDataWithRxJava.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requestJSONDataWithRxJava();
             }
         });
     }
@@ -168,6 +183,39 @@ public class MainActivity extends Activity {
             @Override
             public void onFailure(Call<JSONEntity> call, Throwable t) {
                 Log.i(TAG, "onFailure");
+            }
+        });
+    }
+
+    private void requestJSONDataWithRxJava() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://api.douban.com/v2/movie/")
+                .addConverterFactory(GsonConverterFactory.create())
+                // 注意这里用RxJavaCallAdapterFactory
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .client(new OkHttpClient())
+                .build();
+        ObservableDataRequest request = retrofit.create(ObservableDataRequest.class);
+        Observable<JSONEntity> observable = request.request("96efc220a4196fafdfade0c9d1e897ac", "11111111");
+        observable.subscribe(new Observer<JSONEntity>() {
+            @Override
+            public void onSubscribe(Disposable d) {
+                Log.i(TAG, "onSubscribe");
+            }
+
+            @Override
+            public void onNext(JSONEntity entity) {
+                Log.i(TAG, "onNext = " + entity);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Log.i(TAG, "onError");
+            }
+
+            @Override
+            public void onComplete() {
+                Log.i(TAG, "onComplete");
             }
         });
     }
