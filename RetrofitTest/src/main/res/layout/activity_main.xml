@@ -13,9 +13,17 @@
         android:orientation="vertical">
 
         <Button
+            android:id="@+id/btnRequestResponseBody"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="结果直接用ResponseBody"
+            android:textSize="20sp"/>
+
+        <Button
             android:id="@+id/btnRequestStringData"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:text="结果解析为String"
             android:textSize="20sp"/>
 

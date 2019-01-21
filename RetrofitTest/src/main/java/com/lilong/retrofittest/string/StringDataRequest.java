@@ -6,7 +6,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Url;
 
 /**
- * 访问百度首页
+ * 访问百度首页，访问得到的数据以字符串方式呈现
  *
  * 接口，每个方法代表一种网络请求
  * 具体实现不由用户负责，由{@link Retrofit#create(Class)}负责

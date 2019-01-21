@@ -6,11 +6,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.lilong.retrofittest.bytes.ByteDataRequest;
 import com.lilong.retrofittest.json.JSONDataRequest;
 import com.lilong.retrofittest.json.JSONEntity;
 import com.lilong.retrofittest.string.StringDataRequest;
 
 import okhttp3.OkHttpClient;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -28,6 +30,7 @@ public class MainActivity extends Activity {
 
     private static final String TAG = "RetroTest";
 
+    private Button btnRequestResponseBody;
     private Button btnRequestStringData;
     private Button btnRequestJsonData;
 
@@ -35,6 +38,15 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        btnRequestResponseBody = findViewById(R.id.btnRequestResponseBody);
+        btnRequestResponseBody.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requestResponseBody();
+            }
+        });
+
         btnRequestStringData = findViewById(R.id.btnRequestStringData);
         btnRequestStringData.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,6 +59,48 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 requestJSONData();
+            }
+        });
+    }
+
+    /**
+     * 网络访问返回的数据以ResponseBody形式呈现
+     * {@link Response}的泛型就是{@link Response#body()}方法返回值的类型，就是用户想要的解析后的格式
+     */
+    private void requestResponseBody() {
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://www.baidu.com/")
+                // 不用addConverterFactory
+                .client(new OkHttpClient())
+                .build();
+
+        ByteDataRequest request = retrofit.create(ByteDataRequest.class);
+        Call<ResponseBody> call = request.request();
+        call.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                Log.i(TAG, "onResponse");
+                ResponseBody body = response.body();
+                try {
+                    // body只能消费一次，也就是其中的内容只能读取一次
+                    // 所以body的bytes方法和string方法，后被调用者读到的内容是空的
+                    // 以字节形式呈现ResponseBody
+                    byte[] bytes = body.bytes();
+                    Log.i(TAG, "byte array length = " + bytes.length);
+
+                    // 以字符串形式呈现ResponseBody，字符串跟用了ScalarsConverterFactory之后解析到的字符串一样
+                    String str = body.string();
+                    Log.i(TAG, "str length = " + str.length());
+                    Log.i(TAG, "str = " + str);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                Log.i(TAG, "onFailure");
             }
         });
     }

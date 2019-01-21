@@ -30,12 +30,12 @@ public class Tree extends BaseStructure {
         // TODO
         root = buildTree();
         System.out.println("中序遍历，递归:");
-//        inOrderTraversal(root);
+        inOrderTraversal(root);
 
         // 中序遍历，非递归
         root = buildTree();
         System.out.println("中序遍历，非递归:");
-        inOrderTraversalNonRecursive(root);
+//        inOrderTraversalNonRecursive(root);
 
         // 后序遍历，递归
         root = buildTree();
