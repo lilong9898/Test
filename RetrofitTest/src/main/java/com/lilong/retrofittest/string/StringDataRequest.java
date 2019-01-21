@@ -24,11 +24,11 @@ public interface StringDataRequest {
      * 如果没有，说明这不是个用于retrofit框架的方法，就会报异常
      *
      * 下面两个操作
-     * (1) 写入注解的属性值，是后段url
-     * (2) 方法至少有一个参数，且第一个参数的意思是后段url，并且用{@link Url}注解
+     * (1) 写入注解的属性值，是path或完整url
+     * (2) 方法至少有一个参数，且第一个参数的意思是path或完整url，并且用{@link Url}注解
      * 两个操作里必须有一个，否则抛异常：
      * java.lang.IllegalArgumentException: Missing either @GET URL or @Url parameter.for method ....
-     * 因为必须指定后段url，跟{@link Retrofit.Builder#baseUrl(String)}设置的前段url配合起来才能构成完整的url
+     * 因为必须指定path，跟{@link Retrofit.Builder#baseUrl(String)}设置的host配合起来才能构成完整的url
      */
     @GET("http://www.baidu.com")
     Call<String> request();

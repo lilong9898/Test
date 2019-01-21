@@ -17,7 +17,8 @@ public interface JSONDataRequest {
      * (2) GET注解的属性值是path
      * (3) 参数上的Query注解表示请求参数
      * 故最终url={@link Retrofit.Builder#baseUrl(String)}中设定的host + {@link GET}注解的属性里设置的path + 方法参数中用{@link Query}注解的属性设置的query params
+     * path最前面可以包含/，也可以没有
      * */
-    @GET("/qqevaluate/qq")
+    @GET("qqevaluate/qq")
     Call<JSONEntity> request(@Query("key") String appKey, @Query("qq") String qq);
 }
