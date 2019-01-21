@@ -9,18 +9,50 @@ public class Tree extends BaseStructure {
 
     public static void main(String[] args) {
 
+        //------------------原始二叉树------------------------
         TreeNode root = buildTree();
-        // 用最简单的方法打印二叉树
+        // 打印二叉树
+        displayAsTree(levelOrderTraversal(root), 2);
+
+        //-------------------二叉树的遍历---------------------
+        // 前序遍历，递归
+        root = buildTree();
+        System.out.println("前序遍历，递归:");
+        preOrderTraversal(root);
+
+        // 前序遍历，非递归
+        // TODO
+        root = buildTree();
+        System.out.println("前序遍历，非递归:");
+//        preOrderTraversalNonRecursive(root);
+
+        // 中序遍历，非递归
+        // TODO
+        root = buildTree();
+        System.out.println("中序遍历，递归:");
+//        inOrderTraversal(root);
+
+        // 中序遍历，非递归
+        root = buildTree();
+        System.out.println("中序遍历，非递归:");
+        inOrderTraversalNonRecursive(root);
+
+        // 后序遍历，递归
+        root = buildTree();
+        System.out.println("后序遍历，递归:");
+        postOrderTraversal(root);
+
+        // 层序遍历，非递归
+        root = buildTree();
+        System.out.println("层序遍历，非递归:");
         levelOrderTraversalSimple(root);
 
+        //--------------------------------------------------
         root = buildTree();
         // 用最简单的方法非递归反转二叉树
         System.out.println("------------------------");
         reverseBinaryTreeNonRecursive(root);
 
-        root = buildTree();
-        // 打印二叉树
-        displayAsTree(levelOrderTraversal(root), 2);
 
         root = buildTree();
         // 获取二叉树的最小深度
@@ -293,6 +325,85 @@ public class Tree extends BaseStructure {
         }
 
     }
+
+    /**
+     * 前序遍历二叉树，递归写法
+     */
+    public static void preOrderTraversal(TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        System.out.println(root.value);
+        preOrderTraversal(root.left);
+        preOrderTraversal(root.right);
+    }
+
+    /**
+     * 前序遍历二叉树，非递归写法
+     */
+    public static void preOrderTraversalNonRecursive(TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        Stack<TreeNode> stack = new Stack<>();
+        stack.push(root);
+        TreeNode node = root;
+        while (!stack.isEmpty()) {
+            if(node.left != null){
+                System.out.println(node.value);
+                node = node.left;
+            }
+        }
+    }
+
+    /**
+     * 中序遍历二叉树，非递归写法
+     */
+    public static void inOrderTraversalNonRecursive(TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        Stack<TreeNode> stack = new Stack<>();
+        stack.push(root);
+        TreeNode node = root;
+        while (!stack.isEmpty()) {
+            if (node.left != null) {
+                if (node.right != null) {
+                    stack.push(node.right);
+                }
+                stack.push(node);
+                node = node.left;
+            } else {
+                System.out.println(node.value);
+                node = stack.pop();
+            }
+        }
+    }
+
+    /**
+     * 中序遍历二叉树，递归写法
+     */
+    public static void inOrderTraversal(TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        inOrderTraversal(root.left);
+        System.out.println(root.value);
+        inOrderTraversal(root.right);
+    }
+
+    /**
+     * 后序遍历二叉树，递归写法
+     */
+    public static void postOrderTraversal(TreeNode root) {
+        if (root == null) {
+            return;
+        }
+        postOrderTraversal(root.left);
+        postOrderTraversal(root.right);
+        System.out.println(root.value);
+    }
+
 
     public static class TreeNodeNotSymmetricException extends Exception {
 
