@@ -109,15 +109,15 @@ public class BaseStructure extends BaseSort {
 
         TreeNode root = new TreeNode(1);
         TreeNode left11 = new TreeNode(2);
-        TreeNode right12 = new TreeNode(2);
+        TreeNode right12 = new TreeNode(3);
         root.left = left11;
         root.right = right12;
-        TreeNode left21 = new TreeNode(3);
-        TreeNode left22 = new TreeNode(4);
+        TreeNode left21 = new TreeNode(4);
+        TreeNode left22 = new TreeNode(5);
         left11.left = left21;
         left11.right = left22;
-        TreeNode right23 = new TreeNode(4);
-        TreeNode right24 = new TreeNode(3);
+        TreeNode right23 = new TreeNode(6);
+        TreeNode right24 = new TreeNode(7);
         right12.left = right23;
         right12.right = right24;
 

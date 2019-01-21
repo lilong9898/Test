@@ -3,26 +3,39 @@ package com.lilong.algorithm.structure;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Stack;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class Tree extends BaseStructure {
 
     public static void main(String[] args) {
 
         TreeNode root = buildTree();
+        // 用最简单的方法打印二叉树
+        levelOrderTraversalSimple(root);
 
+        root = buildTree();
+        // 用最简单的方法非递归反转二叉树
+        System.out.println("------------------------");
+        reverseBinaryTreeNonRecursive(root);
+
+        root = buildTree();
         // 打印二叉树
         displayAsTree(levelOrderTraversal(root), 2);
 
+        root = buildTree();
         // 获取二叉树的最小深度
         System.out.println("minDepth is " + findMinDepth(root));
 
+        root = buildTree();
         // 二叉树有多少条路径的和为指定值
         int targetSum = 7;
         System.out.println("there are " + countPathsWithSum(root, targetSum) + " paths with sum of " + targetSum);
 
+        root = buildTree();
         // 是否为对称树
         System.out.println("is symmetric : " + isSymmetricTree(root));
 
+        root = buildTree();
         // 从下向上层序遍历树
         levelOrderTraversalBottomUp(root);
     }
@@ -110,6 +123,60 @@ public class Tree extends BaseStructure {
 
         isSymmetricTreeRecursive(left.left, right.right);
         isSymmetricTreeRecursive(left.right, right.left);
+    }
+
+    /**
+     * 非递归反转二叉树，最简单的代码，基于层序遍历
+     */
+    public static void reverseBinaryTreeNonRecursive(TreeNode root) {
+
+        if (root == null) {
+            return;
+        }
+
+        LinkedBlockingQueue<TreeNode> queue = new LinkedBlockingQueue<>();
+        queue.add(root);
+
+        while (!queue.isEmpty()) {
+
+            TreeNode node = queue.poll();
+            System.out.println(node.value);
+
+            TreeNode temp = node.left;
+            node.left = node.right;
+            node.right = temp;
+
+            if (node.left != null) {
+                queue.add(node.left);
+            }
+            if (node.right != null) {
+                queue.add(node.right);
+            }
+        }
+    }
+
+
+    /**
+     * 无返回值的层序遍历，用最简单的代码
+     */
+    public static void levelOrderTraversalSimple(TreeNode root) {
+
+        if (root == null) {
+            return;
+        }
+
+        LinkedBlockingQueue<TreeNode> queue = new LinkedBlockingQueue<TreeNode>();
+        queue.add(root);
+        while (!queue.isEmpty()) {
+            TreeNode node = queue.poll();
+            System.out.println(node.value);
+            if (node.left != null) {
+                queue.add(node.left);
+            }
+            if (node.right != null) {
+                queue.add(node.right);
+            }
+        }
     }
 
     /**
