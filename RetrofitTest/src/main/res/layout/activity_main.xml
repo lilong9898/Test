@@ -1,16 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity">
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/btnRequestBaidu"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:text="访问百度"
-        android:textSize="20sp" />
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/btnRequestStringData"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="结果解析为String"
+            android:textSize="20sp"/>
+
+        <Button
+            android:id="@+id/btnRequestJsonData"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="结果解析为JSON"
+            android:textSize="20sp"/>
+    </LinearLayout>
 </RelativeLayout>
