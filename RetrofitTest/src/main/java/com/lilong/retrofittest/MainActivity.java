@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapter;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.lilong.retrofittest.bytes.ByteDataRequest;
 import com.lilong.retrofittest.json.JSONDataRequest;
@@ -21,7 +22,9 @@ import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.CallAdapter;
 import retrofit2.Callback;
+import retrofit2.DefaultCallAdapterFactory;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -30,8 +33,19 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 /**
  * Retrofit用到了很多设计模式，其中三个关键步骤：
  * (1) 接口->代理：用户定义的网络访问接口通过{@link Retrofit#create(Class)}被转换成一个代理（代理模式）
- * (2) 调用代理的方法->return Call：这个代理的网络访问方法的调用，返回值是其内部生成的{@link Call}的实现类，一般是{@link ExecutorCallAdapterFactory.ExecutorCallbackCall}（接口适配器）
- * (3) 执行Call：调用{@link Call#execute()}进行同步网路访问，或调用{@link Call#enqueue(Callback)}进行异步网络访问
+ *
+ * (2) 调用代理方法->return callAdapter.adapt(代理)：这个代理方法的调用，返回值取决于使用的{@link CallAdapter}
+ *    (2.1)如果使用默认的callAdapter，也就是{@link DefaultCallAdapterFactory}，则返回的是{@link ExecutorCallAdapterFactory.ExecutorCallbackCall}
+ *    (2.2)如果使用非默认的callAdapter，比如{@link RxJava2CallAdapter}，则返回的是{@link Observable}
+ *         其它的callAdapter可以将Call转换成其它类型T
+ *
+ * (3) 执行：
+ *    (3.1)如果使用默认的callAdapter，则类型是{@link Call}，后面调用{@link Call#execute()}进行同步网路访问，或调用{@link Call#enqueue(Callback)}进行异步网络访问
+ *    (3.2)如果使用非默认的callAdapter，则按类型T的具体后续操作进行，比如使用了{@link RxJava2CallAdapter}，则T是{@link Observable}，后面访问网络要通过{@link Observable#subscribe(Observer)}进行
+ *
+ * {@link CallAdapter}的作用是将输入的{@link Call}转换成指定的其它类型T并输出
+ * {@link DefaultCallAdapterFactory}中生成的{@link CallAdapter}则是原样返回输入的call
+ *
  */
 public class MainActivity extends Activity {
 
@@ -130,7 +144,7 @@ public class MainActivity extends Activity {
                 .baseUrl("http://www.baidu.com/")
                 //设置内容格式,这种对应的数据返回值是String类型(html报文原文)
                 .addConverterFactory(ScalarsConverterFactory.create())
-                //定义client类型
+                //定义client类型，可不写，默认用OkHttpClient
                 .client(new OkHttpClient())
                 // 创建
                 .build();
