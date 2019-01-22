@@ -6,13 +6,14 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapter;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.lilong.retrofittest.bytes.ByteDataRequest;
 import com.lilong.retrofittest.json.JSONDataRequest;
 import com.lilong.retrofittest.json.JSONEntity;
 import com.lilong.retrofittest.rxjava2.ObservableDataRequest;
 import com.lilong.retrofittest.string.StringDataRequest;
+
+import java.util.concurrent.Executor;
 
 import io.reactivex.Observable;
 import io.reactivex.Observer;
@@ -24,7 +25,6 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.CallAdapter;
 import retrofit2.Callback;
-import retrofit2.DefaultCallAdapterFactory;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -44,7 +44,12 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
  *    (3.2)如果使用非默认的callAdapter，则按类型T的具体后续操作进行，比如使用了{@link RxJava2CallAdapter}，则T是{@link Observable}，后面访问网络要通过{@link Observable#subscribe(Observer)}进行
  *
  * {@link CallAdapter}的作用是将输入的{@link Call}转换成指定的其它类型T并输出
- * {@link DefaultCallAdapterFactory}中生成的{@link CallAdapter}则是原样返回输入的call
+ * 在不同平台上，默认使用的CallAdapter不同：
+ * 1. Android平台上，是{@link Platform.Android#defaultCallAdapterFactory(Executor)}返回的{@link ExecutorCallAdapterFactory}所生成的匿名内部类实例
+ *    其作用是将输入的Call转换为{@link ExecutorCallAdapterFactory.ExecutorCallbackCall}，这个类是为了保证回调都运行在主线程上
+ *
+ * 2. Java平台上，是{@link Platform#defaultCallAdapterFactory(Executor)}返回的{@link DefaultCallAdapterFactory}所生成的匿名内部类实例
+ *    其作用是将输入的Call原样返回
  *
  */
 public class MainActivity extends Activity {
@@ -158,7 +163,7 @@ public class MainActivity extends Activity {
         // ExecutorCallAdapterFactory$ExecutorCallbackCall
         // 这个request方法会调到委托类的request
         // 而委托类的request(在invocationHandler的invoke方法中等效触发)实际上什么都没干
-        // 只是返回了CallAdapter#adapt方法返回Call接口的对象
+        // 只是返回了CallAdapter#adapt方法返回的对象
         Call<String> call = request.request();
         Log.i(TAG, "call = " + call);
         // 执行请求（enqueue方法会让请求异步执行）
