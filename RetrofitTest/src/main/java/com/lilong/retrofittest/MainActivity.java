@@ -38,6 +38,7 @@ import retrofit2.http.GET;
  * (2) 通过{@link Retrofit#create(Class)}内部生成的动态代理去生成并调用{@link OkHttpCall}，将okhttp的设置转换成了retrofit的设置
  * (3) 通过{@link CallAdapter}使得用户可以将okhttp的标准api转换成其它工具类的api，并整合进其它工具类的功能，比如{@link RxJava2CallAdapter}使得rxjava2的api和功能整合进来
  * (4) 通过{@link retrofit2.Converter}将网络访问返回的原始字节数据转换成用户指定的数据类型(字符串，ResponseBody，JSON实体等)
+ * 其中(1)(2)(3)是在调用okhttp之前的扩展，(4)是调用之后得到网络访问结果之后的扩展
  *
  * Retrofit用到了很多设计模式，其中三个关键步骤：
  * (1) 接口->代理：用户定义的网络访问接口通过{@link Retrofit#create(Class)}被转换成一个代理（代理模式）
@@ -69,7 +70,7 @@ import retrofit2.http.GET;
  *    其作用是将输入的Call原样返回
  *
  * 说明2:
- *    {@link OkHttpCall}就是retrofit调用okhttp的接口，retrofit和okhttp之间有许多名字相似的方法
+ *    {@link OkHttpCall}就是retrofit调用okhttp的接口，retrofit和okhttp之间有许多名字一样的类和方法，但内容不同
  */
 public class MainActivity extends Activity {
 
