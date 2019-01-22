@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.lilong.retrofittest.bytes.ByteDataRequest;
 import com.lilong.retrofittest.json.JSONDataRequest;
 import com.lilong.retrofittest.json.JSONEntity;
@@ -13,17 +14,16 @@ import com.lilong.retrofittest.rxjava2.ObservableDataRequest;
 import com.lilong.retrofittest.string.StringDataRequest;
 
 import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.OkHttpClient;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
 
@@ -189,15 +189,23 @@ public class MainActivity extends Activity {
 
     private void requestJSONDataWithRxJava() {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://api.douban.com/v2/movie/")
+                .baseUrl("http://japi.juhe.cn/")
                 .addConverterFactory(GsonConverterFactory.create())
-                // 注意这里用RxJavaCallAdapterFactory
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                // 注意这里用RxJava2CallAdapterFactory
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .client(new OkHttpClient())
                 .build();
         ObservableDataRequest request = retrofit.create(ObservableDataRequest.class);
         Observable<JSONEntity> observable = request.request("96efc220a4196fafdfade0c9d1e897ac", "11111111");
-        observable.subscribe(new Observer<JSONEntity>() {
+
+        // 跟rxjava2联用后，触发网络请求不再通过Call:enqueue，而是通过Observable:subscribe，线程调度也由rxjava2负责
+        observable
+                // 因为请求过程使用的是RxJava2的流程，其默认是在主线程执行发送-接收代码的
+                // 这样会报NetworkOnMainThreadException
+                // 所以必须调用subscribeOn非主线程
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<JSONEntity>() {
             @Override
             public void onSubscribe(Disposable d) {
                 Log.i(TAG, "onSubscribe");
@@ -210,7 +218,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onError(Throwable e) {
-                Log.i(TAG, "onError");
+                Log.i(TAG, "onError = " + e);
             }
 
             @Override
