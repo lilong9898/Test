@@ -6,7 +6,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapter;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.lilong.retrofittest.bytes.ByteDataRequest;
 import com.lilong.retrofittest.json.JSONDataRequest;
@@ -43,6 +42,7 @@ import retrofit2.http.GET;
  * Retrofit用到了很多设计模式，其中三个关键步骤：
  * (1) 接口->代理：用户定义的网络访问接口通过{@link Retrofit#create(Class)}被转换成一个代理（代理模式）
  *
+ * 
  * (2) 调用代理方法->return callAdapter.adapt(代理)：这个代理方法的调用
  *    执行过程中：创建{@link OkHttpCall}，用来调用okhttp执行网络请求，其中可以
  *    (2.1.1){@link OkHttpCall#execute()}进行同步网络访问，(3.1.1)中调用的就是经过callAdapt之后的这个方法
