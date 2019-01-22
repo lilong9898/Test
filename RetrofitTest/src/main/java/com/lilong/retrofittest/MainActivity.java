@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapter;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import com.lilong.retrofittest.bytes.ByteDataRequest;
 import com.lilong.retrofittest.json.JSONDataRequest;
@@ -25,24 +26,41 @@ import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.CallAdapter;
 import retrofit2.Callback;
+import retrofit2.OkHttpCall;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.converter.scalars.ScalarsConverterFactory;
+import retrofit2.http.GET;
 
 /**
+ * Retrofit是对okhttp的扩展和封装，相对okhttp扩展了
+ * (1) 通过{@link Retrofit.Builder#baseUrl(String)}和{@link GET}等注解，实现了url的各部分拼接
+ * (2) 通过{@link Retrofit#create(Class)}内部生成的动态代理去生成并调用{@link OkHttpCall}，将okhttp的设置转换成了retrofit的设置
+ * (3) 通过{@link CallAdapter}使得用户可以将okhttp的标准api转换成其它工具类的api，并整合进其它工具类的功能，比如{@link RxJava2CallAdapter}使得rxjava2的api和功能整合进来
+ * (4) 通过{@link retrofit2.Converter}将网络访问返回的原始字节数据转换成用户指定的数据类型(字符串，ResponseBody，JSON实体等)
+ *
  * Retrofit用到了很多设计模式，其中三个关键步骤：
  * (1) 接口->代理：用户定义的网络访问接口通过{@link Retrofit#create(Class)}被转换成一个代理（代理模式）
  *
- * (2) 调用代理方法->return callAdapter.adapt(代理)：这个代理方法的调用，返回值取决于使用的{@link CallAdapter}
+ * (2) 调用代理方法->return callAdapter.adapt(代理)：这个代理方法的调用
+ *    执行过程中：创建{@link OkHttpCall}，用来调用okhttp执行网络请求，其中可以
+ *    (2.1.1){@link OkHttpCall#execute()}进行同步网络访问，(3.1.1)中调用的就是经过callAdapt之后的这个方法
+ *    (2.1.2){@link OkHttpCall#enqueue(Callback)}进行异步网络访问，(3.1.2)中调用的就是经过callAdapt之后的这个方法
+ *
+ *    返回值取决于使用的{@link CallAdapter}
+ *
  *    (2.1)如果使用默认的callAdapter，也就是{@link DefaultCallAdapterFactory}，则返回的是{@link ExecutorCallAdapterFactory.ExecutorCallbackCall}
  *    (2.2)如果使用非默认的callAdapter，比如{@link RxJava2CallAdapter}，则返回的是{@link Observable}
  *         其它的callAdapter可以将Call转换成其它类型T
  *
  * (3) 执行：
- *    (3.1)如果使用默认的callAdapter，则类型是{@link Call}，后面调用{@link Call#execute()}进行同步网路访问，或调用{@link Call#enqueue(Callback)}进行异步网络访问
+ *    (3.1)如果使用默认的callAdapter，则类型是{@link Call}，后面
+ *        (3.1.1) 调用{@link Call#execute()}进行同步网路访问
+ *        (3.1.2) 调用{@link Call#enqueue(Callback)}进行异步网络访问
  *    (3.2)如果使用非默认的callAdapter，则按类型T的具体后续操作进行，比如使用了{@link RxJava2CallAdapter}，则T是{@link Observable}，后面访问网络要通过{@link Observable#subscribe(Observer)}进行
  *
+ * 说明1:
  * {@link CallAdapter}的作用是将输入的{@link Call}转换成指定的其它类型T并输出
  * 在不同平台上，默认使用的CallAdapter不同：
  * 1. Android平台上，是{@link Platform.Android#defaultCallAdapterFactory(Executor)}返回的{@link ExecutorCallAdapterFactory}所生成的匿名内部类实例
@@ -51,6 +69,8 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
  * 2. Java平台上，是{@link Platform#defaultCallAdapterFactory(Executor)}返回的{@link DefaultCallAdapterFactory}所生成的匿名内部类实例
  *    其作用是将输入的Call原样返回
  *
+ * 说明2:
+ *    {@link OkHttpCall}就是retrofit调用okhttp的接口，retrofit和okhttp之间有许多名字相似的方法
  */
 public class MainActivity extends Activity {
 
@@ -116,6 +136,8 @@ public class MainActivity extends Activity {
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 Log.i(TAG, "onResponse");
                 ResponseBody body = response.body();
+                // 这个call对象就是调用enqueue的对象
+                Log.i(TAG, "call = " + call);
                 try {
                     // body只能消费一次，也就是其中的内容只能读取一次
                     // 所以body的bytes方法和string方法，后被调用者读到的内容是空的
