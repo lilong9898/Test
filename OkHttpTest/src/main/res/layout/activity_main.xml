@@ -26,6 +26,13 @@
             android:layout_height="wrap_content"
             android:text="异步访问"
             android:textSize="20sp"/>
+
+        <Button
+            android:id="@+id/btnRequestAsyncWithCache"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="异步访问（带缓存）"
+            android:textSize="20sp"/>
     </LinearLayout>
 
 </RelativeLayout>
