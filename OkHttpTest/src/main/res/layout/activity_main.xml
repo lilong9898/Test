@@ -33,6 +33,62 @@
             android:layout_height="wrap_content"
             android:text="异步访问（带缓存）"
             android:textSize="20sp"/>
+
+        <Button
+            android:id="@+id/btnTestInterceptor"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="拦截器测试"
+            android:textSize="20sp"/>
+
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:orientation="vertical">
+
+        <RadioGroup
+            android:id="@+id/rgInterceptorRegister"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <RadioButton
+                android:id="@+id/rbtnInterceptorApplication"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ApplicationInterceptor"
+                android:textSize="15sp"/>
+
+            <RadioButton
+                android:id="@+id/rbtnInterceptorNetwork"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="NetworkInterceptor"
+                android:textSize="15sp"/>
+        </RadioGroup>
+
+        <RadioGroup
+            android:id="@+id/rgInterceptorType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp">
+
+            <RadioButton
+                android:id="@+id/rbtnInterceptorTypeLoggin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Logging"
+                android:textSize="15sp"/>
+
+            <RadioButton
+                android:id="@+id/rbtnInterceptorTypeModify"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Modify Request"
+                android:textSize="15sp"/>
+        </RadioGroup>
+    </LinearLayout>
 </RelativeLayout>
