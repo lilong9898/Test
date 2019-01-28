@@ -9,10 +9,11 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.internal.http.HttpEngine;
 
 /**
  *
- * okhttp原理：
+ * okhttp原理（整体）：
  *
  * (1) okhttp的请求过程，就是{@link Interceptor.Chain#proceed(Request)}的过程
  *
@@ -54,10 +55,22 @@ import okhttp3.Response;
  * |
  * 触发{@link Callback}
  *
+ * (7) {@link RealCall#getResponse(Request, boolean)}内有while(true)循环，用来在
+ *    (7.1) 网络访问失败后重试，重试成功后跳出循环
+ *    (7.2) 重定向/身份验证的处理，处理完后跳出循环
+ *
+ * okhttp原理（网络访问部分）
+ * (1) {@link RealCall#getResponse(Request, boolean)}内通过{@link HttpEngine}来实际访问网络，一个{@link HttpEngine}对应一次请求/响应对
+ *
+ * (2) 注意所谓＂网络访问部分＂不一定真的有网络访问，有可能是
+ *    (2.1) 纯缓存 (cache-control表示仍然在缓存有效期内)
+ *    (2.2) 条件式网络访问(cache-control表示缓存无效了，但服务端通过last-modified或etag认为缓存还有效，返回304)
+ *    (2.3) 纯网络访问(cache-control, last-modified或etag都表示缓存无效了)
+ *
  * {@link Dispatcher}负责分发请求，其内部有三个{@link ArrayDeque}用来存储同步请求{@link RealCall}和异步请求{@link RealCall.AsyncCall}
  *
  * 使用OkHttp应注意的问题：
- * (1) 尽量共用一个OkHttpClient，是为了复用其拥有的缓存，线程池，连接池
+ * (1) 尽量共用一个OkHttpClient，是为了复用其拥有的缓存，线程池，连接池，对象池
  * */
 public class Doc {
 }
