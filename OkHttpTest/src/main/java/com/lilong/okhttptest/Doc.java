@@ -67,7 +67,9 @@ import okhttp3.internal.http.HttpEngine;
  *    (2.2) 条件式网络访问(cache-control表示缓存无效了，但服务端通过last-modified或etag认为缓存还有效，返回304)
  *    (2.3) 纯网络访问(cache-control, last-modified或etag都表示缓存无效了)
  *
- * {@link Dispatcher}负责分发请求，其内部有三个{@link ArrayDeque}用来存储同步请求{@link RealCall}和异步请求{@link RealCall.AsyncCall}
+ * {@link Dispatcher}负责分发请求，其内部有
+ * (1) 三个{@link ArrayDeque}用来存储同步请求{@link RealCall}和异步请求{@link RealCall.AsyncCall}
+ * (2)
  *
  * 使用OkHttp应注意的问题：
  * (1) 尽量共用一个OkHttpClient，是为了复用其拥有的缓存，线程池，连接池，对象池
