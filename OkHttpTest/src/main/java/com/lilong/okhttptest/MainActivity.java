@@ -10,7 +10,6 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.lilong.okhttptest.interceptor.LoggingInterceptor;
-import com.lilong.okhttptest.interceptor.ModifyRequestInterceptor;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,33 +32,29 @@ public class MainActivity extends Activity {
     private Button mBtnRequestAsyncWithCache;
     private Button mBtnTestInterceptor;
 
-    private RadioGroup mRgInterceptorRegister;
-    private RadioButton mRbtnInterceptorRegisterApplication;
-    private RadioButton mRbtnInterceptorRegisterNetwork;
-
-    private RadioGroup mRgInterceptorType;
-    private RadioButton mRbtnInterceptorTypeLogging;
-    private RadioButton mRbtnInterceptorTypeModify;
+    private RadioGroup mRgSyncOrAsync;
+    private RadioButton mRbtnSync;
+    private RadioButton mRbtnAsync;
 
     // 为了保持配置一致性，并共用应该共用的资源（每个OkHttpClient都有自己的缓存，线程池和连接池），相同配置的网络请求应共用同一个OkHttpClient
     private OkHttpClient simpleClient;
     private OkHttpClient clientWithCache;
 
-    enum InterceptorRegister {
+    enum SyncOrAsync {
         /**
-         * {@link OkHttpClient.Builder#addInterceptor(Interceptor)}方法添加interceptor
+         * {@link Call#execute()}方式进行的同步访问
          */
-        APPLICATION,
+        SYNC,
         /**
-         * {@link OkHttpClient.Builder#addNetworkInterceptor(Interceptor)}方法添加interceptor
+         * {@link Call#enqueue(Callback)}方式进行的异步访问
          */
-        NETWORK
+        ASYNC
     }
 
     /**
-     * 用哪种方法添加的interceptor
+     * 同步还是异步访问
      */
-    private InterceptorRegister interceptorRegister;
+    private SyncOrAsync syncOrAsync;
 
     /**
      * 具体哪种interceptor
@@ -111,79 +106,29 @@ public class MainActivity extends Activity {
         mBtnTestInterceptor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                switch (interceptorRegister) {
-                    case APPLICATION:
-                        Interceptor interceptor = null;
-                        try {
-                            interceptor = interceptorClass.newInstance();
-                        } catch (Exception e) {
-                        }
-                        if (interceptorClass == LoggingInterceptor.class) {
-                            testApplicationInterceptor(interceptor);
-                        } else {
-                            testApplicationInterceptor(interceptor, new LoggingInterceptor());
-                        }
-                        break;
-                    case NETWORK:
-                        interceptor = null;
-                        try {
-                            interceptor = interceptorClass.newInstance();
-                        } catch (Exception e) {
-                        }
-                        if (interceptorClass == LoggingInterceptor.class) {
-                            testApplicationInterceptor(interceptor);
-                        } else {
-                            testApplicationInterceptor(interceptor, new LoggingInterceptor());
-                        }
-                        testNetworkInterceptor(interceptor);
-                        break;
-                }
+                testInterceptors(new Interceptor[]{new LoggingInterceptor("1"), new LoggingInterceptor("2")}, new Interceptor[]{new LoggingInterceptor("3"), new LoggingInterceptor("4")});
             }
         });
 
-        mRgInterceptorRegister = findViewById(R.id.rgInterceptorRegister);
-        mRbtnInterceptorRegisterApplication = findViewById(R.id.rbtnInterceptorApplication);
-        mRbtnInterceptorRegisterNetwork = findViewById(R.id.rbtnInterceptorNetwork);
-
-        mRgInterceptorType = findViewById(R.id.rgInterceptorType);
-        mRbtnInterceptorTypeLogging = findViewById(R.id.rbtnInterceptorTypeLoggin);
-        mRbtnInterceptorTypeModify = findViewById(R.id.rbtnInterceptorTypeModify);
-
-        mRgInterceptorRegister.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        mRgSyncOrAsync = findViewById(R.id.rgSyncOrAsync);
+        mRbtnSync = findViewById(R.id.rbtnSync);
+        mRbtnAsync = findViewById(R.id.rbtnAsync);
+        mRgSyncOrAsync.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId) {
-                    case R.id.rbtnInterceptorApplication:
-                        interceptorRegister = InterceptorRegister.APPLICATION;
+                    case R.id.rbtnSync:
+                        syncOrAsync = SyncOrAsync.SYNC;
                         break;
-                    case R.id.rbtnInterceptorNetwork:
-                        interceptorRegister = InterceptorRegister.NETWORK;
-                        break;
-                    default:
-                        break;
-                }
-            }
-        });
-
-        mRgInterceptorType.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-                switch (checkedId) {
-                    case R.id.rbtnInterceptorTypeLoggin:
-                        interceptorClass = LoggingInterceptor.class;
-                        break;
-                    case R.id.rbtnInterceptorTypeModify:
-                        interceptorClass = ModifyRequestInterceptor.class;
-                        break;
-                    default:
+                    case R.id.rbtnAsync:
+                        syncOrAsync = SyncOrAsync.ASYNC;
                         break;
                 }
             }
         });
 
         // 初始化
-        mRbtnInterceptorRegisterApplication.setChecked(true);
-        mRbtnInterceptorTypeLogging.setChecked(true);
+        mRbtnAsync.setChecked(true);
     }
 
     /**
@@ -288,68 +233,52 @@ public class MainActivity extends Activity {
     /**
      * {@link OkHttpClient.Builder#addInterceptor(Interceptor)}
      * {@link OkHttpClient.Builder#addNetworkInterceptor(Interceptor)}
-     * 两种拦截器的效果不同
-     * <p>
-     * 前者观察的是整个网络请求流程，从建立连接之前到返回数据之后
-     * (1)无法操作中间的响应结果，比如当URL重定向发生以及请求重试等，只能操作客户端主动第一次请求以及最终的响应结果
-     * (2)在任何情况下只会调用一次，即使这个响应来自于缓存
-     * (3)可以监听观察这个请求的最原始未经改变的意图（请求头，请求体等），无法操作OkHttp为我们自动添加的额外的请求头，比如If-None-Match
-     * (4)允许short-circuit (短路)并且允许不去调用Chain.proceed()。（编者注：这句话的意思是Chain.proceed()不需要一定要调用去服务器请求，但是必须还是需要返回Response实例。那么实例从哪里来？答案是缓存。如果本地有缓存，可以从本地缓存中获取响应实例返回给客户端。这就是short-circuit (短路)的意思。。囧）
-     * (5)允许请求失败重试以及多次调用Chain.proceed()。
-     * <p>
-     * 后者观察的是整个网络请求流程中的每一次访问，如果有重定向，则会有多次访问，导致有多次拦截
-     * (1)允许操作中间响应，比如当请求操作发生重定向或者重试等。
-     * (2)不允许调用缓存来short-circuit (短路)这个请求。（编者注：意思就是说不能从缓存池中获取缓存对象返回给客户端，必须通过请求服务的方式获取响应，也就是Chain.proceed()）
-     * (3)可以监听数据的传输
-     * (4)允许Connection对象装载这个请求对象。（编者注：Connection是通过Chain.proceed()获取的非空对象）
-     * <p>
+     * 两种拦截器在整个{@link Interceptor.Chain}加入的位置不同，见{@link Doc}
      * 多个Interceptor按照加入的顺序被调用
      */
-    private void testApplicationInterceptor(Interceptor... interceptors) {
+    private void testInterceptors(Interceptor[] applicationInterceptors, Interceptor[] networkInterceptors) {
         String URL = "http://japi.juhe.cn/qqevaluate/qq?key=96efc220a4196fafdfade0c9d1e897ac&qq=295424589";
         Request request = new Request.Builder()
                 .url(URL)
                 .build();
         OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        for (Interceptor interceptor : interceptors) {
-            builder.addInterceptor(interceptor);
+        if (applicationInterceptors != null) {
+            for (Interceptor interceptor : applicationInterceptors) {
+                builder.addInterceptor(interceptor);
+            }
+        }
+        if (networkInterceptors != null) {
+            for (Interceptor interceptor : networkInterceptors) {
+                builder.addNetworkInterceptor(interceptor);
+            }
         }
         OkHttpClient client = builder.build();
-        Call call = client.newCall(request);
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.i(TAG, "onFailure");
-            }
+        final Call call = client.newCall(request);
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                Log.i(TAG, "onResponse");
-            }
-        });
-    }
+        if (syncOrAsync == SyncOrAsync.SYNC) {
+            new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        call.execute();
+                    } catch (Exception e) {
+                    }
+                }
+            }.start();
+        } else if (syncOrAsync == SyncOrAsync.ASYNC) {
+            call.enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    Log.i(TAG, "onFailure");
+                }
 
-    private void testNetworkInterceptor(Interceptor... interceptors) {
-        String URL = "http://japi.juhe.cn/qqevaluate/qq?key=96efc220a4196fafdfade0c9d1e897ac&qq=295424589";
-        Request request = new Request.Builder()
-                .url(URL)
-                .build();
-        OkHttpClient.Builder builder = new OkHttpClient.Builder();
-        for (Interceptor interceptor : interceptors) {
-            builder.addNetworkInterceptor(interceptor);
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    Log.i(TAG, "onResponse");
+                }
+            });
         }
-        OkHttpClient client = builder.build();
-        Call call = client.newCall(request);
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                Log.i(TAG, "onFailure");
-            }
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                Log.i(TAG, "onResponse");
-            }
-        });
     }
+
 }

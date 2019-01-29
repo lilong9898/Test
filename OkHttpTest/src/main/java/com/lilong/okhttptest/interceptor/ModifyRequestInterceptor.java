@@ -19,12 +19,12 @@ public class ModifyRequestInterceptor implements Interceptor {
         Log.i(TAG, "ModifyRequestInterceptor : intercept starts");
         Request request = chain.request();
         Log.i(TAG, "ModifyRequestInterceptor : modifies request header");
-        Request modifiedRequest = request.newBuilder().header("additional request header", "value").build();
+        Request modifiedRequest = request.newBuilder().header("additional_request_header", "value").build();
         Response modifiedResponse = null;
         try {
             Response response = chain.proceed(modifiedRequest);
             Log.i(TAG, "ModifyRequestInterceptor : modifies response header");
-            modifiedResponse = response.newBuilder().header("additional response header", "value").build();
+            modifiedResponse = response.newBuilder().header("additional_response_header", "value").build();
         } catch (Exception e) {
             e.printStackTrace();
         }

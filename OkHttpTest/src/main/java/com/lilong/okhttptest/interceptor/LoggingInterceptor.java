@@ -6,7 +6,6 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.internal.http.HttpEngine;
 
 import static com.lilong.okhttptest.MainActivity.TAG;
 
@@ -21,21 +20,26 @@ import static com.lilong.okhttptest.MainActivity.TAG;
  * */
 public class LoggingInterceptor implements Interceptor {
 
+    private String name;
+
+    public LoggingInterceptor(String name){
+        this.name = name;
+    }
+
     @Override
     public Response intercept(Chain chain) {
-        Log.i(TAG, "LoggingInterceptor : intercept start");
+        Log.i(TAG, "LoggingInterceptor " + name + ": intercept start, current thread = " + Thread.currentThread().getName());
 
         Request request = chain.request();
-        Log.i(TAG, "url = " + request.url());
-        Log.i(TAG, "request headers = " + request.headers());
         Response response = null;
         try {
+            Log.i(TAG, "LoggingInterceptor " + name + ": proceed");
             response = chain.proceed(request);
         } catch (Exception e) {
+            e.printStackTrace();
         }
 
-        Log.i(TAG, "response headers = " + response.headers());
-        Log.i(TAG, "LoggingInterceptor : intercept finishes");
+        Log.i(TAG, "LoggingInterceptor " + name + ": intercept finishes");
         return response;
     }
 
