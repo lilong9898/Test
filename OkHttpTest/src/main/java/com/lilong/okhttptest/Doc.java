@@ -1,11 +1,13 @@
 package com.lilong.okhttptest;
 
+import java.net.HttpURLConnection;
 import java.net.Socket;
 import java.util.ArrayDeque;
 import java.util.concurrent.Executors;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.ConnectionPool;
 import okhttp3.Dispatcher;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
@@ -13,6 +15,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.internal.cache.CacheInterceptor;
 import okhttp3.internal.connection.ConnectInterceptor;
+import okhttp3.internal.connection.RealConnection;
 import okhttp3.internal.http.BridgeInterceptor;
 import okhttp3.internal.http.CallServerInterceptor;
 import okhttp3.internal.http.HttpCodec;
@@ -74,15 +77,22 @@ import okio.BufferedSource;
  * 触发{@link Callback}
  *
  * okhttp原理（网络访问部分）
- * (1) 通过{@link CallServerInterceptor}来实际访问网络
+ * (1) 访问网络的大体流程：通过{@link CallServerInterceptor}来实际访问网络
  *    (1.1) 内部通过读写{@link HttpCodec}来发出请求和获取响应
  *    (1.2) {@link HttpCodec}内部有{@link BufferedSink}和{@link BufferedSource}实际用来写入请求和读出响应
  *    (1.3) {@link BufferedSink}和{@link BufferedSource}可以读写他们包裹的{@link Socket}
  *
- * (2) okhttp所采用的缓存策略对应于http协议中规定的缓存策略，分为三级
+ * (2) 缓存：okhttp所采用的缓存策略对应于http协议中规定的缓存策略，分为三级
  *    (2.1) 纯缓存 (cache-control表示仍然在缓存有效期内)
  *    (2.2) 条件式网络访问(cache-control表示缓存无效了，但服务端通过last-modified或etag认为缓存还有效，返回304)
  *    (2.3) 纯网络访问(cache-control, last-modified或etag都表示缓存无效了)
+ *    这些策略具体由内置的{@link CacheInterceptor}执行
+ *
+ * (3) 连接与连接池：
+ *    (3.1) {@link HttpURLConnection}是个抽象类，具体对{@link Socket}的操作在它的实现类里
+ *    (3.2) okhttp不用{@link HttpURLConnection}，而是直接操作{@link Socket}
+ *    (3.3) {@link RealConnection}与{@link Socket}一一对应，并与这个包裹这个{@link Socket}的{@link BufferedSource}和{@link BufferedSink}一一对应
+ *    (3.4) {@link ConnectionPool}是连接池，它用{@link java.util.Deque}来存储{@link RealConnection}
  *
  * {@link Dispatcher}负责分发请求，其内部有
  * (1) 三个{@link ArrayDeque}用来存储同步请求{@link RealCall}和异步请求{@link RealCall.AsyncCall}
