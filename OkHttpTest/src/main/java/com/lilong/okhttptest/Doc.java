@@ -103,7 +103,7 @@ import okio.BufferedSource;
  *    (1.1) 内部通过读写器{@link HttpCodec}来发出请求和获取响应
  *    (1.2) {@link HttpCodec}内部有{@link BufferedSink}和{@link BufferedSource}
  *    (1.3) {@link BufferedSink}和{@link BufferedSource}有包裹的{@link Socket}
- *    (1.4) 最终操作的是底层的{@link Socket}，不使用高层工具{@link HttpURLConnection}（虽然它操作的也是{@link Socket}）
+ *    (1.4) 最终操作的是底层的{@link Socket}，不使用高层工具{@link HttpURLConnection}（虽然它底层操作的也是{@link Socket}）
  *
  * (2) 缓存（高层）：{@link Cache}
  *    okhttp所采用的缓存策略对应于http协议中规定的缓存策略，分为三级
