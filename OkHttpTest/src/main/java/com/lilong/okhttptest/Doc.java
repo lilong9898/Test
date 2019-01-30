@@ -2,7 +2,9 @@ package com.lilong.okhttptest;
 
 import java.net.HttpURLConnection;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.concurrent.Executors;
 
 import okhttp3.Call;
@@ -48,9 +50,9 @@ import okio.BufferedSource;
  * |
  * 用户添加的application interceptor[1...N]_chain#proceed之前的代码
  * |
- * 内置的{@link RetryAndFollowUpInterceptor}_chain#proceed之前的代码
+ * 内置的{@link RetryAndFollowUpInterceptor}_chain#proceed之前的代码[本拦截器用于重试/重定向]
  * |
- * 内置的{@link BridgeInterceptor})_chain#proceed之前的代码
+ * 内置的{@link BridgeInterceptor})_chain#proceed之前的代码[本拦截器用于将用户]
  * |
  * 内置的{@link CacheInterceptor}_chain#proceed之前的代码
  * |
@@ -90,9 +92,11 @@ import okio.BufferedSource;
  *
  * (3) 连接与连接池：
  *    (3.1) {@link HttpURLConnection}是个抽象类，具体对{@link Socket}的操作在它的实现类里
- *    (3.2) okhttp不用{@link HttpURLConnection}，而是直接操作{@link Socket}
+ *    (3.2) okhttp不用{@link HttpURLConnection}，而是直接操作{@link Socket}，这一点与前者不同
  *    (3.3) {@link RealConnection}与{@link Socket}一一对应，并与这个包裹这个{@link Socket}的{@link BufferedSource}和{@link BufferedSink}一一对应
- *    (3.4) {@link ConnectionPool}是连接池，它用{@link java.util.Deque}来存储{@link RealConnection}
+ *    (3.4) {@link ConnectionPool}是连接池，它用{@link Deque}来存储{@link RealConnection}
+ *    (3.5) 上述连接池中有专门线程用来清理无用的连接
+ *    (3.5) 连接的复用本质上是{@link Socket}的复用，通过调用{@link Socket#connect(SocketAddress)}将同一个{@link Socket}连接到不同的地址来实现
  *
  * {@link Dispatcher}负责分发请求，其内部有
  * (1) 三个{@link ArrayDeque}用来存储同步请求{@link RealCall}和异步请求{@link RealCall.AsyncCall}
