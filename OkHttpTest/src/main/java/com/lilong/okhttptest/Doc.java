@@ -128,12 +128,12 @@ import okio.Timeout;
  *    (3.1) 实现跟标准的libcore.io.DiskLruCache一样，通过journal文件记录操作历史
  *
  * (4) 连接与连接池：{@link RealConnection}与{@link ConnectionPool}
- *    (3.1) {@link HttpURLConnection}是个抽象类，具体对{@link Socket}的操作在它的实现类里
- *    (3.2) okhttp不用{@link HttpURLConnection}，而是直接操作{@link Socket}，这一点与前者不同
- *    (3.3) {@link RealConnection}与{@link Socket}一一对应，并与这个包裹这个{@link Socket}的{@link BufferedSource}和{@link BufferedSink}一一对应
- *    (3.4) {@link ConnectionPool}是连接池，它用{@link Deque}来存储{@link RealConnection}
- *    (3.5) 上述连接池中有专门线程用来清理无用的连接
- *    (3.5) 连接的复用本质上是相同地址的{@link Socket}的复用(不同地址的无法复用，因为{@link Socket#connect(SocketAddress)}不能重复调用)
+ *    (4.1) {@link HttpURLConnection}是个抽象类，具体对{@link Socket}的操作在它的实现类里
+ *    (4.2) okhttp不用{@link HttpURLConnection}，而是直接操作{@link Socket}，这一点与前者不同
+ *    (4.3) {@link RealConnection}与{@link Socket}一一对应，并与这个包裹这个{@link Socket}的{@link BufferedSource}和{@link BufferedSink}一一对应
+ *    (4.4) {@link ConnectionPool}是连接池，它用{@link Deque}来存储{@link RealConnection}
+ *    (4.5) 上述连接池中有专门线程用来清理无用的连接
+ *    (4.5) 连接的复用本质上是相同地址的{@link Socket}的复用(不同地址的无法复用，因为{@link Socket#connect(SocketAddress)}不能重复调用)
  *
  * (5) 请求向不同线程的分发：{@link Dispatcher}
  *    (5.1) 内有三个{@link ArrayDeque}用来存储同步请求{@link RealCall}和异步请求{@link RealCall.AsyncCall}
@@ -151,7 +151,7 @@ import okio.Timeout;
  *    (7.1) 概念：接口{@link Source}和{@link Sink}代表字节流的提供者和消费者，功能上等同{@link InputStream}和{@link OutputStream}，而且功能更强一些
  *    (7.2) 概念：接口{@link BufferedSource}和{@link BufferedSink}继承了{@link Source}和{@link Sink}，代表有缓冲能力的字节流提供者和消费者
  *    (7.3) 概念：类{@link RealBufferedSource}和{@link RealBufferedSink}实现了{@link BufferedSource}和{@link BufferedSource}，缓冲能力由其内部的{@link Buffer}提供
- *    (7.4) 概念：类{@link Buffer}实现了{@link BufferedSource}和{@link BufferedSink}，代表缓冲区
+ *    (7.4) 概念：类{@link Buffer}实现了{@link BufferedSource}和{@link BufferedSink}，代表可读可写的两用缓冲区
  *          (7.4.1) 有多个字节数组（实际上是{@link Segment}）连接成的圆形链表，用作缓冲区
  *          (7.4.2) 有多个字节数组（实际上是{@link Segment}）连接成的单向链表，用作给缓冲区提供新元素的字节数组池
  *          (7.4.3) 复用字节数组：拷贝数据时不实际拷贝，只改变字节数组的归属，以加快速度
