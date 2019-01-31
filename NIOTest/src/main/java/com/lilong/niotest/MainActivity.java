@@ -21,13 +21,20 @@ import java.nio.channels.SocketChannel;
 
 /**
  * IO的特点：
- * (1) 依靠{@link InputStream}和{@link OutputStream}
- * (2) 不包含任何内置的缓冲区，所以读写是阻塞的
+ * (1) 依靠{@link InputStream}和{@link OutputStream}，处理的对象是流
+ * (2) 优点：针对流的处理较简单
+ * (3) 缺点：不包含内置的缓冲区，也不要求使用外接缓冲区，所以读写是阻塞的
+ *
+ * NIO名字解释有两种：
+ * (1) New IO
+ * (2) Non-blocking IO
  *
  * NIO的特点：
- * (1) 依靠{@link Channel}, {@link Buffer}和{@link Selector}
- * (2) 包含内置的缓冲区({@link Buffer})，所以读写是非阻塞的
- * (3) 由于这种非阻塞的能力，可以在一个线程中处理多路NIO(通过{@link Selector})
+ * (1) 依靠{@link Channel}, {@link Buffer}和{@link Selector}，处理的对象是块
+ * (2) 不包含内置的缓冲区，但{@link Channel}的读写API强制要求用户提供({@link Buffer})作为外接缓冲区
+ * (3) 优点：由于第(2)条的特点，读写是非阻塞的
+ * (4) 优点：由于这种非阻塞的能力，可以在一个线程中处理多路NIO(通过{@link Selector})
+ * (5) 缺点：针对块的处理较复杂
  *
  * NIO的关键类：
  * (1) 接口{@link Channel}：
@@ -43,15 +50,24 @@ import java.nio.channels.SocketChannel;
  * (3) 抽象类{@link Buffer}：
  *    (3.1) 代表一个用来存储原始类型(7种，boolean除外)数据的容器
  *    (3.2) 线性的存储许多元素
- *    (3.3) 容量有限且固定
- *    (3.4) 内部有两个游标：position表示下一个要被读写的元素的位置，limit表示从这个位置开始，往后的元素都不能读写
- *    (3.5) 这两个游标的出现是为了实现非阻塞读写能力，作用是标记当前读写进度，具体就是表示当前可读可写的范围是[position, limit]
+ *    (3.3) 容量(capacity)有限且固定
+ *    (3.4) 内部有三个游标：
+ *          position表示下一个要被读写的元素的位置
+ *          limit表示从这个位置开始，往后的元素都不能读写
+ *          mark是position前一个位置
+ *    (3.5) 初始状态的缓存区中，游标符合关系：mark=-1, position=0, limit=capacity
+ *    (3.5) 运行时的缓存区中，游标符合关系：0<=mark<=position<=limit<=capacity
+ *    (3.6) 这两个游标的出现是为了
+ *         (3.6.1) 表示当前可读可写的范围是[position, limit]
+ *         (3.6.2) 这样可以在不改变实际数据的情况下，通过修改游标位置，改变缓存区的状态，最大程度复用缓存区并减少内存读写
  * (4) 抽象类{@link Buffer}的实现类：
  *    (4.1) 每种原始类型(boolean除外)都有对应的实现类
- *    (4.2) 比如{@link IntBuffer}，{@link ByteBuffer}等
+ *    (4.2) 比如{@link IntBuffer}，{@link ByteBuffer}等，而他们的实现类是{@link HeapIntBuffer}{@link HeapByteBuffer}等
+ *    (4.3) 实际存储区域是这些类中的基本类型数组
  * (5) 抽象类{@link Selector}：
  *    (5.1) 在多个{@link SelectableChannel}中进行选择（选1或多个）的选择器
- *
+ * (6) 抽象类{@link Selector}的实现类：
+ *    (6.1) sdk中没有，估计是隐藏的
  * */
 public class MainActivity extends Activity {
 
