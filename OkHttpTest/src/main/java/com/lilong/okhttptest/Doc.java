@@ -1,5 +1,7 @@
 package com.lilong.okhttptest;
 
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.Socket;
 import java.net.SocketAddress;
@@ -28,8 +30,17 @@ import okhttp3.internal.http.BridgeInterceptor;
 import okhttp3.internal.http.CallServerInterceptor;
 import okhttp3.internal.http.HttpCodec;
 import okhttp3.internal.http.RetryAndFollowUpInterceptor;
+import okio.AsyncTimeout;
+import okio.Buffer;
 import okio.BufferedSink;
 import okio.BufferedSource;
+import okio.Okio;
+import okio.RealBufferedSink;
+import okio.RealBufferedSource;
+import okio.Segment;
+import okio.Sink;
+import okio.Source;
+import okio.Timeout;
 
 /**
  *
@@ -135,6 +146,27 @@ import okio.BufferedSource;
  *    (6.4) 本类是为了满足Call的要求，将一个或多个Stream分配给一个或多个Connection的工具
  *    (6.5) Stream分配给Connection的过程中，[可能]需要从连接池中获取连接来复用
  *    (6.5) {@link Call}，{@link Interceptor.Chain}和{@link StreamAllocation}有一一对应的关系
+ *
+ * (7) Socket读写缓冲区：{@link BufferedSource}和{@link BufferedSink}
+ *    (7.1) 概念：接口{@link Source}和{@link Sink}代表字节流的提供者和消费者，功能上等同{@link InputStream}和{@link OutputStream}，而且功能更强一些
+ *    (7.2) 概念：接口{@link BufferedSource}和{@link BufferedSink}继承了{@link Source}和{@link Sink}，代表有缓冲能力的字节流提供者和消费者
+ *    (7.3) 概念：类{@link RealBufferedSource}和{@link RealBufferedSink}实现了{@link BufferedSource}和{@link BufferedSource}，缓冲能力由其内部的{@link Buffer}提供
+ *    (7.4) 概念：类{@link Buffer}实现了{@link BufferedSource}和{@link BufferedSink}，代表缓冲区
+ *          (7.4.1) 有多个字节数组（实际上是{@link Segment}）连接成的圆形链表，用作缓冲区
+ *          (7.4.2) 有多个字节数组（实际上是{@link Segment}）连接成的单向链表，用作给缓冲区提供新元素的字节数组池
+ *          (7.4.3) 复用字节数组：拷贝数据时不实际拷贝，只改变字节数组的归属，以加快速度
+ *          (7.4.4) 复用字节数组：减少内存抖动，减少gc
+ *    (7.5) 概念：类{@link Segment}代表{@link Buffer}字节数组池中的一个字节数组
+ *          (7.5.1) 内部有一个8K大小的字节数组，数组内部读写位置index，以及指向前一个和后一个{@link Segment}的引用
+ *          (7.5.2)
+ *    (7.6) 概念：类{@link Timeout}代表一种超时监视器，如果某个它监视的任务超时了，则抛出异常
+ *    (7.7) 概念：类{@link AsyncTimeout}继承了{@link Timeout}，用内置的守护线程执行超时监视任务
+ *    (7.8) 转换：{@link Okio#source(Socket)}:{@link Socket}的输入流转换成{@link Source}
+ *          转换：{@link Okio#sink(Socket)}:{@link Socket}的输出流转换成{@link Sink}
+ *    (7.9) 转换：{@link Okio#buffer(Source)}:将{@link Source}转换成{@link BufferedSource}
+ *          转换：{@link Okio#buffer(Sink)}:将{@link Sink}转换成{@link BufferedSink}
+ *    (7.10)完整过程：{@link RealConnection#connectSocket(int, int, Call, EventListener)}通过上述过程将{@link Socket}的输入输出流转换成{@link BufferedSource}和{@link BufferedSink}
+ *
  *
  * 使用OkHttp应注意的问题：
  * (1) 尽量共用一个OkHttpClient，是为了复用其拥有的缓存，线程池，连接池，对象池
