@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 import okhttp3.Cache;
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.Connection;
 import okhttp3.ConnectionPool;
 import okhttp3.Dispatcher;
 import okhttp3.EventListener;
@@ -113,8 +114,9 @@ import okio.BufferedSource;
  *    这些策略具体由内置的{@link CacheInterceptor}执行
  *
  * (3) 缓存（底层）：{@link DiskLruCache}
+ *    (3.1) 实现跟标准的libcore.io.DiskLruCache一样，通过journal文件记录操作历史
  *
- * (4) 连接与连接池：
+ * (4) 连接与连接池：{@link RealConnection}与{@link ConnectionPool}
  *    (3.1) {@link HttpURLConnection}是个抽象类，具体对{@link Socket}的操作在它的实现类里
  *    (3.2) okhttp不用{@link HttpURLConnection}，而是直接操作{@link Socket}，这一点与前者不同
  *    (3.3) {@link RealConnection}与{@link Socket}一一对应，并与这个包裹这个{@link Socket}的{@link BufferedSource}和{@link BufferedSink}一一对应
@@ -122,12 +124,18 @@ import okio.BufferedSource;
  *    (3.5) 上述连接池中有专门线程用来清理无用的连接
  *    (3.5) 连接的复用本质上是相同地址的{@link Socket}的复用(不同地址的无法复用，因为{@link Socket#connect(SocketAddress)}不能重复调用)
  *
- * (5) 请求向不同线程的分发：
- * {@link Dispatcher}负责分发请求，其内部有
- * (1) 三个{@link ArrayDeque}用来存储同步请求{@link RealCall}和异步请求{@link RealCall.AsyncCall}
- * (2) 一个{@link Executors#newCachedThreadPool()}类型的线程池
+ * (5) 请求向不同线程的分发：{@link Dispatcher}
+ *    (5.1) 内有三个{@link ArrayDeque}用来存储同步请求{@link RealCall}和异步请求{@link RealCall.AsyncCall}
+ *    (5.2) 内有一个{@link Executors#newCachedThreadPool()}类型的线程池
  *
- * (5) 请求向物理信道的分发：
+ * (6) 请求向物理信道的分发：{@link StreamAllocation}
+ *    (6.1) 概念：Connection：物理连接，代表并一一对应底层的{@link Socket}，代码对应为{@link Connection}
+ *    (6.2) 概念：Stream：一个请求/响应对
+ *    (6.3) 概念：Call：一次用户眼中的网络请求涉及的n个请求/响应对（如果有重试/重定向的情况，n>1，否则n=1），代码对应为{@link Call}
+ *    (6.4) 本类是为了满足Call的要求，将一个或多个Stream分配给一个或多个Connection的工具
+ *    (6.5) Stream分配给Connection的过程中，[可能]需要从连接池中获取连接来复用
+ *    (6.5) {@link Call}，{@link Interceptor.Chain}和{@link StreamAllocation}有一一对应的关系
+ *
  * 使用OkHttp应注意的问题：
  * (1) 尽量共用一个OkHttpClient，是为了复用其拥有的缓存，线程池，连接池，对象池
  * */
