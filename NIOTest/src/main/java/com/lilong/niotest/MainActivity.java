@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.Buffer;
@@ -42,10 +43,10 @@ import java.nio.channels.SocketChannel;
  *    (1.2) 一旦关闭后就不可用了
  *    (1.3) 是线程安全的
  * (2) 接口{@link Channel}的实现类：
- *    (2.1) 类{@link FileChannel}：读写文件
- *    (2.2) 类{@link DatagramChannel}：通过UDP协议读写
- *    (2.3) 类{@link SocketChannel}：客户端通过TCP协议读写
- *    (2.4) 类{@link ServerSocketChannel}：服务端监听TCP传输时的读写
+ *    (2.1) 抽象类{@link FileChannel}，实现类{@link FileChannelImpl}：读写文件
+ *    (2.2) 类{@link DatagramChannel}，实现类{@link DatagramChannelImpl}：通过UDP协议进行网络通信
+ *    (2.3) 类{@link SocketChannel}，实现类{@link SocketChannelImpl}：客户端通过TCP协议进行网络通信
+ *    (2.4) 类{@link ServerSocketChannel}，实现类{@link ServerSocketChannelImpl}：服务端监听TCP传输时的读写
  *    (2.5) (2.2)/(2.3)/(2.4)这三个都继承了{@link SelectableChannel}，可注册给{@link Selector}让它来调度读写
  * (3) 抽象类{@link Buffer}：
  *    (3.1) 代表一个用来存储原始类型(7种，boolean除外)数据的容器
@@ -68,6 +69,12 @@ import java.nio.channels.SocketChannel;
  *    (5.1) 在多个{@link SelectableChannel}中进行选择（选1或多个）的选择器
  * (6) 抽象类{@link Selector}的实现类：
  *    (6.1) sdk中没有，估计是隐藏的
+ *
+ * NIO读写动作的底层实现：
+ * (1) {@link Channel}的底层读写动作是通过{@link NativeDispatcher}的native方法实现的，是通过操作文件描述符
+ * (2) 作为对比，像{@link InputStream}这种的底层动作是通过其它方法操作文件描述符
+ * (3) 读写相同的文件，IO和NIO操作的文件描述符是一样的，只是方法不同
+ * (4) 所以可以用{@link FileInputStream#getChannel()}这种方法从流中获取{@link Channel}
  * */
 public class MainActivity extends Activity {
 
