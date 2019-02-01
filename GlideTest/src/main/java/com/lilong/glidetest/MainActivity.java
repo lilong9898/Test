@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.GlideBuilder;
+import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.manager.LifecycleListener;
 import com.bumptech.glide.manager.RequestManagerFragment;
 import com.bumptech.glide.manager.RequestManagerRetriever;
@@ -26,8 +27,8 @@ import com.bumptech.glide.manager.SupportRequestManagerFragment;
 /**
  * 关键类：
  * {@link Glide}
- * (1) 单例，通过{@link Glide#initializeGlide(Context, GlideBuilder)}进行初始化
- * (2) 是Glide图片库各种组件和api的入口
+ * (1) 是Glide图片库各种组件和api的入口
+ * (2) 单例，通过{@link Glide#initializeGlide(Context, GlideBuilder)}进行初始化
  * (3) Glide通过传入的context的生命周期变化，可以随之启动或停止图片请求：
  *     (3.1) {@link Glide#with(Context)}
  *     (3.2) {@link Glide#with(Activity)}
@@ -64,7 +65,11 @@ import com.bumptech.glide.manager.SupportRequestManagerFragment;
  * {@link RequestManagerRetriever}
  * (1) 工具类
  * (2) 给某个{@link Context}{@link Activity}{@link FragmentActivity}{@link Fragment}{@link View}加入{@link RequestManagerFragment}或{@link SupportRequestManagerFragment}
- * (3)
+ * (3) 在(2)的过程中创建{@link RequestManager}并将之与{@link RequestManagerFragment}或{@link SupportRequestManagerFragment}关联起来
+ * (4) 如果(2)过程已完成，能反向找出设置过的{@link RequestManager}
+ *
+ * {@link RequestManager}
+ * (1)
  * */
 public class MainActivity extends Activity {
 
