@@ -18,10 +18,10 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.GlideBuilder;
-import com.bumptech.glide.manager.ActivityFragmentLifecycle;
 import com.bumptech.glide.manager.LifecycleListener;
 import com.bumptech.glide.manager.RequestManagerFragment;
 import com.bumptech.glide.manager.RequestManagerRetriever;
+import com.bumptech.glide.manager.SupportRequestManagerFragment;
 
 /**
  * 关键类：
@@ -44,9 +44,27 @@ import com.bumptech.glide.manager.RequestManagerRetriever;
  *     (4.2) {@link Glide#with(Activity)}：
  *　　　　　　 调到{@link RequestManagerRetriever#get(Activity)}方法，其中：
  *           (4.2.1) 如果当前在非UI线程，后续按(4.1.1)处理
- *           (4.2.2) 如果当前在UI线程，则向该{@link Activity}加入一个{@link RequestManagerFragment}
+ *           (4.2.2) 如果当前在UI线程，则向该{@link Activity}加入一个无UI的{@link RequestManagerFragment}
  *                   它在自己的生命周期里通过{@link ActivityFragmentLifecycle}触发{@link LifecycleListener}
- *     (4.3) 
+ *     (4.3) {@link Glide#with(FragmentActivity)}：
+ *           调到{@link RequestManagerRetriever#get(FragmentActivity)}方法，其中：
+ *           (4.3.1) 如果当前在非UI线程，后续按(4.1.1)处理
+ *           (4.3.2) 如果当前在UI线程，则向该{@link FragmentActivity}加入一个无UI的{@link SupportRequestManagerFragment}
+ *                   它在自己的生命周期里通过{@link ActivityFragmentLifecycle}触发{@link LifecycleListener}
+ *     (4.4) {@link Glide#with(Fragment)}：
+ *           调到{@link RequestManagerRetriever#get(Fragment)}方法，其中：
+ *           (4.4.1) 如果当前在非UI线程，后续按(4.1.1)处理
+ *           (4.4.2) 如果当前在UI线程，则向该{@link Fragment}加入一个无UI的{@link SupportRequestManagerFragment}作为Child Fragment
+ *                   它在自己的生命周期里通过{@link ActivityFragmentLifecycle}触发{@link LifecycleListener}
+ *     (4.5) {@link Glide#with(View)}：
+ *     　　　　找到它所属的{@link Context}，对应到(4.1)-(4.4)的情况来处理
+ * (5) {@link RequestManagerFragment}或{@link SupportRequestManagerFragment}不会被重复添加到同一个{@link Context}中
+ *     因为会通过识别具有{@link RequestManagerRetriever#FRAGMENT_TAG}的{@link RequestManagerFragment}或{@link SupportRequestManagerFragment}来得知是否添加过
+ *
+ * {@link RequestManagerRetriever}
+ * (1) 工具类
+ * (2) 给某个{@link Context}{@link Activity}{@link FragmentActivity}{@link Fragment}{@link View}加入{@link RequestManagerFragment}或{@link SupportRequestManagerFragment}
+ * (3)
  * */
 public class MainActivity extends Activity {
 
