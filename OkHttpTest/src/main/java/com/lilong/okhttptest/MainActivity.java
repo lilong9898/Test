@@ -22,6 +22,8 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.internal.connection.StreamAllocation;
+import okhttp3.internal.http.RetryAndFollowUpInterceptor;
 
 public class MainActivity extends Activity {
 
@@ -156,7 +158,12 @@ public class MainActivity extends Activity {
     private void requestAsync() {
         String URL = "http://japi.juhe.cn/qqevaluate/qq?key=96efc220a4196fafdfade0c9d1e897ac&qq=295424589";
         Request request = new Request.Builder().url(URL).build();
-        /** 返回{@link RealCall}*/
+        /**
+         * {@link OkHttpClient#newCall(Request)}方法
+         * (1) 返回{@link RealCall}
+         * (2) {@link RealCall}的构造过程中生成{@link RetryAndFollowUpInterceptor}
+         * (3) {@link RetryAndFollowUpInterceptor#intercept(Interceptor.Chain)}中会生成{@link StreamAllocation}
+         * */
         Call call = simpleClient.newCall(request);
         call.enqueue(new Callback() {
             @Override
