@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -18,22 +19,42 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.GlideBuilder;
+import com.bumptech.glide.GlideContext;
+import com.bumptech.glide.Priority;
+import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.TransitionOptions;
+import com.bumptech.glide.load.engine.Engine;
+import com.bumptech.glide.load.engine.Resource;
 import com.bumptech.glide.manager.LifecycleListener;
 import com.bumptech.glide.manager.RequestManagerFragment;
 import com.bumptech.glide.manager.RequestManagerRetriever;
+import com.bumptech.glide.manager.RequestTracker;
 import com.bumptech.glide.manager.SupportRequestManagerFragment;
+import com.bumptech.glide.manager.TargetTracker;
+import com.bumptech.glide.request.Request;
+import com.bumptech.glide.request.RequestCoordinator;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.SingleRequest;
+import com.bumptech.glide.request.target.ImageViewTarget;
+import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.request.target.ViewTarget;
+import com.bumptech.glide.request.transition.TransitionFactory;
+
+import java.util.List;
 
 /**
  * 关键类：
  * {@link Glide}
  * (1) 是Glide图片库各种组件和api的入口
  * (2) 单例，通过{@link Glide#initializeGlide(Context, GlideBuilder)}进行初始化
- * (3) Glide通过传入的context的生命周期变化，可以随之启动或停止图片请求：
- *     (3.1) {@link Glide#with(Context)}
- *     (3.2) {@link Glide#with(Activity)}
- *     (3.3) {@link Glide#with(Fragment)}
- *     (3.4) {@link Glide#with(View)}
+ * (3) Glide通过下面方法返回{@link RequestManager}
+ *     (3.1) 通过传入的context的生命周期变化，可以随之启动或停止图片请求：
+ *     (3.2) {@link Glide#with(Context)}
+ *     (3.3) {@link Glide#with(Activity)}
+ *     (3.4) {@link Glide#with(Fragment)}
+ *     (3.5) {@link Glide#with(View)}
  * (4) 原理是分析上述with方法传入的{@link Context}，设法向其中加入无UI的{@link RequestManagerFragment}
  * 　　 通过{@link RequestManagerFragment}的生命周期方法，来间接得到宿主{@link Activity}{@link FragmentActivity}或{@link android.app.Fragment}的生命周期情况
  *     并触发{@link LifecycleListener}的回调方法，启动或停止图片请求
@@ -69,7 +90,28 @@ import com.bumptech.glide.manager.SupportRequestManagerFragment;
  * (4) 如果(2)过程已完成，能反向找出设置过的{@link RequestManager}
  *
  * {@link RequestManager}
- * (1)
+ * (1) 图片请求的管理器
+ * (2) 通过{@link RequestManager#load(String)}{@link RequestManager#load(Bitmap)}等多种方法从多种数据源来加载图片
+ * (3) 这些重载的load方法的参数称为model，代表图片的数据源
+ * (4) 实现了{@link LifecycleListener}，所以有{@link Glide}中第(3)条所述的生命周期感知能力，并对应的停止，启动或重启图片请求
+ * (5) 具体动作都委托给{@link RequestTracker}和{@link TargetTracker}处理
+ *
+ * {@link RequestTracker}
+ * (1) 启动，重启，取消{@link Request}的工具类
+ * (2) 能得知{@link Request}的状态
+ *
+ * {@link Request}
+ * (1)　接口，代表一个图片请求，即加载图片资源到{@link Target}的请求
+ * (2) 实现类{@link SingleRequest}，代表一个具体的图片请求，即加载{@link Resource}到{@link Target}的请求
+ * (3) 最底层是通过{@link SingleRequest#init(Context, GlideContext, Object, Class, RequestOptions, int, int, Priority, Target, RequestListener, List, RequestCoordinator, Engine, TransitionFactory)}获得
+ *
+ * {@link TargetTracker}
+ * (1) 是{@link Target}的容器
+ * (2) 实现了{@link LifecycleListener}，可感知宿主生命周期变化，并随之调用{@link Target}的生命周期方法
+ *
+ * {@link Target}
+ * (1) 接口，代表任何可以加载图片进并通知宿主生命周期变化的对象
+ * (2) 有许多层的实现，常用的是{@link ViewTarget}，{@link ImageViewTarget}等
  * */
 public class MainActivity extends Activity {
 
@@ -141,6 +183,21 @@ public class MainActivity extends Activity {
     private void testGlide() {
         Toast.makeText(this, "testGlide", Toast.LENGTH_SHORT).show();
         String PIC_URL = "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1549002509627&di=da3dfaa2a01eeaf101cdecdf621348c0&imgtype=0&src=http%3A%2F%2Fnews.mydrivers.com%2FImg%2F20100828%2F09595250.jpg";
-        Glide.with(this).load(PIC_URL).into(ivTest);
+        Glide
+                /**
+                 * 设定这次图片请求的宿主，开始感知宿主的生命周期，创建并返回{@link RequestManager}
+                 * */
+                .with(this)
+                /**
+                 * 利用之前返回的{@link RequestManager}创建{@link RequestBuilder}，给他设定这次请求的数据源，即model，并返回{@link RequestBuilder}
+                 * */
+                .load(PIC_URL)
+                /**
+                 * (1) 设定目标控件，生成对应的{@link ViewTarget}
+                 * (2) 生成图片请求{@link Request}，并和(1)中的{@link ViewTarget}相互关联
+                 * (3) 调{@link RequestManager#track(Target, Request)}方法启动图片请求
+                 * */
+                .into(ivTest) /** 返回{@link ViewTarget}*/
+        ;
     }
 }
