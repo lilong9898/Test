@@ -18,6 +18,7 @@ import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -27,6 +28,9 @@ import com.bumptech.glide.Priority;
 import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.Key;
+import com.bumptech.glide.load.Options;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.Engine;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.load.engine.Resource;
@@ -40,19 +44,25 @@ import com.bumptech.glide.request.Request;
 import com.bumptech.glide.request.RequestCoordinator;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.ResourceCallback;
 import com.bumptech.glide.request.SingleRequest;
+import com.bumptech.glide.request.target.CustomViewTarget;
 import com.bumptech.glide.request.target.ImageViewTarget;
+import com.bumptech.glide.request.target.SizeReadyCallback;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.target.ViewTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.bumptech.glide.request.transition.TransitionFactory;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Glide的优点：
  * (1) 链式调用
- * (2) 宿主生命周期感知
+ * (2) API简单
+ * (3) 宿主生命周期感知
+ * (4) 根据目标控件的尺寸调整加载参数
  *
  * 关键类：
  * {@link Glide}
@@ -60,7 +70,7 @@ import java.util.List;
  * (2) 单例，通过{@link Glide#initializeGlide(Context, GlideBuilder)}进行初始化
  * (3) Glide通过下面方法返回当前context的{@link RequestManager}
  * (3.1) {@link RequestManager}跟具体的context一一对应
- * (3.2) 通过传入的context的生命周期变化，可以随之启动或停止图片请求：
+ * (3.2) 通过传入的context的生命周期变化，可以随之启动，停止或延迟图片请求：
  * (3.3) {@link Glide#with(Context)}
  * (3.4) {@link Glide#with(Activity)}
  * (3.5) {@link Glide#with(Fragment)}
@@ -103,11 +113,11 @@ import java.util.List;
  * (1) 图片请求的管理器
  * (2) 通过{@link RequestManager#load(String)}{@link RequestManager#load(Bitmap)}等多种方法从多种数据源来加载图片
  * (3) 这些重载的load方法的参数称为model，代表图片的数据源
- * (4) 实现了{@link LifecycleListener}，所以有{@link Glide}中第(3)条所述的生命周期感知能力，并对应的停止，启动或重启图片请求
+ * (4) 实现了{@link LifecycleListener}，所以有{@link Glide}中第(3)条所述的生命周期感知能力，并对应的停止，启动或延迟图片请求
  * (5) 具体动作都委托给{@link RequestTracker}和{@link TargetTracker}处理
  * <p>
  * {@link RequestTracker}
- * (1) 启动，重启，取消{@link Request}的工具类
+ * (1) 启动，延迟，取消{@link Request}的工具类
  * (2) 能得知{@link Request}的状态
  * <p>
  * {@link Request}
@@ -123,7 +133,21 @@ import java.util.List;
  * (1) 接口，代表任何可以加载图片进并通知宿主生命周期变化的对象
  * (2) 有许多层的实现，常用的是{@link ViewTarget}，{@link ImageViewTarget}等
  *
- * {@link Engine}
+ * 图片加载的整个过程：
+ * {@link RequestBuilder#into(Target)}
+ * --call-->
+ * {@link RequestTracker#runRequest(Request)}
+ * --call-->
+ * {@link SingleRequest#begin()}，其内部包含：
+ * (1) {@link Target#getSize(SizeReadyCallback)}
+ *     (1.1) 设置回调，通过异步方式获取目标控件的尺寸
+ *     (1.2) 底层是通过{@link ViewTarget.SizeDeterminer#getSize(SizeReadyCallback)}来实现
+ *     (1.2) 因为{@link SingleRequest}实现了{@link SizeReadyCallback}，所以它自己就是(1.1)中的回调，具体是{@link SingleRequest#onSizeReady(int, int)}方法
+ * (2) {@link SingleRequest#onSizeReady(int, int)}
+ * --call-->
+ * {@link Engine#load(GlideContext, Object, Key, int, int, Class, Class, Priority, DiskCacheStrategy, Map, boolean, boolean, Options, boolean, boolean, boolean, boolean, ResourceCallback)}
+ * 其内部：
+ *     (2.1) {@link Engine#loadFromActiveResources(Key, boolean)}尝试从内存缓存中获取图片
  */
 public class MainActivity extends Activity {
 
