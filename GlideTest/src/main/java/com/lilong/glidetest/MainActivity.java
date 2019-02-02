@@ -23,7 +23,6 @@ import com.bumptech.glide.GlideContext;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.RequestManager;
-import com.bumptech.glide.TransitionOptions;
 import com.bumptech.glide.load.engine.Engine;
 import com.bumptech.glide.load.engine.Resource;
 import com.bumptech.glide.manager.LifecycleListener;
@@ -117,6 +116,15 @@ public class MainActivity extends Activity {
 
     private static int PERMISSION_REQUEST_CODE = 0;
 
+    /** 图片url*/
+    private static final String PIC_URL = "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1549002509627&di=da3dfaa2a01eeaf101cdecdf621348c0&imgtype=0&src=http%3A%2F%2Fnews.mydrivers.com%2FImg%2F20100828%2F09595250.jpg";
+
+    /** 占位符url*/
+    private static final String PLACEHOLDER_URL = "https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=353642393,1838413956&fm=26&gp=0.jpg";
+
+    /** 错误符url*/
+    private static final String ERROR_URL = "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1549697044&di=1662217bfa8e0e3e2e8453ce60277b05&imgtype=jpg&er=1&src=http%3A%2F%2Fwww.missyuan.net%2Fuploads%2Fallimg%2F120801%2F205515I54-0.jpg";
+
     /**
      * 检查应用是否被授予了某项权限
      */
@@ -180,9 +188,14 @@ public class MainActivity extends Activity {
         }
     }
 
+    /** 测试不同的glide用法*/
     private void testGlide() {
-        Toast.makeText(this, "testGlide", Toast.LENGTH_SHORT).show();
-        String PIC_URL = "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1549002509627&di=da3dfaa2a01eeaf101cdecdf621348c0&imgtype=0&src=http%3A%2F%2Fnews.mydrivers.com%2FImg%2F20100828%2F09595250.jpg";
+//        testGlideSimple();
+        testGlideWithPlaceholderAndErrorPic();
+    }
+
+    /** 最简单的用法*/
+    private void testGlideSimple(){
         Glide
                 /**
                  * 设定这次图片请求的宿主，开始感知宿主的生命周期，创建并返回{@link RequestManager}
@@ -199,5 +212,15 @@ public class MainActivity extends Activity {
                  * */
                 .into(ivTest) /** 返回{@link ViewTarget}*/
         ;
+    }
+
+    /** 带占位符和错误符的情况*/
+    private void testGlideWithPlaceholderAndErrorPic(){
+        RequestOptions requestOptions = new RequestOptions();
+        // 加载过程中的图标，比如无网无缓存后突然连上网络
+        requestOptions.placeholder(R.drawable.placeholder);
+        // 发生错误时的图标，比如无网无缓存时，或者乱写一个url
+        requestOptions.error(R.drawable.error);
+        Glide.with(this).load(PIC_URL).apply(requestOptions).into(ivTest);
     }
 }
