@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
+import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.GlideBuilder;
@@ -14,14 +16,21 @@ import com.bumptech.glide.GlideContext;
 import com.bumptech.glide.Priority;
 import com.bumptech.glide.RequestBuilder;
 import com.bumptech.glide.RequestManager;
+import com.bumptech.glide.disklrucache.DiskLruCache;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.Key;
 import com.bumptech.glide.load.Options;
+import com.bumptech.glide.load.data.DataFetcher;
+import com.bumptech.glide.load.data.HttpUrlFetcher;
+import com.bumptech.glide.load.data.LocalUriFetcher;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.engine.Engine;
 import com.bumptech.glide.load.engine.Resource;
+import com.bumptech.glide.load.engine.cache.DiskCache;
+import com.bumptech.glide.load.engine.cache.DiskLruCacheWrapper;
 import com.bumptech.glide.load.engine.cache.LruResourceCache;
 import com.bumptech.glide.load.engine.cache.MemoryCache;
+import com.bumptech.glide.load.engine.executor.GlideExecutor;
 import com.bumptech.glide.load.resource.bitmap.BitmapResource;
 import com.bumptech.glide.manager.LifecycleListener;
 import com.bumptech.glide.manager.RequestManagerFragment;
@@ -35,14 +44,18 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.ResourceCallback;
 import com.bumptech.glide.request.SingleRequest;
+import com.bumptech.glide.request.target.DrawableImageViewTarget;
 import com.bumptech.glide.request.target.ImageViewTarget;
 import com.bumptech.glide.request.target.SizeReadyCallback;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.target.ViewTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.bumptech.glide.request.transition.TransitionFactory;
+import com.bumptech.glide.util.pool.FactoryPools;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * Glide的优点：
@@ -130,8 +143,41 @@ import java.util.Map;
  *
  * {@link MemoryCache}
  * (1) 接口，代表某种内存缓存
+ * (2) 实现类是{@link LruResourceCache}
  *
- * 图片加载的整个过程：
+ * {@link DiskCache}
+ * (1) 接口，代表某种磁盘缓存
+ * (2) 实现类是{@link DiskLruCacheWrapper}，实际动作由内部的{@link DiskLruCache}执行
+ *
+ * {@link GlideExecutor}
+ * (1) 线程池工厂类&工具类
+ * (2) 工厂类的功能
+ *     (2.1) 通过{@link GlideExecutor#newDiskCacheExecutor()}{@link GlideExecutor#newSourceExecutor()}等生成不同场景所使用的{@link GlideExecutor}
+ *     (2.2) 不同方法生成的线程池参数不同，比如
+ *          (2.2.1) {@link GlideExecutor#newDiskCacheExecutor()}生成单线程的线程池
+ *          (2.2.2) {@link GlideExecutor#newSourceExecutor()}生成多线程的线程池
+ * (3) 工具类的功能，是通过静态代理模式，将线程池的动作委托给{@link GlideExecutor#delegate}，而它是通过(2)生成的标准{@link ThreadPoolExecutor}
+ *
+ * {@link DataFetcher}
+ * (1) 接口，用于获取图片数据
+ * (2) 实现类有{@link HttpUrlFetcher}{@link LocalUriFetcher}等
+ *
+ * {@link DataFetcherGenerator}
+ * (1)
+ *
+ * {@link DecodeJob}
+ * (1)　具体执行从磁盘缓存/原始数据源获取图片的工作
+ * (2) 继承{@link Runnable}和{@link FactoryPools.Poolable}接口
+ *
+ * 从磁盘缓存/原始数据源获取图片的过程中的状态机：
+ * (1) {@link DecodeJob.Stage#INITIALIZE}:初始化状态
+ * (2) {@link DecodeJob.Stage#RESOURCE_CACHE}:用内存缓存的已解码图片数据来加载
+ * (3) {@link DecodeJob.Stage#DATA_CACHE}:用内存缓存的未解码图片数据来加载
+ * (4) {@link DecodeJob.Stage#SOURCE}:用原始数据源来加载
+ * (5) {@link DecodeJob.Stage#ENCODE}:加载完成后将图片重新编码
+ * (6) {@link DecodeJob.Stage#FINISHED}:结束，无下一个状态
+ *
+ * 整个过程：
  * {@link RequestBuilder#into(Target)}
  * --call-->
  * {@link RequestTracker#runRequest(Request)}
@@ -153,13 +199,30 @@ import java.util.Map;
  * 　　　　　          然后触发{@link ResourceCallback#onResourceReady(Resource, DataSource)}结束
  *     (2.3) {@link EngineJob}：内存缓存中没有，从磁盘缓存或原始数据源（本地/网络）获取图片
  *          (2.3.1) 如果任务队列中已经存在相同{@link EngineKey}的{@link EngineJob}，说明该图片已经在获取中了，返回目前的加载状态，结束
- *          (2.3.3) 否则，创建新的{@link EngineJob}并加入任务队列
- *             创建新的{@link DecodeJob}，并调用新{@link EngineJob#start(DecodeJob)}开始图片加载
+ *          (2.3.2) 否则，创建新的{@link EngineJob}并加入任务队列
+ *                  创建新的{@link DecodeJob}，并调用新{@link EngineJob#start(DecodeJob)}执行这个{@link DecodeJob}
+ *          (2.3.3) {@link DecodeJob}执行从磁盘缓存/原始数据源获取图片的过程
+ * (3) 用线程池{@link GlideExecutor}执行{@link DecodeJob#run()}--call-->{@link DecodeJob#runWrapped()}
+ *     开始从磁盘缓存/原始数据源获取图片的过程，其内部：
+ *     (3.1) 开始时处于{@link DecodeJob.Stage#INITIALIZE}状态
+ *     (3.2) 取下一个状态，根据磁盘缓存策略的不同设定，下一个状态可能是
+ *         (3.2.1) {@link DecodeJob.Stage#RESOURCE_CACHE}
+ *         (3.2.2) {@link DecodeJob.Stage#DATA_CACHE}
+ *         (3.2.3) {@link DecodeJob.Stage#SOURCE}
  *
+ *
+ *
+ * 加载到图片后的显示过程：
  * 上述过程中调到的{@link ResourceCallback#onResourceReady(Resource, DataSource)}
  * 实际上是{@link SingleRequest#onResourceReady(Resource, DataSource)}
+ * --call-->{@link SingleRequest#onResourceReady(Resource, Object, DataSource)}
  * 其内部：
- * (1)
- */
+ * (1) 触发{@link RequestListener#onResourceReady(Object, Object, Target, DataSource, boolean)}
+ * (2) 如果(1)的返回值是false，则触发{@link ViewTarget#onResourceReady(Object, Transition)}，
+ *     实际上是{@link DrawableImageViewTarget#onResourceReady(Object, Transition)}
+ *     --call-->{@link ImageViewTarget#setResourceInternal(Object)}
+ *     --call-->{@link DrawableImageViewTarget#setResource(Object)}，这里最终调用{@link ImageView#setImageDrawable(Drawable)}方法将图片设置进控件
+ *
+ * */
 public class Doc {
 }
