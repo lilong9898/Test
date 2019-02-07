@@ -16,31 +16,73 @@
 
         <!--dataObj对象中的public类变量-->
         <TextView
-            android:id="@+id/tv1"
-            style="@style/tvStyle"
+            android:id="@+id/tvStrStatic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:text="@{dataObj.STR_STATIC}"/>
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:text="@{dataObj.STR_STATIC}"
+            android:textSize="20sp"/>
 
         <!--dataObj对象的public成员变量-->
         <TextView
-            android:id="@+id/tv2"
-            style="@style/tvStyle"
-            android:layout_below="@+id/tv1"
-            android:text="@{dataObj.str1}"/>
+            android:id="@+id/tvStr1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/tvStrStatic"
+            android:layout_marginLeft="20dp"
+            android:layout_toRightOf="@+id/tvStrStatic"
+            android:text="@{dataObj.str1}"
+            android:textSize="20sp"/>
 
         <!--dataObj对象的private成员变量，但有public getMethod-->
         <!--databinding不能访问数据源对象的private变量-->
-        <TextView
-            android:id="@+id/tv3"
-            style="@style/tvStyle"
-            android:layout_below="@+id/tv2"
-            android:text="@{dataObj.str2}"/>
-
         <!--@{}中的表达式可以使用一些java中的操作符，比如这里的三目运算符-->
         <TextView
-            android:id="@+id/tv4"
-            style="@style/tvStyle"
-            android:layout_below="@+id/tv3"
-            android:text="str3"/>
+            android:id="@+id/tvStr2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/tvStr1"
+            android:layout_marginLeft="20dp"
+            android:layout_toRightOf="@id/tvStr1"
+            android:text="@{dataObj.str2}"
+            android:textSize="20sp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvStr2"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:text="str3"
+            android:textSize="20sp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvStr2"
+            android:layout_marginLeft="80dp"
+            android:layout_marginTop="20dp"
+            android:text="@{dataObj.str4}"
+            android:textSize="20sp"/>
+
+        <Button
+            android:id="@+id/btnChangeStrStatic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="changeStrStatic"
+            android:textSize="20sp"/>
+
+        <Button
+            android:id="@+id/btnChangeStr2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/btnChangeStrStatic"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:text="changeStr2"
+            android:textSize="20sp"/>
     </RelativeLayout>
 </layout>
