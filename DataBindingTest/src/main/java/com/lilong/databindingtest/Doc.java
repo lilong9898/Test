@@ -5,6 +5,7 @@ import android.databinding.Bindable;
 import android.databinding.DataBinderMapper;
 import android.databinding.DataBindingComponent;
 import android.databinding.DataBindingUtil;
+import android.databinding.Observable;
 import android.databinding.ViewDataBinding;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import com.lilong.databindingtest.databinding.ActivityMainBinding;
 import com.lilong.databindingtest.databinding.ActivityMainBindingImpl;
 
 /**
+ * -----------------静态绑定（数据只被设置到UI上一次）所需的类-------------------
  * {@link DataBindingUtil}
  * (1) 工具类，用于生成对应于布局文件的{@link ViewDataBinding}
  *
@@ -36,6 +38,27 @@ import com.lilong.databindingtest.databinding.ActivityMainBindingImpl;
  * (1) 类，继承{@link ActivityMainBinding}
  * (2) 内容包括
  *     (2.1) 原始布局文件中每个无id的控件（不管是否使用了DataBinding），都有一个引用，名字是mBoundView数字
+ *
+ * -----------------动态绑定（数据变化时随时被设置到UI上）所需的类-------------------
+ * {@link BR}
+ * (1) 构建工具生成的代码，形式上类似{@link R}类，是由许多entry组成的
+ * (2) 每个entry是一个int型变量，值是0...N递增的，变量名字是
+ *     (2.1) _all
+ *     (2.2) 数据类的名字
+ *     (2.3) 如果数据类继承了{@link BaseObservable}，则其中每个用{@link Bindable}注解的getter方法的名字
+ * (3) 此类中的entry是{@link BaseObservable#notifyPropertyChanged(int)}中的参数
+ *     用于在动态绑定中指明哪条数据发生变化了，需要刷新UI
+ *
+ * {@link BaseObservable}
+ * (1) 类，继承了{@link Observable}接口，观察者模式中的被观察者
+ * (2) 继承该类，并在getter方法上用{@link Bindable}注解的数据，
+ *     都可以在自身变化时，通过调{@link BaseObservable#notifyPropertyChanged(int)}来刷新UI
+ *
+ * {@link Bindable}
+ * (1) 注解，表示被注解的这条数据是可能发生变化的
+ * (2) 只能用在继承了{@link BaseObservable}的数据类的数据上
+ * (3) 用在数据的getter方法上
+ * (4) 与{@link BaseObservable#notifyPropertyChanged(int)}配合来刷新UI
  *
  * 整个流程：
  * (1) aapt对使用了DataBinding的布局文件进行预处理
@@ -66,7 +89,7 @@ import com.lilong.databindingtest.databinding.ActivityMainBindingImpl;
  *           --return-->{@link ActivityMainBindingImpl}
  *
  * (3) 生成{@link BR}类
- *     (3.1) 里面包括一系列数字，每个数字对应一个数据对象
+ *     (3.1) 里面包括一系列数字，每个数字对应一个数据绑定
  *     (3.2) "数据对象"不一定是通过布局文件中的<variable>指定的，也可通过给继承{@link BaseObservable}的类的方法加{@link Bindable}注解来指定
  *
  * */

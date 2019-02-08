@@ -5,7 +5,7 @@ package com.lilong.databindingtest.data;
  * (1) 在inflate时，其中数据被设置到UI上
  * (2) 此后数据改变，不会再被设置到UI上
  * */
-public class DataObj {
+public class FixedDataObj {
 
     /** public静态变量可在xml中使用*/
     public static String STR_STATIC = "str_static";

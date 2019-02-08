@@ -5,8 +5,12 @@
     <data>
 
         <variable
-            name="dataObj"
-            type="com.lilong.databindingtest.data.DataObj"/>
+            name="fixedDataObj"
+            type="com.lilong.databindingtest.data.FixedDataObj"/>
+
+        <variable
+            name="observableDataObj"
+            type="com.lilong.databindingtest.data.ObservableDataObj"/>
     </data>
 
     <RelativeLayout
@@ -22,7 +26,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginLeft="20dp"
             android:layout_marginTop="20dp"
-            android:text="@{dataObj.STR_STATIC}"
+            android:text="@{fixedDataObj.STR_STATIC}"
             android:textSize="20sp"/>
 
         <!--dataObj对象的public成员变量-->
@@ -33,7 +37,7 @@
             android:layout_alignTop="@+id/tvStrStatic"
             android:layout_marginLeft="20dp"
             android:layout_toRightOf="@+id/tvStrStatic"
-            android:text="@{dataObj.str1}"
+            android:text="@{fixedDataObj.str1}"
             android:textSize="20sp"/>
 
         <!--dataObj对象的private成员变量，但有public getMethod-->
@@ -46,7 +50,7 @@
             android:layout_alignTop="@+id/tvStr1"
             android:layout_marginLeft="20dp"
             android:layout_toRightOf="@id/tvStr1"
-            android:text="@{dataObj.str2}"
+            android:text="@{fixedDataObj.str2}"
             android:textSize="20sp"/>
 
         <TextView
@@ -64,7 +68,16 @@
             android:layout_below="@+id/tvStr2"
             android:layout_marginLeft="80dp"
             android:layout_marginTop="20dp"
-            android:text="@{dataObj.str4}"
+            android:text="@{fixedDataObj.str4}"
+            android:textSize="20sp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvStr2"
+            android:layout_marginLeft="140dp"
+            android:layout_marginTop="20dp"
+            android:text="@{observableDataObj.observableStr}"
             android:textSize="20sp"/>
 
         <Button
@@ -83,6 +96,16 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
             android:text="changeStr2"
+            android:textSize="20sp"/>
+
+        <Button
+            android:id="@+id/btnChangeObservableStr"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/btnChangeStr2"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:text="changeObservableStr"
             android:textSize="20sp"/>
     </RelativeLayout>
 </layout>
