@@ -7,6 +7,11 @@ import android.databinding.DataBindingComponent;
 import android.databinding.DataBindingUtil;
 import android.databinding.Observable;
 import android.databinding.ViewDataBinding;
+import android.databinding.adapters.ImageViewBindingAdapter;
+import android.databinding.adapters.TextViewBindingAdapter;
+import android.databinding.adapters.ViewBindingAdapter;
+import android.util.SparseIntArray;
+import android.view.Choreographer;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +44,11 @@ import com.lilong.databindingtest.databinding.ActivityMainBindingImpl;
  * (2) 内容包括
  *     (2.1) 原始布局文件中每个无id的控件（不管是否使用了DataBinding），都有一个引用，名字是mBoundView数字
  *
+ * {@link ViewBindingAdapter}
+ * (1) 工具类，里面有许多静态方法
+ * (2) 用来将字面上的属性名和值，调用{@link View}的对应的set方法设置给{@link View}
+ * (3) 其它类似的类：{@link ImageViewBindingAdapter}{@link TextViewBindingAdapter}等
+ *
  * -----------------动态绑定（数据变化时随时被设置到UI上）所需的类-------------------
  * {@link BR}
  * (1) 构建工具生成的代码，形式上类似{@link R}类，是由许多entry组成的
@@ -60,7 +70,7 @@ import com.lilong.databindingtest.databinding.ActivityMainBindingImpl;
  * (3) 用在数据的getter方法上
  * (4) 与{@link BaseObservable#notifyPropertyChanged(int)}配合来刷新UI
  *
- * 整个流程：
+ * ------------------------整个流程--------------------------------------------
  * (1) aapt对使用了DataBinding的布局文件进行预处理
  *    (1.1) <layout> <data> <variable> @{...}　这些DataBinding标记都会去掉
  *    (1.2) (1.1)中包含的一些信息会转换成tag标签，插入到布局文件的根布局和使用了DataBinding的控件上
@@ -81,17 +91,29 @@ import com.lilong.databindingtest.databinding.ActivityMainBindingImpl;
  *          (1.3) 调{@link DataBindingUtil#bindToAddedViews(DataBindingComponent, ViewGroup, int, int)}
  *                --call-->{@link DataBindingUtil#bind(DataBindingComponent, View, int)}
  *                --call-->(构建工具生成的代码){@link DataBinderMapperImpl#getDataBinder(DataBindingComponent, View, int)}
- *                --return-->{@link ActivityMainBindingImpl}
+ *                --call-->调用其构造函数，生成并返回{@link ActivityMainBindingImpl}
  *     (2.2) {@link DataBindingUtil#inflate(LayoutInflater, int, ViewGroup, boolean)}
  *           --call-->{@link DataBindingUtil#inflate(LayoutInflater, int, ViewGroup, boolean, DataBindingComponent)}
  *           --call-->{@link DataBindingUtil#bind(DataBindingComponent, View, int)}
  *           --call-->(构建工具生成的代码){@link DataBinderMapperImpl#getDataBinder(DataBindingComponent, View, int)}
- *           --return-->{@link ActivityMainBindingImpl}
+ *           --call-->调用其构造函数，生成并返回{@link ActivityMainBindingImpl}
+ *     (2.3) 在{@link ActivityMainBindingImpl}的构造函数中，会调{@link ViewDataBinding#mapBindings(DataBindingComponent, View, int, ViewDataBinding.IncludedLayouts, SparseIntArray)}
+ *           这个方法内会遍历ViewTree，把(1.2)中打进布局文件中的tag所对应的view都找出来，也就是使用了数据绑定的view
+ *           然后把他们的引用存起来，将tag置为空（此时tag已经传递完信息，没用了）
  *
  * (3) 生成{@link BR}类
- *     (3.1) 里面包括一系列数字，每个数字对应一个数据绑定
- *     (3.2) "数据对象"不一定是通过布局文件中的<variable>指定的，也可通过给继承{@link BaseObservable}的类的方法加{@link Bindable}注解来指定
  *
+ * (4) 初次显示UI时的绑定动作
+ *     {@link ActivityMainBindingImpl#invalidateAll()}
+ *     --call-->{@link ActivityMainBindingImpl#requestRebind()}
+ *     --call-->{@link Choreographer#postFrameCallback(Choreographer.FrameCallback)}}
+ *     -->在下一帧的时候执行{@link ViewDataBinding#mRebindRunnable}，其中：
+ *     {@link ViewDataBinding#executePendingBindings()}
+ *     --call-->{@link ViewDataBinding#executeBindingsInternal()}
+ *     --call-->{@link ActivityMainBindingImpl#executeBindings()}（这部分代码是构建工具生成的），其中：
+ *     (4.1) 取出数据对象中的数据
+ *     (4.2) 调用{@link ViewBindingAdapter}的各个子类将数据设置到UI上
+ * (5) 
  * */
 public class Doc {
 }
