@@ -17,10 +17,27 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.databinding.BaseObservable;
 
+import com.lilong.databindingtest.data.ObservableDataObj;
 import com.lilong.databindingtest.databinding.ActivityMainBinding;
 import com.lilong.databindingtest.databinding.ActivityMainBindingImpl;
 
+import static android.databinding.Observable.*;
+import static android.databinding.ViewDataBinding.*;
+
 /**
+ * 数据绑定与一般换肤框架相比的优点：
+ * (1) 换肤过程的大部分工作
+ *     (1.1) 搜索布局文件获取可换肤的控件和属性
+ *     (1.2) 获取要换上的资源
+ *     (1.3) 根据(1.1)和(1.2)确定具体设置UI的代码
+ *     (1.4) 调用(1.3)中的代码
+ *     这些工作都在构建时生成了专门的代码，不需在运行时耗费时间处理
+ * (2) 对细节的很处理完善
+ *
+ * 数据绑定与一般换肤框架相比的缺点：
+ * (1) 数据只能来自于数据对象，不能来自于网络下发/皮肤包下发
+ * (2) 包会变大
+ *
  * -----------------静态绑定（数据只被设置到UI上一次）所需的类-------------------
  * {@link DataBindingUtil}
  * (1) 工具类，用于生成对应于布局文件的{@link ViewDataBinding}
@@ -97,7 +114,7 @@ import com.lilong.databindingtest.databinding.ActivityMainBindingImpl;
  *           --call-->{@link DataBindingUtil#bind(DataBindingComponent, View, int)}
  *           --call-->(构建工具生成的代码){@link DataBinderMapperImpl#getDataBinder(DataBindingComponent, View, int)}
  *           --call-->调用其构造函数，生成并返回{@link ActivityMainBindingImpl}
- *     (2.3) 在{@link ActivityMainBindingImpl}的构造函数中，会调{@link ViewDataBinding#mapBindings(DataBindingComponent, View, int, ViewDataBinding.IncludedLayouts, SparseIntArray)}
+ *     (2.3) 在{@link ActivityMainBindingImpl}的构造函数中，会调{@link ViewDataBinding#mapBindings(DataBindingComponent, View, int, IncludedLayouts, SparseIntArray)}
  *           这个方法内会遍历ViewTree，把(1.2)中打进布局文件中的tag所对应的view都找出来，也就是使用了数据绑定的view
  *           然后把他们的引用存起来，将tag置为空（此时tag已经传递完信息，没用了）
  *
@@ -105,7 +122,7 @@ import com.lilong.databindingtest.databinding.ActivityMainBindingImpl;
  *
  * (4) 初次显示UI时的绑定动作
  *     {@link ActivityMainBindingImpl#invalidateAll()}
- *     --call-->{@link ActivityMainBindingImpl#requestRebind()}
+ *     --call-->{@link ViewDataBinding#requestRebind()}
  *     --call-->{@link Choreographer#postFrameCallback(Choreographer.FrameCallback)}}
  *     -->在下一帧的时候执行{@link ViewDataBinding#mRebindRunnable}，其中：
  *     {@link ViewDataBinding#executePendingBindings()}
@@ -113,7 +130,20 @@ import com.lilong.databindingtest.databinding.ActivityMainBindingImpl;
  *     --call-->{@link ActivityMainBindingImpl#executeBindings()}（这部分代码是构建工具生成的），其中：
  *     (4.1) 取出数据对象中的数据
  *     (4.2) 调用{@link ViewBindingAdapter}的各个子类将数据设置到UI上
- * (5) 
+ *
+ * (5) 可变数据源在数据变化时执行的绑定动作
+ *    (5.1) 在注册可变数据源对象时，会注册数据变化的监听器：
+ *          {@link ActivityMainBindingImpl#setObservableDataObj(ObservableDataObj)}
+ *          --call-->{@link ActivityMainBindingImpl#updateRegistration(int, Observable)}
+ *          --.....-->{@link BaseObservable#addOnPropertyChangedCallback(OnPropertyChangedCallback)}
+ *          参数实际上是{@link WeakPropertyListener}对象
+ *    (5.2) 可变数据源变化时，用户会调{@link BaseObservable#notifyPropertyChanged(int)}
+ *    --call-->{@link WeakPropertyListener#onPropertyChanged(Observable, int)}
+ *    --call-->{@link ViewDataBinding#handleFieldChange(int, Object, int)}，其中：
+ *          (5.2.1) {@link ActivityMainBindingImpl#onChangeObservableDataObj(ObservableDataObj, int)}
+ *                  这一步是为了设置{@link ActivityMainBindingImpl#mDirtyFlags}，这是个表示那个数据有改动的标志位
+ *          (5.2.2) {@link ViewDataBinding#requestRebind()}后续执行跟(4)中相似的逻辑
+ *
  * */
 public class Doc {
 }
