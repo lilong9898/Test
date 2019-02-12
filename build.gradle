@@ -32,3 +32,12 @@ allprojects {
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
+
+subprojects { subProject ->
+    afterEvaluate {
+        if (subProject.plugins.hasPlugin("kotlin") && subProject.plugins.hasPlugin("java-library")) {
+            subProject.kotlin.copyClassesToJavaOutput = true
+            subProject.jar.duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        }
+    }
+}

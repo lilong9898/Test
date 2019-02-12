@@ -1,4 +1,4 @@
-package com.lilong.kotlintest
+package com.lilong.android.kotlintest
 
 import android.app.Activity
 import android.os.Bundle

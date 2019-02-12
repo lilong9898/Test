@@ -1,22 +1,6 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
+apply plugin: 'java-library'
+apply plugin: 'kotlin'
 
-android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
-
-    defaultConfig {
-        applicationId "com.lilong.kotlintest"
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
-    }
-
-    buildTypes {
-    }
-
-}
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -25,3 +9,6 @@ dependencies {
     compile "org.jetbrains.anko:anko-support-v4:${rootProject.ext.ankoVersion}"
     compile "org.jetbrains.kotlin:kotlin-reflect:${rootProject.ext.kotlinVersion}"
 }
+
+sourceCompatibility = "7"
+targetCompatibility = "7"
