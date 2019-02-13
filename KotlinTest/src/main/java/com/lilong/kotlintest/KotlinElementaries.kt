@@ -42,7 +42,14 @@ var packageLevelVariable = 1
  * */
 class KotlinElementaries {
 
-    // 所有变量默认为public
+    /**
+     * kotlin中所有属性默认为public，因为构建工具会给它生成getter setter的字节码
+     * 从最终的字节码执行情况看：
+     * (1) 在类内部访问，自然是可以直接访问的
+     * (2) 在类外部访问，会调用生成的getter/setter
+     *
+     * 指定为private的属性，构建工具不会给其生成getter/setter
+     */
 
     //-----------------以下为var关键字标记的变量，表示可变的-------------------
     // 属性都需要设定初始值，带lateinit关键字的除外
@@ -165,7 +172,11 @@ class KotlinElementaries {
         }
     }
 
-    fun testFunc(): Int {
+    /**
+     * 函数参数都是val类型，是常量，不能再被赋值
+     * */
+    fun testFunc(str:String): Int {
+//        str = "1"
         return 3
     }
 
@@ -219,7 +230,7 @@ class KotlinElementaries {
             // 测试for关键字
             c.testFor()
             // 测试方法返回值
-            println(c.testFunc())
+            println(c.testFunc("1"))
             // 测试操作符重载
             c.testOperatorOverride()
             // 测试方法扩展
