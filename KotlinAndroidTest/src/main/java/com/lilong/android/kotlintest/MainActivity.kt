@@ -29,4 +29,5 @@ class MainActivity : Activity() {
         // java setter也按照协议转换成控件的kotlin属性，对kotlin属性的赋值相当于调用java setter
         tv.text="haha"
     }
+
 }
