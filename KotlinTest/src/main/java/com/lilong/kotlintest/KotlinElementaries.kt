@@ -126,10 +126,11 @@ class KotlinElementaries {
 
         /**
          * variableF是Any类型的，在类型判断成功后，可能被被其它线程置成null，或者任意类型
-         * 所以不允许smart cast，
+         * 所以不允许smart cast，必须用as操作符手动转换
          * */
         if (variableF is Int) {
 //            variableF?.minus(3)
+            (variableF as Int).minus(3)
         }
     }
 
