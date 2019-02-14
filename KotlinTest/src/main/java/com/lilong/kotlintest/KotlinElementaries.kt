@@ -96,7 +96,7 @@ class KotlinElementaries {
 
     lateinit var variableF: Any
 
-    fun smartCastTest(arg: Any) {
+    fun testSmartCast(arg: Any) {
 
         /**
          * is进行类型判断
@@ -127,11 +127,15 @@ class KotlinElementaries {
         /**
          * variableF是Any类型的，在类型判断成功后，可能被被其它线程置成null，或者任意类型
          * 所以不允许smart cast，必须用as操作符手动转换
+         * as?是安全的强制转换，如果强转失败，会返回null
          * */
+        variableF = 1
         if (variableF is Int) {
 //            variableF?.minus(3)
             (variableF as Int).minus(3)
         }
+
+        println("smart cast string length = " + (variableF as? String)?.length)
     }
 
     /**
@@ -224,6 +228,8 @@ class KotlinElementaries {
             c.printVariableType()
             //　调用包级方法
             packageLevelFunction()
+            // 测试smartCast
+            c.testSmartCast(2)
             // 打印原始字符串
             c.printRawString()
             // 测试when关键字
