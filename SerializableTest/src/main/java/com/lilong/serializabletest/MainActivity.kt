@@ -9,6 +9,23 @@ import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.onClick
 import java.io.*
 
+/**
+ * serializable和parcelable的区别：
+ *
+ * serializable:
+ * (1) java库中的功能
+ * (2) 使用简单，代码少，只要让类实现Serializable接口即可，几乎全自动
+ * (3) 序列化过程中通过反射来解析，速度比parcelable慢几乎十倍
+ * (4) 占用内存较多，会生成大量临时对象，内存抖动厉害
+ * (5) 可以通过ObjectOutputStream将序列化的数据写入磁盘/通过网络传输
+ *
+ * parcelable:
+ * (1) android独有的功能
+ * (2) 使用复杂，代码多，需要指定对象与Parcel之间互相转换的过程（需要实现writeToParcel和CREATOR中的createFromParcel)，几乎全手动
+ * (3) 序列化过程会依照(2)中用户指定的过程来进行，速度很快，效率高
+ * (4) 占内存少
+ * (5) 虽然技术上可以，但不应该将parcel的数据（通过parcel.marshall方法可获得其字节数据）写入磁盘或通过网络传输，因为parcel是根据机器和环境深度优化过的，没有通用性，换机器后很可能无法读取
+ * */
 class MainActivity : Activity() {
 
     val objFile: File = File(MainApplication.Companion.getInstance()?.cacheDir?.absolutePath + File.separator + "haha")
