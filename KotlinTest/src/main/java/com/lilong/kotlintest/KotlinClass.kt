@@ -297,10 +297,8 @@ fun testObjectExpression() {
 /**
  * 对象声明：
  *
- * 还是用object关键字，但不像对象表达式中用object {}或object:xx {}的写法
- * 而是object xx{}
- *
  * 与对象表达式本质相同，声明了一个匿名类并生成了其对象，对象名字是xx(这里是anonymousClassObj)
+ * 与对象表达式的唯一区别，就是在object后面指定了匿名对象的名字，对象表达式未指定匿名对象的名字
  * */
 object anonymousClassObj {
     fun method(){

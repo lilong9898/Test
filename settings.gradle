@@ -25,6 +25,7 @@ include ':OkHttpTest'
 include ':PermissionTest'
 include ':RetrofitTest'
 include ':RxJavaTest'
+include ':SerializableTest'
 include ':ServiceTest'
 
 
