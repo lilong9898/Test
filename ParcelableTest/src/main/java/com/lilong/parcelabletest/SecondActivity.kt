@@ -15,6 +15,7 @@ class SecondActivity : Activity() {
         setContentView(R.layout.activity_second)
         setTitle("SecondActivity")
         btnDeParcelIncomingData.onClick {
+            intent.extras.classLoader
             var car: Car = intent.getParcelableExtra<Car>("car")
             tvAfterDeParcel.text = car.toString()
         }

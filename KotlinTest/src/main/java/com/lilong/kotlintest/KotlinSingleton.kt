@@ -1,42 +1,69 @@
 package com.lilong.kotlintest
 
 fun main(args: Array<String>) {
-    testHungrySingleton()
+    testSingletonLazy()
+    println()
+    println()
+    println()
+    println()
+    testSingletonHungry()
 }
 
-fun testLazySingleton() {
-    println("call Singleton class" + Singleton)
-    var singleton: Singleton = Singleton.getInstance()
+/** 预加载*/
+fun testSingletonHungry() {
+    println("------------call SingletonHungry class------------------")
+    SingletonHungry.toString()
+    println("--------------------------------------------------------")
+    println("-------------getInstance--------------------------------")
+    var singleton: SingletonHungry = SingletonHungry.getInstance()
     println("singleton is " + singleton)
-    var singleton2: Singleton = Singleton.getInstance()
+    println("--------------------------------------------------------")
+    println("-------------getInstance--------------------------------")
+    var singleton2: SingletonHungry = SingletonHungry.getInstance()
     println("singleton2 is " + singleton)
+    println("--------------------------------------------------------")
+}
+
+/** 懒加载*/
+fun testSingletonLazy() {
+    println("---------------call SingletonLazy class-----------------")
+    SingletonLazy.toString()
+    println("--------------------------------------------------------")
+    println("---------------getInstance------------------------------")
+    var singleton: SingletonLazy = SingletonLazy.getInstance()
+    println("singleton is " + singleton)
+    println("--------------------------------------------------------")
+    println("---------------getInstance------------------------------")
+    var singleton2: SingletonLazy = SingletonLazy.getInstance()
+    println("singleton2 is " + singleton)
+    println("--------------------------------------------------------")
 }
 
 /**
  * 线程安全的饿汉式单例，写法跟java的相似，只是kotlin的静态属性和方法是通过companion object实现的
  * */
-class Singleton private constructor() {
+class SingletonLazy private constructor() {
 
     // 这个init块的内容最终转换成Singleton的构造函数中的内容
     init {
-        println("call Singleton constructor")
+        println("SINGLETON LAZY GENERATED")
     }
 
     companion object {
 
         // 这个init块的内容最终转换成Singleton类的静态块中的内容
         init {
-            println("call companion object constructor")
+            println("COMPANION OBJECT GENERATED")
         }
 
         @Volatile
-        private var instance: Singleton? = null
+        private var instance: SingletonLazy? = null
 
-        fun getInstance(): Singleton {
+        fun getInstance(): SingletonLazy {
             if (instance == null) {
-                synchronized(Singleton::class) {
+                synchronized(SingletonHungry::class) {
                     if (instance == null) {
-                        instance = Singleton()
+                        instance = SingletonLazy()
                     }
                 }
             }
@@ -45,31 +72,23 @@ class Singleton private constructor() {
     }
 }
 
-/** 懒汉式单例*/
-class Singleton2 private constructor() {
+/** 预加载 */
+class SingletonHungry private constructor() {
 
     init {
-        println("call Singleton constructor")
+        println("SINGLETON HUNGRY GENERATED")
     }
 
     companion object {
 
         init {
-            println("call companion object constructor")
+            println("COMPANION OBJECT GENERATED")
         }
 
-        private val instance: Singleton2 = Singleton2()
+        private val instance: SingletonHungry = SingletonHungry()
 
-        fun getInstance(): Singleton2 {
+        fun getInstance(): SingletonHungry {
             return instance
         }
     }
-}
-
-fun testHungrySingleton() {
-    println("call Singleton class " + Singleton2)
-    var singleton: Singleton2 = Singleton2.getInstance()
-    println("singleton is " + singleton)
-    var singleton2: Singleton2 = Singleton2.getInstance()
-    println("singleton2 is " + singleton)
 }
