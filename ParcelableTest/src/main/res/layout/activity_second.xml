@@ -10,36 +10,21 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
         android:layout_marginLeft="50dp"
         android:layout_marginRight="50dp"
+        android:layout_centerInParent="true"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tvBeforeSerialize"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@android:color/holo_blue_light"
-            android:textSize="16sp"/>
-
         <Button
-            android:id="@+id/btnSerialize"
+            android:id="@+id/btnDeParcelIncomingData"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="Serialize"
-            android:textSize="16sp"/>
-
-        <Button
-            android:id="@+id/btnDeSerialize"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="DeSerialize"
+            android:text="DeParcelIncomingData"
             android:textSize="16sp"/>
 
         <TextView
-            android:id="@+id/tvAfterDeSerialize"
+            android:id="@+id/tvAfterDeParcel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"

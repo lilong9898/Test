@@ -1,0 +1,27 @@
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+
+    defaultConfig {
+        applicationId "com.lilong.parcelabletest"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    compile "org.jetbrains.kotlin:kotlin-stdlib:${rootProject.ext.kotlinVersion}"
+    compile "org.jetbrains.anko:anko-sdk15:${rootProject.ext.ankoVersion}"
+    compile "org.jetbrains.anko:anko-support-v4:${rootProject.ext.ankoVersion}"
+    compile "org.jetbrains.kotlin:kotlin-reflect:${rootProject.ext.kotlinVersion}"
+}
