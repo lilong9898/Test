@@ -28,5 +28,6 @@ include ':RetrofitTest'
 include ':RxJavaTest'
 include ':SerializableTest'
 include ':ServiceTest'
+include ':SQLiteTest'
 
 
