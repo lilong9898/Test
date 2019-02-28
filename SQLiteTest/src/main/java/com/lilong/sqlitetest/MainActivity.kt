@@ -23,6 +23,8 @@ import org.jetbrains.anko.onClick
  *
  * 不同线程使用不同SQLiteOpenHelper时,会有不同的SQLiteSession,虽然他们各自串行分配各自的SQLiteSession,但在db看来,会有不同线程上的Session同时发送给自己,会抛出SQLiteDatabase Locked Code = 5异常
  * 不同线程使用相同SQLiteOpenHelper时,SQLiteDatabase会将这些线程对应的SQLiteSession串行分配到这个SQLiteOpenHelper对应的SQLiteConnection上,一个Session执行完,立即执行下一个Session
+ *
+ * "串行分配"的底层操作,在SQLiteConnectionPool的waitForConnection方法里
  * */
 class MainActivity : Activity() {
 
