@@ -9,12 +9,11 @@ class TestDBOpenHelper(context: Context?, name: String?, cursorFactory: SQLiteDa
     companion object {
         val TABLE_NAME = "test"
         val COLUMN_ID = "id"
-        val COLUMN_PRODUCT = "product"
-        val COLUMN_PRICE = "price"
+        val COLUMN_THREAD = "thread"
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
-        val createTableSQL: String = "create table " + TABLE_NAME + "(" + COLUMN_ID + " integer primary key autoincrement, " + COLUMN_PRODUCT + " text, " + COLUMN_PRICE + " integer)";
+        val createTableSQL: String = "create table " + TABLE_NAME + "(" + COLUMN_ID + " integer, " + COLUMN_THREAD + " text)";
         db?.execSQL(createTableSQL)
     }
 
