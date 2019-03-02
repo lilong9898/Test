@@ -82,9 +82,9 @@ import okio.Timeout;
  *             (2.1.1) 用作网络通道
  *             (2.1.2) 通过{@link StreamAllocation#findHealthyConnection(int, int, int, int, boolean, boolean)}找到
  *             (2.1.3) (2.1.2)的调用中会通过{@link RealConnection#connect(int, int, int, int, boolean, Call, EventListener)}建立TCP连接（包括HTTPS用的TLS握手过程）
- *         (3)创建一个{@link HttpCodec}
- *             (3.1) 用作通道的读写器
- *             (3.2) 通过{@link RealConnection#newCodec(OkHttpClient, Interceptor.Chain, StreamAllocation)}创建
+ *      (3)创建一个{@link HttpCodec}
+ *         (3.1) 用作通道的读写器
+ *         (3.2) 通过{@link RealConnection#newCodec(OkHttpClient, Interceptor.Chain, StreamAllocation)}创建
  * |
  * 用户添加的network interceptor[1...N]_chain#proceed之前的代码
  * |
