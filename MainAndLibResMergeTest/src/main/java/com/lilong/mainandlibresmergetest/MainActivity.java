@@ -14,7 +14,8 @@ import android.os.Bundle;
  *
  * 综上, 库工程中的R.txt是没用的, 也没有任何地方使用资源id, 本质上所有地方都是用资源名的方式引用资源
  * 这避免了主工程编译过程中对aar中的资源id重新分配,导致资源id变化进而导致引用错资源的问题,而资源名是不变的,如有冲突,主工程的覆盖库工程的
- * 
+ *
+ * 其实主工程的apk也是一样的, 引用资源的时候会使用R.java的引用,而不是字面值资源id(int型数字)
  * */
 public class MainActivity extends Activity {
 
