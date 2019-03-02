@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">TestLib</string>
-    <string name="drawText">DrawText</string>
+    <string name="c">c</string>
+    <string name="drawText">DrawTextLib</string>
 </resources>

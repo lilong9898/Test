@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">MainAndLibResMergeTest</string>
+    <string name="b">b</string>
+    <string name="drawText">DrawTextMain</string>
 </resources>
