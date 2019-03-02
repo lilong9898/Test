@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">TestLib</string>
+    <string name="drawText">DrawText</string>
+</resources>
