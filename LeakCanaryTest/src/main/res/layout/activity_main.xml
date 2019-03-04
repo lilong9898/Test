@@ -21,12 +21,5 @@
             android:text="JumpToSecondActivity"
             android:textSize="16sp"/>
 
-        <Button
-            android:id="@+id/btnShowRefSecondActivity"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:text="showSecondActivityRef"
-            android:textSize="16sp"/>
     </LinearLayout>
 </RelativeLayout>

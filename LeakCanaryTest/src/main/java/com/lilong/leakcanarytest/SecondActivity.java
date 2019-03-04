@@ -1,32 +1,13 @@
 package com.lilong.leakcanarytest;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.widget.TextView;
-import android.widget.Toast;
 
 public class SecondActivity extends Activity {
 
-    public static SecondActivity sInstance;
-    private Handler handler;
-    public TextView tv;
-
-    public static final String ACTION_SECOND_ACTIVITY_ONCREATE = "action_second_activity_oncreate";
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_second);
-        tv = findViewById(R.id.tv);
-        handler = new MyHandler();
-        sInstance = this;
-        setTitle("SecondActivity");
-        Intent intent = new Intent(ACTION_SECOND_ACTIVITY_ONCREATE);
-        sendBroadcast(intent);
-    }
+    private MyHandler handler;
 
     class MyHandler extends Handler{
         @Override
@@ -36,13 +17,17 @@ public class SecondActivity extends Activity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(SecondActivity.this, "haha", Toast.LENGTH_SHORT).show();
-            }
-        }, 3000);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_second);
+        setTitle("SecondActivity");
+
+        // 内存泄漏scenario 1: application持有activity的引用
+//        MainApplication.getInstance().setRefSecondActivity(this);
+        handler = new MyHandler();
+
+        // 内存泄漏scenario 2: 延时message持有handler引用,而handler持有activity引用
+        handler.sendEmptyMessageDelayed(0, 3000);
     }
+
 }
