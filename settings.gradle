@@ -33,5 +33,6 @@ include ':SerializableTest'
 include ':ServiceTest'
 include ':SQLiteTest'
 include ':TestLib'
+include ':WindowAnimationTest'
 
 
