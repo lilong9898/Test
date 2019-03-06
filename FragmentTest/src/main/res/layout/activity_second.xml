@@ -24,10 +24,19 @@
         android:textSize="20sp"/>
 
     <Button
-        android:id="@+id/btnRemoveCurFragment"
+        android:id="@+id/btnAddSecondFragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/btnAddMainFragment"
+        android:layout_alignLeft="@+id/btnAddMainFragment"
+        android:text="addSecondFragment"
+        android:textSize="20sp"/>
+
+    <Button
+        android:id="@+id/btnRemoveCurFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btnAddSecondFragment"
         android:layout_alignLeft="@+id/btnAddMainFragment"
         android:text="removeCurFragment"
         android:textSize="20sp"/>
@@ -59,18 +68,20 @@
         android:text="hideCurFragment"
         android:textSize="20sp"/>
 
-    <Button android:id="@+id/btnAttachMainFragment"
+    <Button
+        android:id="@+id/btnAttachMainFragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/btnHideCurFragment"
         android:layout_alignLeft="@+id/btnAddMainFragment"
         android:text="attachMainFragment"/>
 
-    <Button android:id="@+id/btnDetachMainFragment"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/btnAttachMainFragment"
-            android:layout_alignLeft="@+id/btnAddMainFragment"
-            android:text="detachMainFragment"/>
+    <Button
+        android:id="@+id/btnDetachMainFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btnAttachMainFragment"
+        android:layout_alignLeft="@+id/btnAddMainFragment"
+        android:text="detachMainFragment"/>
 
 </RelativeLayout>
