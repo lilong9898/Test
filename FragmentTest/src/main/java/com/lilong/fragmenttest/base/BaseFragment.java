@@ -4,15 +4,21 @@ import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.lilong.fragmenttest.R;
+
 public abstract class BaseFragment extends Fragment {
 
-    private static final String TAG = "tag";
+    public static final String TAG = "tag";
 
     public abstract int getLayoutResourceId();
+
+    /** fragment的rootView, 即{@link Fragment#onCreateView(LayoutInflater, ViewGroup, Bundle)}方法返回的view*/
+    private View rootView;
 
     @Override
     public void onAttach(Context context) {
@@ -30,7 +36,15 @@ public abstract class BaseFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.i(TAG, getClass().getSimpleName() + "@" + Integer.toHexString(hashCode()) + " onCreateView container = " + container);
         ViewGroup vg = (ViewGroup) inflater.inflate(getLayoutResourceId(), null);
+        rootView = vg;
         return vg;
+    }
+
+    /** 这时rootView已经被加到了parent里, 即{@link R.id#containerFragment}这个布局里*/
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        Log.i(TAG, getClass().getSimpleName() + "@" + Integer.toHexString(hashCode()) + " onViewCreated, rootView's parent = " + rootView.getParent());
     }
 
     @Override
@@ -63,10 +77,14 @@ public abstract class BaseFragment extends Fragment {
         Log.i(TAG, getClass().getSimpleName() + "@" + Integer.toHexString(hashCode()) + " onStop");
     }
 
+    /**
+     * 这时fragment的rootView的{@link View#saveHierarchyState(SparseArray)}已调用
+     * 但rootView此时还在parent里, 等onDestroyView调完就会从parent里脱离
+     * */
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        Log.i(TAG, getClass().getSimpleName() + "@" + Integer.toHexString(hashCode()) + " onDestroyView");
+        Log.i(TAG, getClass().getSimpleName() + "@" + Integer.toHexString(hashCode()) + " onDestroyView, rootView's parent = " + rootView.getParent());
     }
 
     @Override
@@ -79,5 +97,11 @@ public abstract class BaseFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         Log.i(TAG, getClass().getSimpleName() + "@" + Integer.toHexString(hashCode()) + " onDetach");
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        Log.i(TAG, getClass().getSimpleName() + "@" + Integer.toHexString(hashCode()) + "onHiddenChanged = " + hidden);
     }
 }
