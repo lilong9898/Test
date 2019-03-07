@@ -28,6 +28,11 @@ import com.lilong.fragmenttest.fragment.SecondFragment;
  * (3) 调{@link BackStackRecord#commit}最终调到{@link FragmentManager#enqueueAction}其中
  *     (3.1) 之前的ArrayList<BackStackRecord#Op>被转换成{@link FragmentManager.OpGenerator}
  *     (3.2) {@link FragmentManager.OpGenerator}被加到ArrayList<OpGenerator>的mPendingActions里
+ *     (3.3) {@link FragmentManager#scheduleCommit}将一个runnable发送到所属activity的mHandler上, 这个handler是activity初始化的时候就生成的
+ *           runnable的内容是执行{@link FragmentManagerImpl#execPendingActions}
+ *
+ * {@link FragmentManagerImpl#execPendingActions}中:
+ * (1)
  */
 
 public class SecondActivity extends BaseActivity {
@@ -85,7 +90,7 @@ public class SecondActivity extends BaseActivity {
         mBtnReplaceBySecondFragment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getFragmentManager().beginTransaction().replace(R.id.containerFragment, secondFragment).setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN).commitAllowingStateLoss();
+                getFragmentManager().beginTransaction().setCustomAnimations(R.anim.push_left_in, R.anim.push_left_out).replace(R.id.containerFragment, secondFragment).commitAllowingStateLoss();
             }
         });
         mBtnShowCurFragment.setOnClickListener(new View.OnClickListener() {
