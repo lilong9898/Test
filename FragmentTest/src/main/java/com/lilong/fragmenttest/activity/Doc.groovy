@@ -2,8 +2,11 @@ import android.app.FragmentManager
 import android.app.FragmentTransaction
 
 /**
- * 某个布局容器, 先加上fragmentA, 再加上fragmentB, 不会触发fragmentA的onPause/onStop等方法
+ * (1) 某个布局容器, 先加上fragmentA, 再加上fragmentB, 不会触发fragmentA的onPause/onStop等方法
  * 只有当fragmentA被detach, remove或所属的activity结束时才触发
+ *
+ * (2) 某个布局容器, 先加上fragmentA, 再加上fragmentB, 会依次将fragmentA和fragmentB的rootView加到容器里
+ * 所以两者的rootView都响应触摸事件
  *
  * {@link FragmentManager}是抽象类, 它的实现类是{@link FragmentManagerImpl}
  * {@link FragmentTransaction}是抽象类, 它的实现是{@link BackStackRecord}

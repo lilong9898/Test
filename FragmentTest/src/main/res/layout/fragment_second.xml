@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.lilong.fragmenttest.view.CustomRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#6000ff00">
+                                                   android:layout_width="match_parent"
+                                                   android:layout_height="match_parent"
+                                                   android:background="#4000ff00">
+
+    <Button
+        android:id="@+id/btnFragmentSecond"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:text="FragmentSecond"/>
 
     <TextView
         android:layout_width="wrap_content"

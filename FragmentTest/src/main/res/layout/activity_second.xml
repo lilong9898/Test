@@ -10,7 +10,7 @@
         android:layout_height="100dp"
         android:layout_alignParentTop="true"
         android:layout_marginLeft="50dp"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="20dp"
         android:background="@android:color/holo_blue_dark"></FrameLayout>
 
     <Button
@@ -20,8 +20,7 @@
         android:layout_below="@+id/containerFragment"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="50dp"
-        android:text="addMainFragment"
-        android:textSize="20sp"/>
+        android:text="addMainFragment"/>
 
     <Button
         android:id="@+id/btnAddSecondFragment"
@@ -29,8 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/btnAddMainFragment"
         android:layout_alignLeft="@+id/btnAddMainFragment"
-        android:text="addSecondFragment"
-        android:textSize="20sp"/>
+        android:text="addSecondFragment"/>
 
     <Button
         android:id="@+id/btnRemoveCurFragment"
@@ -38,8 +36,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/btnAddSecondFragment"
         android:layout_alignLeft="@+id/btnAddMainFragment"
-        android:text="removeCurFragment"
-        android:textSize="20sp"/>
+        android:text="removeCurFragment"/>
 
     <Button
         android:id="@+id/btnReplaceBySecondFragment"
@@ -47,8 +44,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/btnRemoveCurFragment"
         android:layout_alignLeft="@+id/btnAddMainFragment"
-        android:text="replaceBySecondFragment"
-        android:textSize="20sp"/>
+        android:text="replaceBySecondFragment"/>
 
     <Button
         android:id="@+id/btnShowCurFragment"
@@ -56,8 +52,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/btnReplaceBySecondFragment"
         android:layout_alignLeft="@+id/btnAddMainFragment"
-        android:text="showCurFragment"
-        android:textSize="20sp"/>
+        android:text="showCurFragment"/>
 
     <Button
         android:id="@+id/btnHideCurFragment"
@@ -65,8 +60,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/btnShowCurFragment"
         android:layout_alignLeft="@+id/btnAddMainFragment"
-        android:text="hideCurFragment"
-        android:textSize="20sp"/>
+        android:text="hideCurFragment"/>
 
     <Button
         android:id="@+id/btnAttachMainFragment"
