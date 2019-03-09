@@ -77,7 +77,7 @@ public class MainActivity extends Activity {
             WindowManager.LayoutParams nl = new WindowManager.LayoutParams();
             nl.windowAnimations = R.style.coverFragmentAnimation;
             nl.type = WindowManager.LayoutParams.TYPE_APPLICATION;
-            ViewGroup container = getWindow().getDecorView().findViewById(android.R.id.content);
+            ViewGroup container = (ViewGroup) getWindow().getDecorView().findViewById(android.R.id.content);
             nl.width = container.getWidth();
             nl.height = container.getHeight();
             // 注意系统默认会由新的window消费触摸/按键事件, 所以要加下面的flags以允许activity消费事件
