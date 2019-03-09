@@ -22,12 +22,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:layout_alignParentTop="true"
+                android:layout_marginTop="300dp"
                 android:background="@android:color/holo_orange_light"/>
 
             <SurfaceView
                 android:id="@+id/sv"
                 android:layout_width="200dp"
                 android:layout_height="200dp"
+                android:layout_marginTop="300dp"
                 android:layout_alignParentTop="true"
                 android:background="#5000ff00"/>
         </RelativeLayout>

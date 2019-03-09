@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -14,6 +16,8 @@ import android.widget.ScrollView;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
  * (1) SurfaceView和其它控件都属于同一个window
@@ -34,8 +38,13 @@ public class MainActivity extends Activity {
     private ScrollView scrollView;
 
     private Paint paint;
+    // 用来清空canvas的
+    private Paint clearPaint;
     private int surfaceWidth;
     private int surfaceHeight;
+
+    // 用来放渲染线程的线程池
+    private Executor singleThreadExecutor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +54,12 @@ public class MainActivity extends Activity {
         paint = new Paint();
         paint.setAntiAlias(true);
         paint.setColor(Color.WHITE);
-        paint.setTextSize(120.0f);
+        paint.setTextSize(90.0f);
+
+        clearPaint = new Paint();
+        clearPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+
+        singleThreadExecutor = Executors.newSingleThreadExecutor();
 
         v = findViewById(R.id.v);
         sv = (SurfaceView) findViewById(R.id.sv);
@@ -87,7 +101,8 @@ public class MainActivity extends Activity {
             @Override
             public void onScrollChanged() {
                 // 运行在渲染线程上
-                new RenderThread(sh, paint, surfaceWidth, surfaceHeight).start();
+                Runnable runnable = new RenderThreadRunnable(sh, paint, surfaceWidth, surfaceHeight);
+                singleThreadExecutor.execute(runnable);
             }
         });
     }
@@ -101,7 +116,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    class RenderThread extends Thread{
+    class RenderThreadRunnable implements Runnable{
 
         private SurfaceHolder surfaceHolder;
         private Paint paint;
@@ -109,22 +124,30 @@ public class MainActivity extends Activity {
         private int height;
         private SimpleDateFormat sdf;
 
-        public RenderThread(SurfaceHolder surfaceHolder, Paint paint, int width, int height){
+        public RenderThreadRunnable(SurfaceHolder surfaceHolder, Paint paint, int width, int height){
             this.surfaceHolder = surfaceHolder;
             this.paint = paint;
             this.width = width;
             this.height = height;
-            sdf = new SimpleDateFormat("HH:mm:ss");
+            sdf = new SimpleDateFormat("HH:mm:ss.SSS");
         }
 
         @Override
         public void run() {
             Canvas canvas = surfaceHolder.lockCanvas();
 
+            // 清空已有内容
+            canvas.drawPaint(clearPaint);
+
             String text = sdf.format(new Date());
             float textWidthPx = paint.measureText(text);
             canvas.drawText(text, width / 2 - textWidthPx / 2, height * 3/4, paint);
             surfaceHolder.unlockCanvasAndPost(canvas);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 }
