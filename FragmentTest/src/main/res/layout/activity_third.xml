@@ -11,4 +11,30 @@
         android:layout_marginLeft="50dp"
         android:layout_marginTop="20dp"
         android:background="#d0d0d0"></FrameLayout>
+
+    <Button
+        android:id="@+id/btnAddMainFragmentWithBackStack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/layoutFragmentContainer"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="50dp"
+        android:text="addMainFragmentWithBackStack"/>
+
+    <Button
+        android:id="@+id/btnAddSecondFragmentWithBackStack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btnAddMainFragmentWithBackStack"
+        android:layout_alignLeft="@+id/btnAddMainFragmentWithBackStack"
+        android:text="addSecondFragmentWithBackStack"/>
+
+    <Button
+        android:id="@+id/btnReplaceBySecondFragmentWithBackStack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btnAddSecondFragmentWithBackStack"
+        android:layout_alignLeft="@id/btnAddMainFragmentWithBackStack"
+        android:text="replaceBySecondFragmentWithBackStack"/>
+
 </RelativeLayout>

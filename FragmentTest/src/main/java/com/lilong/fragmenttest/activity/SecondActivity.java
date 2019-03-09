@@ -1,9 +1,11 @@
 package com.lilong.fragmenttest.activity;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.lilong.fragmenttest.R;
 import com.lilong.fragmenttest.base.BaseActivity;
@@ -25,6 +27,7 @@ public class SecondActivity extends BaseActivity {
     private Button mBtnHideCurFragment;
     private Button mBtnAttachCurFragment;
     private Button mBtnDetachCurFragment;
+    private Button mBtnFindFragmentById;
 
     @Override
     public int getLayoutResourceId() {
@@ -42,6 +45,7 @@ public class SecondActivity extends BaseActivity {
         mBtnHideCurFragment = findViewById(R.id.btnHideCurFragment);
         mBtnAttachCurFragment = findViewById(R.id.btnAttachMainFragment);
         mBtnDetachCurFragment = findViewById(R.id.btnDetachMainFragment);
+        mBtnFindFragmentById = findViewById(R.id.btnFindFragmentById);
         mainFragment = new MainFragment();
         secondFragment = new SecondFragment();
         mBtnAddMainFragment.setOnClickListener(new View.OnClickListener() {
@@ -97,6 +101,14 @@ public class SecondActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 getFragmentManager().beginTransaction().detach(mainFragment).commitAllowingStateLoss();
+            }
+        });
+        /** {@link FragmentManager#findFragmentById(int)}会找到这个容器中最上面的fragment(最后一个加上去的)*/
+        mBtnFindFragmentById.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Fragment fragment = getFragmentManager().findFragmentById(R.id.layoutFragmentContainer);
+                Toast.makeText(SecondActivity.this, fragment == null ? "null" : fragment.toString(), Toast.LENGTH_SHORT).show();
             }
         });
     }

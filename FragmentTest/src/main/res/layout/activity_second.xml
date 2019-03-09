@@ -78,4 +78,11 @@
         android:layout_alignLeft="@+id/btnAddMainFragment"
         android:text="detachMainFragment"/>
 
+    <Button
+        android:id="@+id/btnFindFragmentById"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btnDetachMainFragment"
+        android:layout_alignLeft="@+id/btnAddMainFragment"
+        android:text="findFragmentById"/>
 </RelativeLayout>
