@@ -4,6 +4,7 @@ import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLUtils;
+import android.util.Log;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
@@ -11,6 +12,8 @@ import java.nio.ByteOrder;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
+
+import static com.lilong.glsurfaceviewtest.MainActivity.TAG;
 
 /**
  *
@@ -68,6 +71,7 @@ public class MainRender implements GLSurfaceView.Renderer{
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+        Log.i(TAG, "onSurfaceCreated called on thread " + Thread.currentThread().getName());
         textures = new int[1];
         gl.glEnable(GL10.GL_TEXTURE_2D);
         gl.glEnableClientState(GL10.GL_VERTEX_ARRAY);
@@ -86,11 +90,13 @@ public class MainRender implements GLSurfaceView.Renderer{
 
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
+        Log.i(TAG, "onSurfaceChanged called on thread " + Thread.currentThread().getName());
         gl.glViewport(0, 0, width, height);
     }
 
     @Override
     public void onDrawFrame(GL10 gl) {
+        Log.i(TAG, "onDrawFrame called on thread " + Thread.currentThread().getName());
         gl.glActiveTexture(GL10.GL_TEXTURE0);
         gl.glBindTexture(GL10.GL_TEXTURE_2D, textures[0]);
 
