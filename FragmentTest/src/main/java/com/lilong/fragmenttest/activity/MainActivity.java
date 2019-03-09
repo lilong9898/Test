@@ -1,8 +1,8 @@
 package com.lilong.fragmenttest.activity;
 
 import android.content.Intent;
-import android.view.View;
-import android.widget.Button;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.lilong.fragmenttest.R;
 import com.lilong.fragmenttest.base.BaseActivity;
@@ -14,7 +14,29 @@ import com.lilong.fragmenttest.fragment.SecondFragment;
 
 public class MainActivity extends BaseActivity {
 
-    private Button btnJumpToSecondActivity;
+    private MenuItem menuItemJumpToSecondActivity;
+    private MenuItem menuItemJumpToThirdActivity;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.actions, menu);
+        menuItemJumpToSecondActivity = menu.findItem(R.id.menuItemJumpToSecondActivity);
+        menuItemJumpToThirdActivity = menu.findItem(R.id.menuItemJumpToThirdActivity);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item == menuItemJumpToSecondActivity){
+            Intent intent = new Intent(MainActivity.this, SecondActivity.class);
+            startActivity(intent);
+        }else if(item == menuItemJumpToThirdActivity){
+            Intent intent = new Intent(MainActivity.this, ThirdActivity.class);
+            startActivity(intent);
+        }
+        return true;
+    }
+
     private SecondFragment secondFragment;
 
     @Override
@@ -24,14 +46,6 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void initView() {
-        btnJumpToSecondActivity = (Button) findViewById(R.id.btnJumpToSecondActivity);
-        btnJumpToSecondActivity.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, SecondActivity.class);
-                startActivity(intent);
-            }
-        });
         secondFragment = new SecondFragment();
     }
 

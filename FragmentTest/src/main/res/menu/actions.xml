@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menuItemJumpToSecondActivity"
+        android:showAsAction="always"
+        android:title="SecondActivity"/>
+    <item
+        android:id="@+id/menuItemJumpToThirdActivity"
+        android:showAsAction="always"
+        android:title="ThirdActivity"/>
+</menu>

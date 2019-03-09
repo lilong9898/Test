@@ -18,6 +18,7 @@
             </intent-filter>
         </activity>
         <activity android:name="com.lilong.fragmenttest.activity.SecondActivity"/>
+        <activity android:name=".activity.ThirdActivity"/>
     </application>
 
 </manifest>

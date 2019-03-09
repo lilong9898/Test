@@ -40,7 +40,7 @@ public abstract class BaseFragment extends Fragment {
         return vg;
     }
 
-    /** 这时rootView已经被加到了parent里, 即{@link R.id#containerFragment}这个布局里*/
+    /** 这时rootView已经被加到了parent里, 即{@link R.id#layoutFragmentContainer}这个布局里*/
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);

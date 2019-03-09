@@ -33,7 +33,7 @@ public class SecondActivity extends BaseActivity {
 
     @Override
     public void initView() {
-        fragmentContainer = findViewById(R.id.containerFragment);
+        fragmentContainer = findViewById(R.id.layoutFragmentContainer);
         mBtnAddMainFragment = findViewById(R.id.btnAddMainFragment);
         mBtnAddSecondFragment = findViewById(R.id.btnAddSecondFragment);
         mBtnRemoveCurFragment = findViewById(R.id.btnRemoveCurFragment);
@@ -47,32 +47,32 @@ public class SecondActivity extends BaseActivity {
         mBtnAddMainFragment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getFragmentManager().beginTransaction().add(R.id.containerFragment, mainFragment).commitAllowingStateLoss();
+                getFragmentManager().beginTransaction().add(R.id.layoutFragmentContainer, mainFragment).commitAllowingStateLoss();
             }
         });
         mBtnAddSecondFragment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getFragmentManager().beginTransaction().add(R.id.containerFragment, secondFragment).commitAllowingStateLoss();
+                getFragmentManager().beginTransaction().add(R.id.layoutFragmentContainer, secondFragment).commitAllowingStateLoss();
             }
         });
         mBtnRemoveCurFragment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Fragment curFragment = getFragmentManager().findFragmentById(R.id.containerFragment);
+                Fragment curFragment = getFragmentManager().findFragmentById(R.id.layoutFragmentContainer);
                 getFragmentManager().beginTransaction().remove(curFragment).commitAllowingStateLoss();
             }
         });
         mBtnReplaceBySecondFragment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getFragmentManager().beginTransaction().setCustomAnimations(R.animator.slide_right_in, R.animator.slide_left_out).replace(R.id.containerFragment, secondFragment).commitAllowingStateLoss();
+                getFragmentManager().beginTransaction().setCustomAnimations(R.animator.slide_right_in, R.animator.slide_left_out).replace(R.id.layoutFragmentContainer, secondFragment).commitAllowingStateLoss();
             }
         });
         mBtnShowCurFragment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Fragment curFragment = getFragmentManager().findFragmentById(R.id.containerFragment);
+                Fragment curFragment = getFragmentManager().findFragmentById(R.id.layoutFragmentContainer);
                 if (curFragment != null) {
                     getFragmentManager().beginTransaction().show(curFragment).commitAllowingStateLoss();
                 }
@@ -81,7 +81,7 @@ public class SecondActivity extends BaseActivity {
         mBtnHideCurFragment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Fragment curFragment = getFragmentManager().findFragmentById(R.id.containerFragment);
+                Fragment curFragment = getFragmentManager().findFragmentById(R.id.layoutFragmentContainer);
                 if (curFragment != null) {
                     getFragmentManager().beginTransaction().hide(curFragment).commitAllowingStateLoss();
                 }

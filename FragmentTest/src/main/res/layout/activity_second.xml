@@ -5,19 +5,19 @@
                 android:orientation="vertical">
 
     <FrameLayout
-        android:id="@+id/containerFragment"
+        android:id="@+id/layoutFragmentContainer"
         android:layout_width="300dp"
         android:layout_height="100dp"
         android:layout_alignParentTop="true"
         android:layout_marginLeft="50dp"
         android:layout_marginTop="20dp"
-        android:background="@android:color/holo_blue_dark"></FrameLayout>
+        android:background="#d0d0d0"></FrameLayout>
 
     <Button
         android:id="@+id/btnAddMainFragment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/containerFragment"
+        android:layout_below="@+id/layoutFragmentContainer"
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="50dp"
         android:text="addMainFragment"/>
