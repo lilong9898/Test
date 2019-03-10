@@ -8,7 +8,7 @@
 
 /**
 本头文件需引入jni库的头文件jni.h
-这个文件的实际位置是 jdk目录/include/jni.h
+这个文件的实际位置是 <Android SDK目录>/ndk-bundle/toolchains/llvm/prebuilt/<os架构>/sysroot/usr/include/jni.h
 */
 #include <jni.h>
 /**

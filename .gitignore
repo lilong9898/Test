@@ -3,6 +3,7 @@
 build/
 .gradle/
 captures/
+.externalNativeBuild
 
 # 过滤文件类型
 *.rawproto
