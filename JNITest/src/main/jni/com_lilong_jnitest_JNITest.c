@@ -46,6 +46,14 @@ A/DEBUG:     #03 pc 0000207f  /data/app/com.lilong.jnitest-jJhDo4lwsezYlkHQizPQK
      完整列表见 http://man7.org/linux/man-pages/man2/sigaction.2.html
 
  (3) backtrace中的调用栈
+
+ native crash发生时，程序直接立刻停止运行，不会给用户可见的反馈
+ 但是有办法可以在捕获到native crash的信号后，将其转换成java exception:
+ http://blog.httrack.com/blog/2013/08/23/catching-posix-signals-on-android/
+
+ 关于符号表：
+ linux系统上用 nm -g xxx.so 或readelf -Ws xxx.so命令可以看到so的符号表
+ 能看到Java_com_lilong_jnitest_JNITest_add这个方法
  * */
 JNIEXPORT jint JNICALL Java_com_lilong_jnitest_JNITest_add(JNIEnv * env, jclass thisObj, jint a, jint b){
     // 故意引入一个除零的错误

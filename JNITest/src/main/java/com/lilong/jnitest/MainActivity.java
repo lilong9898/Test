@@ -34,6 +34,18 @@ import android.widget.Toast;
  *     }
  *     配置完后，头文件和c文件都会有代码提示了
  * (6) 结束，不需单独生成so，so会自动编译生成并放到apk的lib目录下
+ *
+ * 加载so有两种方式
+ * (1) {@link System#loadLibrary(String)}
+ * 参数是so的名字去掉开头的"lib"，也就是Android.mk中LOCAL_MODULE的值
+ * 然后{@link Runtime}内部会调用{@link ClassLoader#findLibrary(String)}方法根据so名字找到so的绝对路径
+ *
+ * (2) {@link System#load(String)}
+ * 参数是so的绝对路径，这种方式允许我们从网络下载so，再来加载
+ * 这有两个好处：
+ *    - 减少apk大小
+ *    - 可以在运行时获取到手机的cpu架构，去下载对应的so，达到最佳性能
+ * 注意加载时so不能在sd卡里(sd卡不是executable的)，最好拷贝到应用的私有目录里
  * */
 public class MainActivity extends Activity {
 
