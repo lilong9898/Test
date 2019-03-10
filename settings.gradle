@@ -1,6 +1,7 @@
 include ':app'
 include ':ActivityTest'
 include ':AnnotationTest'
+include ':ANRTest'
 include ':Algorithm'
 include ':BroadcastTest'
 include ':ContentProvider'
