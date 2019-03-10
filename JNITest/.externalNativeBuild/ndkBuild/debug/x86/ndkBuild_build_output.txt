@@ -1,0 +1,19 @@
+rm -f /home/lilong/Test/JNITest/build/intermediates/ndkBuild/debug/lib/x86/*
+rm -f /home/lilong/Test/JNITest/build/intermediates/ndkBuild/debug/lib/x86/gdbserver
+rm -f /home/lilong/Test/JNITest/build/intermediates/ndkBuild/debug/lib/x86/gdb.setup
+mkdir -p /home/lilong/Test/JNITest/build/intermediates/ndkBuild/debug/lib/x86
+echo [x86] "Gdbserver      ": "[i686-linux-android] /home/lilong/Test/JNITest/build/intermediates/ndkBuild/debug/lib/x86/gdbserver"
+install -p /home/lilong/android-sdk/ndk-bundle/prebuilt/android-x86/gdbserver/gdbserver /home/lilong/Test/JNITest/build/intermediates/ndkBuild/debug/lib/x86/gdbserver
+echo [x86] "Gdbsetup       ": "/home/lilong/Test/JNITest/build/intermediates/ndkBuild/debug/lib/x86/gdb.setup"
+echo "set solib-search-path /home/lilong/Test/JNITest/build/intermediates/ndkBuild/debug/obj/local/x86" > /home/lilong/Test/JNITest/build/intermediates/ndkBuild/debug/lib/x86/gdb.setup
+echo "directory /home/lilong/android-sdk/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/sysroot /home/lilong/Test/JNITest/src/main/jni /home/lilong/android-sdk/ndk-bundle/sources/cxx-stl/system" >> /home/lilong/Test/JNITest/build/intermediates/ndkBuild/debug/lib/x86/gdb.setup
+mkdir -p /home/lilong/Test/JNITest/build/intermediates/ndkBuild/debug/obj/local/x86/objs-debug/JNITest
+echo [x86] "Compile        ": "JNITest <= com_lilong_jnitest_JNITest.c"
+rm -f /home/lilong/Test/JNITest/build/intermediates/ndkBuild/debug/obj/local/x86/objs-debug/JNITest/com_lilong_jnitest_JNITest.o
+/home/lilong/android-sdk/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/bin/clang -MMD -MP -MF /home/lilong/Test/JNITest/build/intermediates/ndkBuild/debug/obj/local/x86/objs-debug/JNITest/com_lilong_jnitest_JNITest.o.d -target i686-none-linux-android16 -fdata-sections -ffunction-sections -fstack-protector-strong -funwind-tables -no-canonical-prefixes  --sysroot /home/lilong/android-sdk/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/sysroot -g -Wno-invalid-command-line-argument -Wno-unused-command-line-argument  -fno-addrsig -fPIC -O0 -UNDEBUG -fno-limit-debug-info  -I/home/lilong/Test/JNITest/src/main/jni   -DANDROID  -Wa,--noexecstack -Wformat -Werror=format-security -mstackrealign  -c  /home/lilong/Test/JNITest/src/main/jni/com_lilong_jnitest_JNITest.c -o /home/lilong/Test/JNITest/build/intermediates/ndkBuild/debug/obj/local/x86/objs-debug/JNITest/com_lilong_jnitest_JNITest.o
+mkdir -p /home/lilong/Test/JNITest/build/intermediates/ndkBuild/debug/obj/local/x86
+echo [x86] "SharedLibrary  ": "libJNITest.so"
+/home/lilong/android-sdk/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/bin/clang++ -Wl,-soname,libJNITest.so -shared /home/lilong/Test/JNITest/build/intermediates/ndkBuild/debug/obj/local/x86/objs-debug/JNITest/com_lilong_jnitest_JNITest.o -lgcc -Wl,--exclude-libs,libgcc.a -latomic -Wl,--exclude-libs,libatomic.a -target i686-none-linux-android16 -no-canonical-prefixes    -Wl,--build-id -Wl,--no-undefined -Wl,-z,noexecstack -Wl,-z,relro -Wl,-z,now -Wl,--warn-shared-textrel -Wl,--fatal-warnings   -lc -lm -o /home/lilong/Test/JNITest/build/intermediates/ndkBuild/debug/obj/local/x86/libJNITest.so
+echo [x86] "Install        ": "libJNITest.so => /home/lilong/Test/JNITest/build/intermediates/ndkBuild/debug/lib/x86/libJNITest.so"
+install -p /home/lilong/Test/JNITest/build/intermediates/ndkBuild/debug/obj/local/x86/libJNITest.so /home/lilong/Test/JNITest/build/intermediates/ndkBuild/debug/lib/x86/libJNITest.so
+/home/lilong/android-sdk/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/bin/i686-linux-android-strip --strip-unneeded  /home/lilong/Test/JNITest/build/intermediates/ndkBuild/debug/lib/x86/libJNITest.so
