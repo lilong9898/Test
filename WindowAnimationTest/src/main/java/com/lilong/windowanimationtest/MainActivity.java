@@ -18,7 +18,8 @@ import android.widget.RelativeLayout;
  * 本测试在layoutParams参数里设置了时长为3秒的平移动画, 在调用{@link WindowManager#addView(View, ViewGroup.LayoutParams)}后, 就会启动这个动画
  * 在这之后, 给window的rootView添加view仍然有效! 添加上来的view会随着window的动画一起移动, 因为它已经是window的一部分
  *
- * 新window划入的动画由windowManager所在的system server进程执行
+ * 从layout inspector的结果看，会生成新的window，新的window中没有decorView，其rootView直接就是windowManager.addView()的参数view
+ * 新window划入的动画由windowManager所在的system server进程执行，
  *
  * Window WindowManager DecorView ViewRootImpl Activity WMS AMS之间的关系:
  * (1) PhoneWindow与DecorView一一对应, DecorView在PhoneWindow的installDecor方法中生成
