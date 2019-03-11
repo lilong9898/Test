@@ -76,50 +76,7 @@ import java.util.Date;
  *     - ANR触发逻辑全在InputDispatcher.cpp里
  *
  * (10) InputDispatching ANR的触发流程:
- *
- *     - void InputDispatcher::dispatchOnceInnerLocked(nsecs_t* nextWakeupTime){
- *         nsecs_t currentTime = now();
- *         ....
- *         resetANRTimesLocked();
- *         ....
- *         dispatchMotionLocked(currentTime, ....)
- *         ....
- *     }
- *
- *     bool InputDispatcher::dispatchMotionLocked(nsecs_t currentTime, ....) {
- *         ....
- *         // 找到当前接收触摸事件的窗口, 根据条件触发ANR
- *         findTouchedWindowTargetsLocked(currentTime, entry, inputTargets, nextWakeupTime, &conflictingPointerActions);
- *         ....
- *     }
- *
- *     int32_t InputDispatcher::findTouchedWindowTargetsLocked(nsecs_t currentTime, ....) {
- *         ....
- *         // If the touched window is still working on previous events then keep waiting.
- *         if(!isWindowReadyForMoreInputLocked(currentTime, ....){
- *             handleTargetsNotReadyLocked(currentTime, ....)
- *             goto Unresponsive
- *         }
- *         ....
- *
- *     }
- *     其中:
- *     bool InputDispatcher::isWindowReadyForMoreInputLocked(nsecs_t currentTime, ....){
- *         .....
- *         // The one case where we pause input event delivery is when the wait queue is piling
- *         // up with lots of events because the application is not responding.
- *         // This condition ensures that ANRs are detected reliably.
- *         if (!connection->waitQueue.isEmpty()
- *                 && currentTime >= connection->waitQueue.head->eventEntry->eventTime
- *                         + STREAM_AHEAD_EVENT_TIMEOUT) {
- *             return false;
- *         }
- *         .....
- *     }
- *
- *     int32_t InputDispatcher::handleTargetsNotReadyLocked(nsecs_t currentTime, ....) {
- *
- *     }
+ *      http://www.voidcn.com/article/p-cvimgjuk-bpd.html
  * */
 public class MainActivity extends Activity {
 
