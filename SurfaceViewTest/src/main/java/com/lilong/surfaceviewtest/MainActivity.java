@@ -7,7 +7,9 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
+import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -28,6 +30,14 @@ import java.util.concurrent.Executors;
  *     而surfaceView自身的背景(黑色), 挡住了其他view
  * (5) {@link SurfaceHolder}的各个方法都是在[主线程]上被调用的
  * (6) 通过(5)能看出, SurfaceView不会自己帮你开辟一个渲染用线程, 你得自己创建一个渲染用线程, 并在里面渲染
+ * (7) 在主线程完全阻塞的情况下, 其它线程仍然可以更新surfaceView的显示
+ *
+ * SurfaceView相比View的不同:
+ * (1) SurfaceView可以用工作线程来更新, 但是要考虑工作线程和主线程的配合问题
+ * (2) 因为(1), SurfaceView可以在任何时候更新, 而View只会在VSYNC信号时更新
+ * (3) SurfaceView内部有个{@link Surface}, 而所有的View都共用ViewRootImpl内部的{@link Surface}(见BaseSurfaceHolder类)
+ *     所以SurfaceView会消耗更多资源
+ * (4) Surface本身实现了{@link Parcelable}接口, 所以它可以用其他进程传递来的数据来生成
  * */
 public class MainActivity extends Activity {
 
