@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity">
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context=".MainActivity">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -13,12 +13,21 @@
         android:orientation="vertical">
 
         <Button
-            android:id="@+id/btnTestANR"
+            android:id="@+id/btnMainThreadSleep"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:text="TestANR"
-            android:textSize="20sp" />
+            android:text="MainThreadSleep1min"
+            android:textSize="20sp"/>
+
+        <Button
+            android:id="@+id/btnCollectInputEvent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:text="CollectInputEvent"
+            android:textSize="20sp"/>
 
         <TextView
             android:id="@+id/tvClock"
@@ -26,13 +35,14 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="20dp"
-            android:textSize="20sp" />
+            android:textSize="20sp"/>
 
         <SurfaceView
             android:id="@+id/sv"
             android:layout_width="200dp"
             android:layout_height="100dp"
-            android:layout_marginTop="20dp" />
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"/>
     </LinearLayout>
 
 </RelativeLayout>

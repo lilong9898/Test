@@ -23,14 +23,31 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * 可以看到，在点击按钮，主线程完全阻塞之后
- * handlerThread的消息循环不受影响，还是正常进行，surfaceView上能正常刷新时间
+ * (1) 可以看到，在点击按钮，主线程完全阻塞之后
+ *     handlerThread的消息循环不受影响，还是正常进行，surfaceView上能正常刷新时间
+ * (2) 当主线程阻塞后, 只要没有新的输入事件, 不管过多长时间, 也不会触发ANR
+ * (3) 当主线程阻塞后, 只有一个新的输入事件1, 不管过多长时间, 也不会出发ANR
+ * (4) 当主线程阻塞后, 有新的输入事件1, 然后再有新的输入事件2, 主线程在经过一定时间(5秒左右, 跟手机设定有关)后未处理完输入事件2, 才会触发ANR
+ *
+ * 比如像下面的测试程序, 所引发的ANR, 在logcat中的log是:
+ * E/ActivityManager: ANR in com.lilong.anrtest (com.lilong.anrtest/.MainActivity)
+ *     PID: 8588
+ *     Reason: Input dispatching timed out (Waiting to send non-key event because the touched window has not finished processing certain input events that were delivered to it over 500.0ms ago.  Wait queue length: 6.  Wait queue head age: 5598.0ms.)
+ *     Load: 0.0 / 0.0 / 0.0
+ *     CPU usage from 213436ms to 0ms ago (2019-03-11 11:27:03.894 to 2019-03-11 11:30:37.331):
+ *       6.8% 1284/audioserver: 6.4% user + 0.3% kernel / faults: 1 minor
+ *       3.7% 2062/system_server: 2% user + 1.6% kernel / faults: 11672 minor 22 major
+ *       3.6% 763/surfaceflinger: 1.7% user + 1.8% kernel
+ *       ......
+ *   wait queue length: inputDispatcher里积压了多少个事件等待分发给window, 因为(4)的规则, wait queue length最少是2
+ *   wait queue head age: 积压的输入事件里, 最早的那个是多久之前的
  * */
 public class MainActivity extends Activity {
 
     private static final String TAG = "ATest";
     private static final long SECOND = 1000l;
-    private Button btnTestANR;
+    private Button btnMainThreadSleep1Min;
+    private Button btnCollectInputEvent;
     private TextView tvClock;
 
     private MainThreadHandler mainThreadHandler;
@@ -87,19 +104,21 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        btnTestANR = findViewById(R.id.btnTestANR);
-        btnTestANR.setOnClickListener(new View.OnClickListener() {
+        btnMainThreadSleep1Min = findViewById(R.id.btnMainThreadSleep);
+        btnMainThreadSleep1Min.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i(TAG, "onClick");
+                Log.i(TAG, "main thread sleep now");
                 try {
-                    Thread.sleep(20 * SECOND);
+                    Thread.sleep(60 * SECOND);
                 } catch (Exception e) {
 
                 }
-                Toast.makeText(MainActivity.this, "Clicked!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "main thread wakes up!", Toast.LENGTH_SHORT).show();
             }
         });
+
+        btnCollectInputEvent = findViewById(R.id.btnCollectInputEvent);
 
         // 工作在主线程的handler
         tvClock = findViewById(R.id.tvClock);
