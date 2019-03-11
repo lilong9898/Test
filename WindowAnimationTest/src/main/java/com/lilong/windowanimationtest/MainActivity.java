@@ -33,8 +33,12 @@ import android.widget.RelativeLayout;
  * (9) ViewRootImpl向WMS的跨进程通信, 是ViewRootImpl通过IWindowSession的binder接口(通过WindowManagerGlobal获得客户端)向WMS发起
  * (10) WMS向ViewRootImpl的跨进程通信, 是WMS通过IWindow的binder接口(在ViewRootImpl内生成服务端)向ViewRootImpl发起
  * (11) ViewRootImpl是在ActivityThread的handleResumeActivity调用WindowManager的addView(DecorView)时生成的
- * (12) 同样在(11)执行时, 调ViewRootImpl的setView方法使得ViewRootImpl跟DecorView关联, 从此UI开始与WMS通信, 事件分发开始
- * (13) ViewRootImpl的scheduleTraversals方法->ViewRootImpl的performTraversals方法
+ * (12) 同样在(11)执行时, 调ViewRootImpl的setView方法使得ViewRootImpl跟DecorView关联
+ * (13) 在(12)执行时, ViewRootImpl会调用IWindowSession的binder接口的addToDisplay方法,
+ *      - 向WMS注册新的窗口
+ *      - 让运行在system_server进程的InputManagerService与运行在应用进程的新窗口使用一个socket pair
+ *        前者通过socket通信向后者发送输入事件, 事件分发开始
+ * (14) ViewRootImpl的scheduleTraversals方法->ViewRootImpl的performTraversals方法
  *      其中会调用ViewRootImpl的performMeasure performLayout performDraw方法来完整绘制UI *
  *
  * Activity启动过程简述:

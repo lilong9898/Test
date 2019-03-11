@@ -27,9 +27,9 @@ import java.util.Date;
  *     handlerThread的消息循环不受影响，还是正常进行，surfaceView上能正常刷新时间
  * (2) 当主线程阻塞后, 只要没有新的输入事件, 不管过多长时间, 也不会触发ANR
  * (3) 当主线程阻塞后, 只有一个新的输入事件1, 不管过多长时间, 也不会出发ANR
- * (4) 当主线程阻塞后, 有新的输入事件1, 然后再有新的输入事件2, 主线程在经过一定时间(5秒左右, 跟手机设定有关)后未处理完输入事件2, 才会触发ANR
+ * (4) 当主线程阻塞后, 有新的输入事件1, 然后再有新的输入事件2, 主线程在经过一定时间(5秒, 在InputDispatcher.cpp中规定)后未处理完输入事件2, 才会触发ANR
  *
- * 比如像下面的测试程序, 所引发的ANR, 在logcat中的log是:
+ * (5) 比如像下面的测试程序, 所引发的ANR, 在logcat中的log是:
  * E/ActivityManager: ANR in com.lilong.anrtest (com.lilong.anrtest/.MainActivity)
  *     PID: 8588
  *     Reason: Input dispatching timed out (Waiting to send non-key event because the touched window has not finished processing certain input events that were delivered to it over 500.0ms ago.  Wait queue length: 6.  Wait queue head age: 5598.0ms.)
@@ -41,6 +41,85 @@ import java.util.Date;
  *       ......
  *   wait queue length: inputDispatcher里积压了多少个事件等待分发给window, 因为(4)的规则, wait queue length最少是2
  *   wait queue head age: 积压的输入事件里, 最早的那个是多久之前的
+ *
+ * (6) 各组件的ANR触发的时间门槛:
+ *
+ *     InputDispatching Timeout:
+ *         - 输入事件分发超时5s，包括按键和触摸事件
+ *         - 在InputDispatcher.cpp中由
+ *           const nsecs_t DEFAULT_INPUT_DISPATCHING_TIMEOUT = 5000 * 1000000LL; // 5 sec
+ *           定义
+ *
+ *     BroadcastQueue Timeout：  前台广播在10s内未执行完成
+ *     Service Timeout:          前台服务在20s内未执行完成；
+ *     ContentProvider Timeout： 内容提供者,在publish过超时10s;
+ * (7) InputDispatchTimeout类型的ANR的具体分类
+ *     - 无窗口, 有应用：Waiting because no window has focus but there is a focused application that may eventually add a window when it finishes starting up.
+ *     - 窗口暂停: Waiting because the [targetType] window is paused.
+ *     - 窗口未连接: Waiting because the [targetType] window’s input channel is not registered with the input dispatcher. The window may be in the process of being removed.
+ *     - 窗口连接已死亡：Waiting because the [targetType] window’s input connection is [Connection.Status]. The window may be in the process of being removed.
+ *     - 窗口连接已满：Waiting because the [targetType] window’s input channel is full. Outbound queue length: [outboundQueue长度]. Wait queue length: [waitQueue长度].
+ *     - 按键事件，输出队列或事件等待队列不为空：Waiting to send key event because the [targetType] window has not finished processing all of the input events that were previously delivered to it. Outbound queue length: [outboundQueue长度]. Wait queue length: [waitQueue长度].
+ *     - 非按键事件，事件等待队列不为空且头事件分发超时500ms：Waiting to send non-key event because the [targetType] window has not finished processing certain input events that were delivered to it over 500ms ago. Wait queue length: [waitQueue长度]. Wait queue head age: [等待时长].
+ *
+ * (8) Android输入事件处理流程:
+ *     - system_server进程中有个InputManagerService服务(IMS),
+ *     - 其中EventHub组件利用linux的inotify/epoll机制监听/dev/input设备传来的事件
+ *     - 其中一个线程运行InputReader, 负责从EventHub读取事件, 发给InputDispatcher
+ *     - 其中另一个线程运行InputDispatcher, 读取InputReader收集到的事件, 选择向应用进程中合适的window派发
+ *          - 分发事件的时候就是不断执行InputDispatcher的threadLoop来读取事件
+ *  *         并调用dispatchOnce分发事件
+ *  *       - 没有事件的时候，他会执行mLooper->pollOnce, 进入等待状态
+ *     - 通过InputChannel使用socket通信将事件传到应用进程的window上, socket pair是在ViewRootImpl的setView方法中, 通过调用IWindowSession.addToDisplay方法创建的
+ *
+ * (9) InputDispatching ANR的触发位置:
+ *     - ANR触发逻辑全在InputDispatcher.cpp里
+ *
+ * (10) InputDispatching ANR的触发流程:
+ *
+ *     - void InputDispatcher::dispatchOnceInnerLocked(nsecs_t* nextWakeupTime){
+ *         nsecs_t currentTime = now();
+ *         ....
+ *         resetANRTimesLocked();
+ *         ....
+ *         dispatchMotionLocked(currentTime, ....)
+ *         ....
+ *     }
+ *
+ *     bool InputDispatcher::dispatchMotionLocked(nsecs_t currentTime, ....) {
+ *         ....
+ *         // 找到当前接收触摸事件的窗口, 根据条件触发ANR
+ *         findTouchedWindowTargetsLocked(currentTime, entry, inputTargets, nextWakeupTime, &conflictingPointerActions);
+ *         ....
+ *     }
+ *
+ *     int32_t InputDispatcher::findTouchedWindowTargetsLocked(nsecs_t currentTime, ....) {
+ *         ....
+ *         // If the touched window is still working on previous events then keep waiting.
+ *         if(!isWindowReadyForMoreInputLocked(currentTime, ....){
+ *             handleTargetsNotReadyLocked(currentTime, ....)
+ *             goto Unresponsive
+ *         }
+ *         ....
+ *
+ *     }
+ *     其中:
+ *     bool InputDispatcher::isWindowReadyForMoreInputLocked(nsecs_t currentTime, ....){
+ *         .....
+ *         // The one case where we pause input event delivery is when the wait queue is piling
+ *         // up with lots of events because the application is not responding.
+ *         // This condition ensures that ANRs are detected reliably.
+ *         if (!connection->waitQueue.isEmpty()
+ *                 && currentTime >= connection->waitQueue.head->eventEntry->eventTime
+ *                         + STREAM_AHEAD_EVENT_TIMEOUT) {
+ *             return false;
+ *         }
+ *         .....
+ *     }
+ *
+ *     int32_t InputDispatcher::handleTargetsNotReadyLocked(nsecs_t currentTime, ....) {
+ *
+ *     }
  * */
 public class MainActivity extends Activity {
 
