@@ -63,14 +63,37 @@ import java.util.Date;
  *     - 非按键事件，事件等待队列不为空且头事件分发超时500ms：Waiting to send non-key event because the [targetType] window has not finished processing certain input events that were delivered to it over 500ms ago. Wait queue length: [waitQueue长度]. Wait queue head age: [等待时长].
  *
  * (8) Android输入事件处理流程:
- *     - system_server进程中有个InputManagerService服务(IMS),
+ *     [IMS native代码处理 begin]
+ *     - system_server进程中有个InputManagerService服务(IMS)
  *     - 其中EventHub组件利用linux的inotify/epoll机制监听/dev/input设备传来的事件
  *     - 其中一个线程运行InputReader, 负责从EventHub读取事件, 发给InputDispatcher
  *     - 其中另一个线程运行InputDispatcher, 读取InputReader收集到的事件, 选择向应用进程中合适的window派发
  *          - 分发事件的时候就是不断执行InputDispatcher的threadLoop来读取事件
- *  *         并调用dispatchOnce分发事件
- *  *       - 没有事件的时候，他会执行mLooper->pollOnce, 进入等待状态
- *     - 通过InputChannel使用socket通信将事件传到应用进程的window上, socket pair是在ViewRootImpl的setView方法中, 通过调用IWindowSession.addToDisplay方法创建的
+ *            并调用dispatchOnce分发事件
+ *          - 没有事件的时候，他会执行mLooper->pollOnce, 进入等待状态
+ *     - 应用进程里的ViewRootImpl会调用IWindowSession.addToDisplay方法创建InputChannel
+ *       并注册到system_server进程的InputDispatcher中, InputChannel-ViewRoot-Window三者一一对应
+ *     - InputChannel在创建时会生成linux管道(早期版本)或socket(晚期版本)用于事件从system_server进程到应用进程的传递
+ *       其中IMS一侧是socket客户端, 应用窗口一侧是socket服务端
+ *     - InputDispatcher通过InputChannel将事件传到应用进程的消息队列里, 并通知对应的window
+ *     - InputDispatcher会为每个InputChannel维护两个队列:
+ *       - outboundQueue: 等待发送给窗口的事件。每一个从InputReader中取得的新消息，都会先进入到此队列
+ *       - waitQueue:     已经发送给窗口的事件
+ *       所以事件发送给应用后, 会从outboundQueue移动到waitQueue
+ *     - 事件发送给应用后, ActivityThread中的Looper会从应用的消息队列中取出事件, 触发应用窗口的InputEventReceiver的dispatchInputEvent方法
+ *     [IMS native代码处理 end]
+ *     [APP java 代码处理 begin]
+ *     - 应用窗口中被调起的实际是ViewRootImpl中的WindowInputEventReceiver的dispatchInputEvent方法
+ *       WindowInputEventReceiver是InputEventReceiver的子类
+ *     - 然后调用Activity的dispatchTouchEvent->Window的superDispatchTouchEvent->DecorView的superDispatchTouchEvent->rootView的dispatchTouchEvent
+ *     - 当应用窗口处理完事件后, rootView的dispatchTouchEvent方法会返回, 最终触发WindowInputEventReceiver的finishInputEvent方法, 表明应用窗口处理这个事件完毕
+ *     [APP java 代码处理 end]
+ *     [IMS native代码处理 begin]
+ *     - APP调用会触发WindowInputEventReceiver的finishInputEvent方法, 其内部会通过socket向system_server一侧的IMS传递事件完成的消息
+ *     - 然后InputDispatcher.cpp中的回调函数handleReceiveCallback()被触发,
+ *       它会将这个事件从waitQueue中移除, 然后从outboundQueue中取出下一个事件开始下一轮分发
+ *     [IMS native代码处理 end]
+ *     .....针对下一个事件重复上面的流程.....burr.....
  *
  * (9) InputDispatching ANR的触发位置:
  *     - ANR触发逻辑全在InputDispatcher.cpp里

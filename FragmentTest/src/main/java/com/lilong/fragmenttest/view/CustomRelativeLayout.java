@@ -7,6 +7,7 @@ import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.MotionEvent;
 import android.widget.RelativeLayout;
 
 import static com.lilong.fragmenttest.base.BaseFragment.TAG;
@@ -52,5 +53,10 @@ public class CustomRelativeLayout extends RelativeLayout {
         int viewWidth = getWidth();
         float translationX = scaledTranslationX * viewWidth;
         setTranslationX(translationX);
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        return super.dispatchTouchEvent(ev);
     }
 }
