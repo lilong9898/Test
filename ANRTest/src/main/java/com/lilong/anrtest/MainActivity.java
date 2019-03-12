@@ -11,7 +11,6 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.os.Message;
-import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -27,7 +26,7 @@ import java.util.Date;
  *     handlerThread的消息循环不受影响，还是正常进行，surfaceView上能正常刷新时间
  * (2) 当主线程阻塞后, 只要没有新的输入事件, 不管过多长时间, 也不会触发ANR
  * (3) 当主线程阻塞后, 只有一个新的输入事件1, 不管过多长时间, 也不会出发ANR
- * (4) 当主线程阻塞后, 有新的输入事件1, 然后再有新的输入事件2, 主线程在经过一定时间(5秒, 在InputDispatcher.cpp中规定)后未处理完输入事件2, 才会触发ANR
+ * (4) 当主线程阻塞后, 有新的输入事件1, 然后再有新的输入事件2, 再经过一段时间(5秒, 在InputDispatcher.cpp中规定)后未处理完输入事件2, 才会触发ANR
  *
  * (5) 比如像下面的测试程序, 所引发的ANR, 在logcat中的log是:
  * E/ActivityManager: ANR in com.lilong.anrtest (com.lilong.anrtest/.MainActivity)
@@ -113,6 +112,7 @@ public class MainActivity extends Activity {
     private OtherThreadHandler otherThreadHandler;
     private SimpleDateFormat sdf;
     private static final int MSG_TICK = 1;
+    private static final int MSG_MAIN_THREAD_SLEEP = 2;
 
     private HandlerThread handlerThread;
     private Paint textPaint;
@@ -132,6 +132,12 @@ public class MainActivity extends Activity {
                     String timeText = sdf.format(new Date());
                     tvClock.setText(timeText);
                     sendEmptyMessageDelayed(MSG_TICK, SECOND);
+                    break;
+                case MSG_MAIN_THREAD_SLEEP:
+                    try{
+                        Thread.sleep(60 * SECOND);
+                    }catch (Exception e){}
+                    Toast.makeText(MainActivity.this, "main thread wakes up!", Toast.LENGTH_SHORT).show();
                     break;
             }
         }
@@ -167,13 +173,7 @@ public class MainActivity extends Activity {
         btnMainThreadSleep1Min.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i(TAG, "main thread sleep now");
-                try {
-                    Thread.sleep(60 * SECOND);
-                } catch (Exception e) {
-
-                }
-                Toast.makeText(MainActivity.this, "main thread wakes up!", Toast.LENGTH_SHORT).show();
+                mainThreadHandler.sendEmptyMessage(MSG_MAIN_THREAD_SLEEP);
             }
         });
 
@@ -221,6 +221,7 @@ public class MainActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         mainThreadHandler.removeMessages(MSG_TICK);
+        mainThreadHandler.removeMessages(MSG_MAIN_THREAD_SLEEP);
         otherThreadHandler.removeMessages(MSG_TICK);
     }
 }
