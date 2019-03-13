@@ -36,6 +36,7 @@ include ':ServiceTest'
 include ':SQLiteTest'
 include ':SurfaceViewTest'
 include ':TestLib'
+include ':ViewPositionTest'
 include ':WindowAnimationTest'
 
 
