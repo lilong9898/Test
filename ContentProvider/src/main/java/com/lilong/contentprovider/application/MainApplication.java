@@ -11,7 +11,7 @@ public class MainApplication extends Application {
 
     @Override
     public void onCreate() {
-        Log.i(TAG, "application onCreate");
+        Log.i(TAG, "content provider application onCreate");
         super.onCreate();
         sApplication = this;
     }

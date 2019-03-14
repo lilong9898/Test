@@ -5,9 +5,6 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-/**
- * db helper，对应一个sqliteDBConnection
- */
 public class MyDBHelper extends SQLiteOpenHelper {
 
     private final static int VERSION = 1;

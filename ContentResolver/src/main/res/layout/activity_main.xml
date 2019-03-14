@@ -7,10 +7,35 @@
     android:layout_height="match_parent"
     tools:context=".activity.MainActivity">
 
+    <Button
+        android:id="@+id/btnQueryAll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="queryAll"
+        android:textSize="20sp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toLeftOf="@+id/btnClearAll"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <Button
+        android:id="@+id/btnClearAll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="clearAll"
+        android:textSize="20sp"
+        android:layout_marginLeft="30dp"
+        app:layout_constraintBottom_toBottomOf="@+id/btnQueryAll"
+        app:layout_constraintLeft_toRightOf="@+id/btnQueryAll"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btnQueryAll"/>
+
     <com.lilong.contentresolver.view.WrapContentListView
         android:id="@+id/lvData"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"/>
+        android:layout_marginTop="20dp"
+        android:background="#d0d0d0"
+        app:layout_constraintTop_toBottomOf="@+id/btnQueryAll"/>
 
 </android.support.constraint.ConstraintLayout>

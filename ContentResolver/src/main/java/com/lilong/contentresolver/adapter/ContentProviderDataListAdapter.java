@@ -1,14 +1,14 @@
 package com.lilong.contentresolver.adapter;
 
-import com.lilong.contentresolver.R;
-import com.lilong.contentresolver.entity.ContentProviderDataItem;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+
+import com.lilong.contentresolver.R;
+import com.lilong.contentresolver.entity.ContentProviderDataItem;
 
 import java.util.ArrayList;
 
@@ -47,7 +47,7 @@ public class ContentProviderDataListAdapter extends BaseAdapter {
         ViewHolder holder = null;
         ContentProviderDataItem dataItem = data.get(position);
         if (convertView == null) {
-            convertView = layoutInflater.inflate(R.layout.layout_data_item, parent);
+            convertView = layoutInflater.inflate(R.layout.layout_data_item, parent, false);
             holder = new ViewHolder();
             holder.tvId = convertView.findViewById(R.id.tvId);
             holder.tvProduct = convertView.findViewById(R.id.tvProduct);
@@ -57,8 +57,8 @@ public class ContentProviderDataListAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
         holder.tvId.setText(dataItem.id + "");
-        holder.tvProduct.setText(dataItem.product);
-        holder.tvPrice.setText(dataItem.price);
+        holder.tvProduct.setText("" + dataItem.product);
+        holder.tvPrice.setText("" + dataItem.price);
         return convertView;
     }
 

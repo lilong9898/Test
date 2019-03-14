@@ -15,8 +15,8 @@
             </intent-filter>
         </activity>
         <provider
-            android:name=".provider.MyContentProvider"
-            android:authorities=".provider.MyContentProvider"
+            android:name="com.lilong.contentprovider.provider.MyContentProvider"
+            android:authorities="com.lilong.contentprovider.provider.MyContentProvider"
             android:exported="true"/>
     </application>
 

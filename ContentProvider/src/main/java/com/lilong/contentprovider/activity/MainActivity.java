@@ -1,13 +1,13 @@
 package com.lilong.contentprovider.activity;
 
-import com.lilong.contentprovider.R;
-
 import android.app.Activity;
 import android.os.Bundle;
 
+import com.lilong.contentprovider.R;
+
 public class MainActivity extends Activity {
 
-    public static final String TAG = "ContentProviderTest";
+    public static final String TAG = "CTest";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
