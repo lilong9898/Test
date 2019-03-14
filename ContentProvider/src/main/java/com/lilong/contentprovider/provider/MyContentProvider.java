@@ -28,11 +28,12 @@ import static com.lilong.contentprovider.db.MyDBHelper.TABLE_NAME;
  * 如果需要uri match这种功能，也可以不用uri matcher，手工解析uri并对应到操作
  *
  * ------------------关于{@link ContentProvider}的初始化时机----------------------------------
- * 在ActivityThread中初始化, 其中
- * handleBindApplication -> installContentProviders -> installProvider, 其中
- * (1) 通过反射调用ContentProvider的构造函数
- * (2) 调用{@link ContentProvider#onCreate()}方法
- * 然后才构造{@link Application}对象并调用其{@link Application#onCreate()}
+ * 在ActivityThread中的handleBindApplication中初始化, 其中
+ * (1) 构造{@link Application}对象
+ * (2) 初始化{@link ContentProvider}: installContentProviders -> installProvider, 其中
+ *     (2.1) 通过反射调用ContentProvider的构造函数
+ *     (2.2) 调用{@link ContentProvider#onCreate()}方法
+ * (3) 调用{@link Application#onCreate()}
  */
 public class MyContentProvider extends ContentProvider {
 
