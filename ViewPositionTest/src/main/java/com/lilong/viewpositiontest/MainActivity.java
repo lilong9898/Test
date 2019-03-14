@@ -12,6 +12,9 @@ import android.view.View;
  * {@link MotionEvent#getRawX()}返回的是事件相对于屏幕边缘的位置
  *
  * (2)
+ * {@link View#getLeft()}和{@link View#getX()}都是相对父布局而言
+ *
+ * (3)
  * {@link View#setTranslationX(float)}会改变控件的事件响应区域, 使得它与控件的可视区域一致
  * 但是不改变{@link View#getLeft()}的值
  *
@@ -21,8 +24,12 @@ import android.view.View;
  *
  * 这应该是在layout过程后, translationX被加到left/right属性上
  *
- * (3)
- * {@link Canvas#translate(float, float)}只改变绘制, 不改变事件相应区域
+ * (4)
+ * {@link Canvas#translate(float, float)}只改变绘制, 不改变事件响应区域
+ *
+ * (5)
+ * {@link View#scrollTo(int, int)}不能改变自身位置, 改变的是自身内容绘制和所有子布局的位置
+ * 自身的left和x都不变, scrollX变成设置的了, 子布局的left, x和scrollX都不变
  *
  * */
 public class MainActivity extends Activity {

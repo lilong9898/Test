@@ -91,7 +91,10 @@ public class CustomViewGroup extends RelativeLayout {
     public boolean onTouchEvent(MotionEvent event) {
         float x = event.getX();
         float rawX = event.getRawX();
-        Log.i(TAG, name + ": x = " + x + ", rawX = " + rawX + ", left = " + getLeft() + ", x = "  +getX());
+        Log.i(TAG, name + ": x = " + x + ", rawX = " + rawX + ", left = " + getLeft() + ", x = "  +getX() + ", scrollX = " + getScrollX());
+        View child = getChildAt(0);
+        Log.i(TAG, "child left = " + child.getLeft() + ", child x = " + child.getX() + ", child scrollX = " + child.getScrollX());
         return true;
     }
+
 }
