@@ -1,6 +1,6 @@
 package com.lilong.ipc.client;
 
-import com.lilong.ipc.ICalculate;
+import com.lilong.ipc.ITest;
 import com.lilong.ipc.R;
 
 import android.app.Activity;
@@ -16,12 +16,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.Arrays;
+
 public class MainActivity extends Activity {
 
     private EditText editNumber1;
     private EditText editNumber2;
     private Button btnCalculate;
     private TextView tvResult;
+    private TextView tvData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +34,7 @@ public class MainActivity extends Activity {
         editNumber2 = (EditText) findViewById(R.id.editNumber2);
         btnCalculate = (Button) findViewById(R.id.btnCalculate);
         tvResult = (TextView) findViewById(R.id.tvResult);
+        tvData = findViewById(R.id.tvData);
         btnCalculate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -40,31 +44,35 @@ public class MainActivity extends Activity {
 
                 int number1 = Integer.parseInt(editNumber1.getText().toString());
                 int number2 = Integer.parseInt(editNumber2.getText().toString());
-                ComponentName name = new ComponentName("com.lilong.ipc.server", "com.lilong.ipc.server.CalculateService");
+                ComponentName name = new ComponentName("com.lilong.ipc.server", "com.lilong.ipc.server.TestService");
                 Intent intent = new Intent();
                 intent.setComponent(name);
-                bindService(intent, new CalculateServiceConnection(number1, number2), Context.BIND_AUTO_CREATE);
+                bindService(intent, new TestServiceConnection(number1, number2), Context.BIND_AUTO_CREATE);
             }
         });
     }
 
-    class CalculateServiceConnection implements ServiceConnection{
+    class TestServiceConnection implements ServiceConnection{
 
         private int num1 = 0;
         private int num2 = 0;
 
-        public CalculateServiceConnection(int num1, int num2){
+        public TestServiceConnection(int num1, int num2){
             this.num1 = num1;
             this.num2 = num2;
         }
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            ICalculate calculateServer = ICalculate.Stub.asInterface(service);
+            ITest testServer = ITest.Stub.asInterface(service);
             try{
-                int result = calculateServer.calculate(num1, num2);
+                int result = testServer.calculate(num1, num2);
                 tvResult.setText("" + result);
-            }catch (Exception e){}
+                byte[] data = testServer.getData();
+                tvData.setText(Arrays.toString(data));
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }
 
         @Override

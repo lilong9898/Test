@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <LinearLayout
+        android:id="@+id/layoutCalculate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
@@ -17,14 +17,14 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
             android:inputType="number"
-            android:textSize="20sp"/>
+            android:textSize="20sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
             android:text="+"
-            android:textSize="20sp"/>
+            android:textSize="20sp" />
 
         <EditText
             android:id="@+id/editNumber2"
@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
             android:inputType="number"
-            android:textSize="20sp"/>
+            android:textSize="20sp" />
 
         <Button
             android:id="@+id/btnCalculate"
@@ -40,14 +40,22 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
             android:text="="
-            android:textSize="20sp"/>
+            android:textSize="20sp" />
 
         <TextView
             android:id="@+id/tvResult"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
-            android:textSize="20sp"/>
+            android:textSize="20sp" />
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/tvData"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/layoutCalculate"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:textSize="20sp" />
 </RelativeLayout>

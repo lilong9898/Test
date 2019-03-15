@@ -1,5 +1,6 @@
 package com.lilong.ipc;
 
-interface ICalculate {
+interface ITest {
     int calculate(int number1, int number2);
+    byte[] getData();
 }
