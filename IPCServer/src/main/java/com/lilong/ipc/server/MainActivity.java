@@ -7,6 +7,8 @@ import com.lilong.ipc.R;
 
 public class MainActivity extends Activity {
 
+    public static final String TAG = "ITest";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

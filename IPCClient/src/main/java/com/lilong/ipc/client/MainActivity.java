@@ -10,21 +10,28 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.ParcelFileDescriptor;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
 import java.util.Arrays;
 
 public class MainActivity extends Activity {
+
+    private static final String TAG = "ITest";
 
     private EditText editNumber1;
     private EditText editNumber2;
     private Button btnCalculate;
     private TextView tvResult;
     private TextView tvData;
+    private TextView tvAshmem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +42,7 @@ public class MainActivity extends Activity {
         btnCalculate = (Button) findViewById(R.id.btnCalculate);
         tvResult = (TextView) findViewById(R.id.tvResult);
         tvData = findViewById(R.id.tvData);
+        tvAshmem = findViewById(R.id.tvAshmem);
         btnCalculate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -64,12 +72,20 @@ public class MainActivity extends Activity {
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.i(TAG, "onServiceConnected");
+            Log.i(TAG, "client onServiceConnected currentThread = " + Thread.currentThread().getName());
             ITest testServer = ITest.Stub.asInterface(service);
             try{
                 int result = testServer.calculate(num1, num2);
                 tvResult.setText("" + result);
                 byte[] data = testServer.getData();
                 tvData.setText(Arrays.toString(data));
+                ParcelFileDescriptor pfd = testServer.getAshmemFd();
+                FileDescriptor fd = pfd.getFileDescriptor();
+                FileInputStream fis = new FileInputStream(fd);
+                byte[] buffer = new byte[10];
+                fis.read(buffer);
+                tvAshmem.setText(Arrays.toString(buffer));
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -77,7 +93,7 @@ public class MainActivity extends Activity {
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-
+            Log.i(TAG, "onServiceDisconnected");
         }
     }
 }

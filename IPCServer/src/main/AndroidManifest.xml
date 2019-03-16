@@ -16,7 +16,7 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <service android:name=".server.TestService">
+        <service android:name=".server.TestService" android:exported="true">
             <intent-filter>
                 <action android:name="lets.calculate"/>
             </intent-filter>
