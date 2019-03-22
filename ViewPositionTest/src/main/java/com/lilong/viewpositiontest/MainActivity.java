@@ -2,7 +2,9 @@ package com.lilong.viewpositiontest;
 
 import android.app.Activity;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -22,7 +24,11 @@ import android.view.View;
  * android:translationX
  * translation in x of the view. This value is added post-layout to the left property of the view, which is set by its layout.
  *
- * 这应该是在layout过程后, translationX被加到left/right属性上
+ * 会改变控件的事件响应区域的原因:
+ * {@link View#setTranslationX(float)}会影响到{@link View}的RenderNode的matrix
+ * 使用过这个方法的view, 其{@link View#getMatrix()}返回的矩阵不再是单位矩阵
+ * 而事件分发过程中的ViewGroup#transformPointToViewLocal方法会调用View#getInverseMatrix()方法获取matrix的逆矩阵,
+ * 并调{@link Matrix#mapPoints(float[])}对触摸事件的坐标进行转换, 这就会考虑{@link View#setTranslationX(float)}的影响
  *
  * (4)
  * {@link Canvas#translate(float, float)}只改变绘制, 不改变事件响应区域
@@ -60,7 +66,20 @@ public class MainActivity extends Activity {
         if(hasFocus && !alreadyTest){
             v2.setTranslationX(v2.getWidth());
             v4.scrollBy(v4.getWidth() / 3, 0);
+            printViewMatrix(v1);
+            printViewMatrix(v2);
+            printViewMatrix(v3);
+            printViewMatrix(v4);
             alreadyTest = true;
         }
     }
+
+    private void printViewMatrix(View v){
+        if(v == null){
+            return;
+        }
+        Matrix matrix = v.getMatrix();
+        Log.i(TAG, getResources().getResourceEntryName(v.getId()) + "'s matrix : " + matrix.toShortString());
+    }
+
 }

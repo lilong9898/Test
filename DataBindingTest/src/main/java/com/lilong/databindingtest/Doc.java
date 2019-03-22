@@ -121,6 +121,7 @@ import static android.databinding.ViewDataBinding.*;
  * (3) 生成{@link BR}类
  *
  * (4) 初次显示UI时的绑定动作
+ *     {@link ActivityMainBindingImpl}的构造方法--call-->
  *     {@link ActivityMainBindingImpl#invalidateAll()}
  *     --call-->{@link ViewDataBinding#requestRebind()}
  *     --call-->{@link Choreographer#postFrameCallback(Choreographer.FrameCallback)}}
