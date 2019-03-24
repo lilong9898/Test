@@ -8,6 +8,7 @@ import android.view.MotionEvent;
 import android.widget.RelativeLayout;
 
 import static com.lilong.toucheventtest.MainActivity.TAG;
+import static com.lilong.toucheventtest.MainActivity.getIndent;
 import static com.lilong.toucheventtest.MainActivity.verbalize;
 
 public class CustomRelativeLayout extends RelativeLayout {
@@ -33,25 +34,46 @@ public class CustomRelativeLayout extends RelativeLayout {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        Log.i(TAG, "\t" + name + ", dispatchTouchEvent : " + verbalize(ev));
+        MainActivity.indentCount++;
+        Log.i(TAG, getIndent() + name + ", dispatchTouchEvent : " + verbalize(ev));
         boolean result  = super.dispatchTouchEvent(ev);
-        Log.i(TAG, "\t" + name + ", dispatchTouchEvent : return " + result);
+        result = overrideDispatchTouchEventResult(result, ev);
+        Log.i(TAG, getIndent() + name + ", dispatchTouchEvent : " + verbalize(ev) + " return " + result);
+        MainActivity.indentCount--;
         return result;
     }
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        Log.i(TAG, "\t" + name + ", onInterceptTouchEvent : " + verbalize(ev));
+        MainActivity.indentCount++;
+        Log.i(TAG, getIndent() + name + ", onInterceptTouchEvent : " + verbalize(ev));
         boolean result = super.onInterceptTouchEvent(ev);
-        Log.i(TAG, "\t" + name + ", onInterceptTouchEvent : return " + result);
+        result = overrideOnInterceptTouchEventResult(result, ev);
+        Log.i(TAG, getIndent() + name + ", onInterceptTouchEvent : " + verbalize(ev) + " return " + result);
+        MainActivity.indentCount--;
         return result;
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        Log.i(TAG, "\t" + name + ", onTouchEvent : " + verbalize(event));
+        MainActivity.indentCount++;
+        Log.i(TAG, getIndent() + name + ", onTouchEvent : " + verbalize(event));
         boolean result = super.onTouchEvent(event);
-        Log.i(TAG, "\t" + name + ", onTouchEvent : return " + result);
+        result = overrideOnTouchEventResult(result, event);
+        Log.i(TAG, getIndent() + name + ", onTouchEvent : " + verbalize(event) + " return " + result);
+        MainActivity.indentCount--;
         return result;
+    }
+
+    private boolean overrideDispatchTouchEventResult(boolean originalResult, MotionEvent ev){
+        return originalResult;
+    }
+
+    private boolean overrideOnInterceptTouchEventResult(boolean originalResult, MotionEvent ev){
+        return originalResult;
+    }
+
+    private boolean overrideOnTouchEventResult(boolean originalResult, MotionEvent ev){
+        return originalResult;
     }
 }
