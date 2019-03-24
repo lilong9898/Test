@@ -45,6 +45,17 @@ import android.view.ViewGroup;
  *  综上, touchTarget的有无是非常重要的, 决定了
  *  (1) 本级布局是否对后续事件调用onInterceptTouchEvent
  *  (2) 本级布局是将后续事件交给自身的onTouchEvent处理, 还是交给touchTarget处理
+ *
+ *  由上面两条原理, 可以实现下面三条效果:
+ *  (1) 如果有某层布局消费了DOWN事件(onTouchEvent返回true), 则MOVE/UP事件就传递到这一层, 不再往更深层去传递
+ *  (2) 如果Activity以下的所有层次的布局都没消费这个DOWN事件(所有层次的onTouchEvent都返回false), 则MOVE/UP就传递到Activity的onTouchEvent为止
+ *  (3) 本级布局在MOVE/UP事件传来时, 不需再遍历一次所有子布局, 而是直接找到被标记为touchTarget的子布局, 将事件传递给它
+ *
+ *  这使得MOVE/UP事件的传递深度尽量浅, 所需遍历尽量少, 这也是设置touchTarget的目的: 节省时间
+ *
+ *  从(4.2)看出, CANCEL事件的作用, 是通知子布局, 虽然之前发给过它事件, 但后续事件被上级布局拦截了
+ *
+ *  从(1.2)和(5)看出, DOWN/UP/CANCEL事件都会触发清除touchTarget
  * */
 public class MainActivity extends Activity {
 
