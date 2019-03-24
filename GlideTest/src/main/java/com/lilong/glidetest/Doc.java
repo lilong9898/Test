@@ -4,6 +4,8 @@ import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
@@ -34,7 +36,9 @@ import com.bumptech.glide.request.target.*
 import com.bumptech.glide.request.transition.Transition
 import com.bumptech.glide.request.transition.TransitionFactory
 import com.bumptech.glide.util.pool.FactoryPools
+import com.bumptech.glide.load.resource.bitmap.Downsampler
 
+import java.io.InputStream;
 import java.util.concurrent.ThreadPoolExecutor
 /**
  * Glide的优点：
@@ -234,6 +238,8 @@ import java.util.concurrent.ThreadPoolExecutor
  *                 (3.4.3.5) 但这次{@link DecodeJob.RunReason}变成了{@link DecodeJob.RunReason#DECODE_DATA}
  *                 (3.4.3.6) 调到{@link DecodeJob#decodeFromRetrievedData()}，其中：
  *                           (3.4.3.6.1) {@link DecodeJob#decodeFromData(DataFetcher, Object, DataSource)}返回{@link Resource}
+ *                                       底层是通过{@link Downsampler#decode(InputStream, int, int, Options)}方法
+ *                                       最终调用{@link BitmapFactory#decodeStream(InputStream, Rect, BitmapFactory.Options)}来获得{@link Bitmap}
  *                           (3.4.3.6.2) {@link DecodeJob#notifyEncodeAndRelease(Resource, DataSource)}
  *                                       --call-->{@link DecodeJob#notifyComplete(Resource, DataSource)}
  *                                       --call-->{@link EngineJob#onResourceReady(Resource, DataSource)}
