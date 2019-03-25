@@ -30,6 +30,15 @@ package com.lilong.concurrenttest;
  *          thread2 see number before add = 8
  *          thread1 see number after add = 9
  *          thread2 see number after add = 10
+ *
+ *          用了volatile关键字后, 打印出来的数字会严格按非降序排列
+ *
+ *  (2) 避免编译器或CPU为了优化而做的指令重排
+ *          XXXClass a = new XXXClass()不是原子操作, 而是包含
+ *          (2.1) 分配内存空间(new)
+ *          (2.2) 初始化对象(init)
+ *          (2.3) 将对象赋值给引用(dup)
+ *          三步, 如果有指令重排的话, (2.3)比(2.2)先执行, 可能使得DCL形式的单例初始化过程出现判断错误(引用非null, 但对象还没初始化)
  * */
 public class VolatileKeyWordTest {
 
@@ -42,7 +51,7 @@ public class VolatileKeyWordTest {
     }
 
     static class Data {
-        public int number = 0;
+        public volatile int number = 0;
     }
 
     static class MyThread extends Thread {
