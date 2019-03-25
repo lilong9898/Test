@@ -1,6 +1,8 @@
 package com.lilong.memoryanalyzertooltest;
 
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -22,8 +24,12 @@ public class MainActivity extends Activity {
     private Button btnPilingObjects;
     private Button btnClear;
     private TextView tvObjects;
+    private TextView tvPerAppMemoryM;
+    private TextView tvMemoryInfo;
     private LinkedList<CustomObject> list;
     private CustomHandler handler;
+    private static ActivityManager.MemoryInfo memoryInfo;
+    private static ActivityManager activityManager;
 
     private static final int MEMORY_CHUNK_SIZE_KB = 100;
 
@@ -37,7 +43,11 @@ public class MainActivity extends Activity {
         btnPilingObjects = findViewById(R.id.btnPilingObjects);
         btnClear = findViewById(R.id.btnClear);
         tvObjects = findViewById(R.id.tvObjects);
+        tvPerAppMemoryM = findViewById(R.id.tvPerAppMemoryM);
+        tvMemoryInfo = findViewById(R.id.tvMemoryInfo);
         handler = new CustomHandler();
+        memoryInfo = new ActivityManager.MemoryInfo();
+        activityManager = (ActivityManager) MainApplication.getInstance().getSystemService(Context.ACTIVITY_SERVICE);
         btnPilingObjects.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -64,6 +74,8 @@ public class MainActivity extends Activity {
                     list.add(new CustomObject());
                     String memorySize = list.size() * MEMORY_CHUNK_SIZE_KB + "K";
                     tvObjects.setText(memorySize);
+                    tvPerAppMemoryM.setText(getPerAppMemoryLimitM());
+                    tvMemoryInfo.setText(getMemoryInfo());
                     break;
             }
         }
@@ -71,6 +83,18 @@ public class MainActivity extends Activity {
 
     class CustomObject {
         private byte[] memory = new byte[MEMORY_CHUNK_SIZE_KB * 1024];
+    }
+
+    private static String getPerAppMemoryLimitM(){
+        int perAppMemoryLimitM = activityManager.getMemoryClass();
+        return "perAppMemoryLimit = " + perAppMemoryLimitM + "M";
+    }
+
+    private static String getMemoryInfo(){
+        activityManager.getMemoryInfo(memoryInfo);
+        String availMem = memoryInfo.availMem / 1024 / 1024 + "M";
+        String thresholdMem = memoryInfo.threshold / 1024 / 1024 + "M";
+        return "device availMem = " + availMem + ",\ndevice thresholdMem = " + thresholdMem;
     }
 
     @Override
