@@ -45,9 +45,11 @@ public class MainActivity extends Activity {
     private Button btnSendMsgDelayed;
     private TextView tvMessageQueue;
     private Button btnClearMsgs;
+    private Button btnSendBlockRunnable;
     private Handler handler;
     private SimpleDateFormat sdf;
     private Date date;
+
 
     private static final int MSG_TEST = 1;
 
@@ -58,6 +60,7 @@ public class MainActivity extends Activity {
         btnSendMsgDelayed = findViewById(R.id.btnSendMsgDelayed);
         tvMessageQueue = findViewById(R.id.tvMessageQueue);
         btnClearMsgs = findViewById(R.id.btnClearMsgs);
+        btnSendBlockRunnable = findViewById(R.id.btnSendBlockRunnable);
         handler = new Handler();
         sdf = new SimpleDateFormat("HH:mm:ss");
         date = new Date();
@@ -78,6 +81,22 @@ public class MainActivity extends Activity {
                 if(event.getAction() == MotionEvent.ACTION_DOWN){
                     handler.removeMessages(MSG_TEST);
                     tvMessageQueue.setText(getMessageQueueInfo());
+                }
+                return true;
+            }
+        });
+        btnSendBlockRunnable.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_DOWN){
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            try{
+                                Thread.sleep(3000);
+                            }catch (Exception e){}
+                        }
+                    });
                 }
                 return true;
             }

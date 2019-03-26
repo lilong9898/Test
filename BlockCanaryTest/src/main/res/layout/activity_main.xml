@@ -36,5 +36,13 @@
             android:layout_marginTop="20dp"
             android:text="clearMsgs"
             android:textSize="20sp"/>
+
+        <Button
+            android:id="@+id/btnSendBlockRunnable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="sendBlockRunnable"
+            android:textSize="20sp"/>
     </LinearLayout>
 </RelativeLayout>
