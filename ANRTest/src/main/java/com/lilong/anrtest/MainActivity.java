@@ -79,13 +79,21 @@ import java.util.Date;
  *       - outboundQueue: 等待发送给窗口的事件。每一个从InputReader中取得的新消息，都会先进入到此队列
  *       - waitQueue:     已经发送给窗口的事件
  *       所以事件发送给应用后, 会从outboundQueue移动到waitQueue
- *     - 事件发送给应用后, ActivityThread中的Looper会从应用的消息队列中取出事件, 触发应用窗口的InputEventReceiver的dispatchInputEvent方法
+ *     - 随后事件会写入inputChannel中的客户端socket中
  *     [IMS native代码处理 end]
  *     [APP java 代码处理 begin]
- *     - 应用窗口中被调起的实际是ViewRootImpl中的WindowInputEventReceiver的dispatchInputEvent方法
- *       WindowInputEventReceiver是InputEventReceiver的子类
- *     - 然后调用Activity的dispatchTouchEvent->Window的superDispatchTouchEvent->DecorView的superDispatchTouchEvent->rootView的dispatchTouchEvent
- *     - 当应用窗口处理完事件后, rootView的dispatchTouchEvent方法会返回, 最终触发WindowInputEventReceiver的finishInputEvent方法, 表明应用窗口处理这个事件完毕
+ *     - 应用主线程消息队列通过nativePollOnce阻塞式的读取inputChannel的服务端socket对应的Fd, 如果读到输入事件就唤醒主线程
+ *       注意, 触摸事件不在应用的消息队列中, 而是通过socket实时传来, 应用产生message则都在应用java层的消息队列中存储
+ *     - nativePollOnce方法将socket传来的数据组装成触摸事件, 调起ViewRootImpl中的WindowInputEventReceiver的dispatchInputEvent方法
+ *       WindowInputEventReceiver是InputEventReceiver的子类, 其构造的时候与当前InputChannel和Looper进行关联
+ *     - 然后调用
+ *       DecorView的dispatchTouchEvent->
+ *       Activity的dispatchTouchEvent->
+ *       Window的superDispatchTouchEvent->
+ *       DecorView的superDispatchTouchEvent->
+ *       rootView的dispatchTouchEvent->
+ *       ....各层布局的事件处理代码....
+ *     - 当应用窗口处理完事件后, rootView的dispatchTouchEvent方法会返回[...不明过程....]最终触发WindowInputEventReceiver的finishInputEvent方法, 表明应用窗口处理这个事件完毕
  *     [APP java 代码处理 end]
  *     [IMS native代码处理 begin]
  *     - APP调用会触发WindowInputEventReceiver的finishInputEvent方法, 其内部会通过socket向system_server一侧的IMS传递事件完成的消息
@@ -99,6 +107,40 @@ import java.util.Date;
  *
  * (10) InputDispatching ANR的触发流程:
  *      http://www.voidcn.com/article/p-cvimgjuk-bpd.html
+ *
+ * (11) 触摸事件在应用侧的调用栈
+ *   at android.view.ViewGroup.dispatchTouchEvent(ViewGroup.java:2613)
+ *   	  at com.android.internal.policy.DecorView.superDispatchTouchEvent(DecorView.java:531)
+ *   	  at com.android.internal.policy.PhoneWindow.superDispatchTouchEvent(PhoneWindow.java:1875)
+ *  	  at android.app.Activity.dispatchTouchEvent(Activity.java:3469)
+ *   	  at com.lilong.toucheventtest.MainActivity.dispatchTouchEvent(MainActivity.java:85)
+ *   	  at com.android.internal.policy.DecorView.dispatchTouchEvent(DecorView.java:481)
+ *   	  at android.view.View.dispatchPointerEvent(View.java:12155)
+ *   	  at android.view.ViewRootImpl$ViewPostImeInputStage.processPointerEvent(ViewRootImpl.java:5361)
+ *   	  at android.view.ViewRootImpl$ViewPostImeInputStage.onProcess(ViewRootImpl.java:5113)
+ *   	  at android.view.ViewRootImpl$InputStage.deliver(ViewRootImpl.java:4590)
+ *   	  at android.view.ViewRootImpl$InputStage.onDeliverToNext(ViewRootImpl.java:4650)
+ *   	  at android.view.ViewRootImpl$InputStage.forward(ViewRootImpl.java:4609)
+ *   	  at android.view.ViewRootImpl$AsyncInputStage.forward(ViewRootImpl.java:4762)
+ *   	  at android.view.ViewRootImpl$InputStage.apply(ViewRootImpl.java:4617)
+ *   	  at android.view.ViewRootImpl$AsyncInputStage.apply(ViewRootImpl.java:4819)
+ *   	  at android.view.ViewRootImpl$InputStage.deliver(ViewRootImpl.java:4590)
+ *   	  at android.view.ViewRootImpl$InputStage.onDeliverToNext(ViewRootImpl.java:4650)
+ *   	  at android.view.ViewRootImpl$InputStage.forward(ViewRootImpl.java:4609)
+ *   	  at android.view.ViewRootImpl$InputStage.apply(ViewRootImpl.java:4617)
+ *   	  at android.view.ViewRootImpl$InputStage.deliver(ViewRootImpl.java:4590)
+ *   	  at android.view.ViewRootImpl.deliverInputEvent(ViewRootImpl.java:7280)
+ *   	  at android.view.ViewRootImpl.doProcessInputEvents(ViewRootImpl.java:7254)
+ *   	  at android.view.ViewRootImpl.enqueueInputEvent(ViewRootImpl.java:7215)
+ *   	  at android.view.ViewRootImpl$WindowInputEventReceiver.onInputEvent(ViewRootImpl.java:7383)
+ *   	  at android.view.InputEventReceiver.dispatchInputEvent(InputEventReceiver.java:186)
+ *   	  at android.os.MessageQueue.nativePollOnce(MessageQueue.java:-1)
+ *   	  at android.os.MessageQueue.next(MessageQueue.java:325)
+ *   	  at android.os.Looper.loop(Looper.java:169)
+ *   	  at android.app.ActivityThread.main(ActivityThread.java:7022)
+ *   	  at java.lang.reflect.Method.invoke(Method.java:-1)
+ *   	  at com.android.internal.os.RuntimeInit$MethodAndArgsCaller.run(RuntimeInit.java:515)
+ *   	  at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:837)
  * */
 public class MainActivity extends Activity {
 

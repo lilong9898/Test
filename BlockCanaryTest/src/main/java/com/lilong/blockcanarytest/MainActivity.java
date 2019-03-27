@@ -37,6 +37,16 @@ import java.util.Date;
  *     (5.1) 将消息放入链表中的合适位置
  *     (5.2) 如果当前消息队列停在nativePollOnce()上了, 调nativeWake(), 向管道中写入一个字符"W"
  *           nativePollOnce作为管道的读端, 就会返回, (4.1)中的next()方法会继续执行, 处理链表中的消息
+ *
+ * 触摸事件的分发:
+ *     ViewRootImpl$WindowInputEventReceiver#dispatchInputEvent由nativePollOnce触发
+ *     这里体现了:
+ *     (1) nativePollOnce的作用不仅仅是监听管道的读端的Fd:mWakePipeFd, 用来唤醒主线程
+ *         它还监听了inputChannel中的socket连接的Fd, 这个Fd收到数据说明有触摸事件通过socket传来了
+ *         会触发ViewRootImpl$WindowInputEventReceiver#dispatchInputEvent, 触摸事件开始在客户端java层中传递
+ *     (2) 触摸事件虽然由客户端消息队列调用nativePollOnce读取, 但触摸事件本身不在客户端消息队列里, 而是由socket实时传来
+ *     (3) 应用产生的message和socket传来的触摸事件, 虽然存储位置不同(前者在应用java层的消息队列中, 后者由socket实时传来, 无存储),
+ *         但都会用主线程来执行, 所以处理慢了都会阻塞其他message和触摸事件的执行
  * */
 public class MainActivity extends Activity {
 
