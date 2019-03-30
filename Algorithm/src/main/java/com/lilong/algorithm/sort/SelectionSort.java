@@ -10,22 +10,17 @@ public class SelectionSort extends BaseSort {
     }
 
     public static int[] sort(int[] numbers) {
-
-        int minIndex;
-
         for (int i = 0; i < numbers.length; i++) {
-
-            minIndex = i;
-
-            for (int j = i + 1; j < numbers.length; j++) {
-                if (numbers[minIndex] > numbers[j]) {
+            int minIndex = i;
+            int minValue = numbers[i];
+            for(int j = i; j < numbers.length; j++){
+                if(numbers[j] < minValue){
                     minIndex = j;
+                    minValue = numbers[j];
                 }
             }
-
             swap(numbers, i, minIndex);
         }
-
         return numbers;
     }
 }

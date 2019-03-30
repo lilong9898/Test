@@ -20,6 +20,7 @@ public class MethodReferenceTest {
         // 方法引用中的方法的参数类型必须符合forEach方法的要求，否则编译不过
         // 用::表示方法引用
         list.forEach(SomeClass::someMethod);
+        list.forEach((String element)-> {element.charAt(1);});
     }
 
     static class SomeClass {

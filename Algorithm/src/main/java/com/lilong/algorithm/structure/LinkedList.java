@@ -12,9 +12,31 @@ public class LinkedList extends BaseStructure {
         ListNode head = buildLinkedList();
         System.out.println("input:");
         printLinkedList(head);
-        removeConsecutiveDuplicates(head);
-        System.out.println("output:");
-        printLinkedList(head);
+        printLinkedList(reverse(head));
+//        removeConsecutiveDuplicates(head);
+//        System.out.println("output:");
+//        printLinkedList(head);
+    }
+
+    public static ListNode reverse(ListNode head){
+        if(head == null || head.next == null){
+            return head;
+        }
+        ListNode p1 = head;
+        ListNode p2 = head.next;
+        ListNode p3 = head.next.next;
+        while(p2 != null){
+            p2.next = p1;
+            if(p1 == head){
+                p1.next = null;
+            }
+            p1 = p2;
+            p2 = p3;
+            if(p3 != null){
+                p3 = p3.next;
+            }
+        }
+        return p1;
     }
 
     /**

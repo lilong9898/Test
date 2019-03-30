@@ -8,43 +8,39 @@ public class StairProblem {
 
     public static void main(String[] args) {
 
-        int n = 10;
-        int WAY_1 = 1;
-        int WAY_2 = 3;
+        int n = 5;
 
-        System.out.println(getPossibleWaysRecursive(n, WAY_1, WAY_2) + "");
+        System.out.println(getPossibleWaysRecursive(n) + "");
         System.out.println(getPossibleWaysLoop(n) + "");
     }
 
-    public static int getPossibleWaysRecursive(int n, int WAY_1, int WAY_2) {
+    public static int getPossibleWaysRecursive(int n) {
 
-        if (n < 0) {
+        if (n < 1) {
             return 0;
         }
 
-        if (n == 0) {
+        if (n == 1){
             return 1;
         }
 
-        return getPossibleWaysRecursive(n - WAY_1, WAY_1, WAY_2)
-                + getPossibleWaysRecursive(n - WAY_2, WAY_1, WAY_2);
+        if (n == 2){
+            return 2;
+        }
+
+        return getPossibleWaysRecursive(n - 1) + getPossibleWaysRecursive(n - 2);
     }
 
     public static int getPossibleWaysLoop(int n) {
+        int[] result = new int[n + 1];
+        result[0] = 0;
+        result[1] = 1;
+        result[2] = 2;
+        for(int i = 3; i < n + 1; i++){
 
-        if (n == 1) {
-            return 1;
+            result[i] = result[i - 1] + result[i - 2];
         }
-
-        int minus1 = 1;
-        int minus2 = 1;
-        int ways = 0;
-        for (int i = 0; i < n - 1; i++) {
-            ways = minus1 + minus2;
-            minus1 = minus2;
-            minus2 = ways;
-        }
-
-        return ways;
+        return result[n];
     }
+
 }

@@ -19,12 +19,17 @@ public abstract class BaseSort {
     /**
      * 打印数组
      */
-    protected static void display(int[] numbers) {
+    public static void display(int[] numbers) {
         for (int i = 0; i < numbers.length; i++) {
             System.out.print(numbers[i] + " ");
         }
     }
 
+    public static void display(Integer[] numbers) {
+        for (int i = 0; i < numbers.length; i++) {
+            System.out.print(numbers[i] + " ");
+        }
+    }
     /**
      * 删掉数组中值为target的元素
      */

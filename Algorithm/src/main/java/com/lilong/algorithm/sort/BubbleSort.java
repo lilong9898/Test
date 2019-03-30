@@ -2,7 +2,7 @@ package com.lilong.algorithm.sort;
 
 /**
  * 冒泡排序
- * */
+ */
 public class BubbleSort extends BaseSort {
 
     public static void main(String[] args) {
@@ -17,7 +17,6 @@ public class BubbleSort extends BaseSort {
                 }
             }
         }
-
         return numbers;
     }
 }

@@ -24,7 +24,7 @@ public class Tree extends BaseStructure {
         // TODO
         root = buildTree();
         System.out.println("前序遍历，非递归:");
-//        preOrderTraversalNonRecursive(root);
+        preOrderTraversalNonRecursive(root);
 
         // 中序遍历，非递归
         // TODO
@@ -35,7 +35,7 @@ public class Tree extends BaseStructure {
         // 中序遍历，非递归
         root = buildTree();
         System.out.println("中序遍历，非递归:");
-//        inOrderTraversalNonRecursive(root);
+        inOrderTraversalNonRecursive(root);
 
         // 后序遍历，递归
         root = buildTree();
@@ -168,20 +168,18 @@ public class Tree extends BaseStructure {
 
         LinkedBlockingQueue<TreeNode> queue = new LinkedBlockingQueue<>();
         queue.add(root);
-
-        while (!queue.isEmpty()) {
-
+        while(!queue.isEmpty()){
             TreeNode node = queue.poll();
             System.out.println(node.value);
-
-            TreeNode temp = node.left;
-            node.left = node.right;
-            node.right = temp;
-
-            if (node.left != null) {
+            if(node.left != null || node.right != null){
+                TreeNode temp = node.left;
+                node.left = node.right;
+                node.right = temp;
+            }
+            if(node.left != null){
                 queue.add(node.left);
             }
-            if (node.right != null) {
+            if(node.right != null){
                 queue.add(node.right);
             }
         }
@@ -197,15 +195,15 @@ public class Tree extends BaseStructure {
             return;
         }
 
-        LinkedBlockingQueue<TreeNode> queue = new LinkedBlockingQueue<TreeNode>();
+        LinkedBlockingQueue<TreeNode> queue = new LinkedBlockingQueue<>();
         queue.add(root);
-        while (!queue.isEmpty()) {
+        while(!queue.isEmpty()){
             TreeNode node = queue.poll();
             System.out.println(node.value);
-            if (node.left != null) {
+            if(node.left != null){
                 queue.add(node.left);
             }
-            if (node.right != null) {
+            if(node.right != null){
                 queue.add(node.right);
             }
         }
@@ -334,8 +332,12 @@ public class Tree extends BaseStructure {
             return;
         }
         System.out.println(root.value);
-        preOrderTraversal(root.left);
-        preOrderTraversal(root.right);
+        if (root.left != null) {
+            preOrderTraversal(root.left);
+        }
+        if (root.right != null) {
+            preOrderTraversal(root.right);
+        }
     }
 
     /**
@@ -345,13 +347,16 @@ public class Tree extends BaseStructure {
         if (root == null) {
             return;
         }
-        Stack<TreeNode> stack = new Stack<>();
-        stack.push(root);
-        TreeNode node = root;
-        while (!stack.isEmpty()) {
-            if(node.left != null){
-                System.out.println(node.value);
-                node = node.left;
+        Stack<TreeNode> stack = new Stack<TreeNode>();
+        TreeNode curNode = root;
+        while (curNode != null || !stack.isEmpty()) {
+            if (curNode != null) {
+                stack.push(curNode);
+                System.out.println(curNode.value);
+                curNode = curNode.left;
+            } else {
+                curNode = stack.pop();
+                curNode = curNode.right;
             }
         }
     }
@@ -363,19 +368,16 @@ public class Tree extends BaseStructure {
         if (root == null) {
             return;
         }
-        Stack<TreeNode> stack = new Stack<>();
-        stack.push(root);
-        TreeNode node = root;
-        while (!stack.isEmpty()) {
-            if (node.left != null) {
-                if (node.right != null) {
-                    stack.push(node.right);
-                }
-                stack.push(node);
-                node = node.left;
+        Stack<TreeNode> stack = new Stack<TreeNode>();
+        TreeNode curNode = root;
+        while (curNode != null || !stack.isEmpty()) {
+            if (curNode != null) {
+                stack.push(curNode);
+                curNode = curNode.left;
             } else {
-                System.out.println(node.value);
-                node = stack.pop();
+                curNode = stack.pop();
+                System.out.println(curNode.value);
+                curNode = curNode.right;
             }
         }
     }
