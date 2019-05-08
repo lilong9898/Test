@@ -7,18 +7,27 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/layoutParamsPanel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:orientation="vertical">
+        android:layout_centerHorizontal="true">
+
+        <TextView
+            android:id="@+id/tvSyncOrAsyncHint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="20dp"
+            android:text="拦截器测试用"
+            android:textSize="15sp"/>
 
         <RadioGroup
             android:id="@+id/rgSyncOrAsync"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp">
+            android:layout_marginTop="20dp"
+            android:layout_toRightOf="@id/tvSyncOrAsyncHint">
 
             <RadioButton
                 android:id="@+id/rbtnSync"
@@ -35,7 +44,7 @@
                 android:textSize="15sp"/>
         </RadioGroup>
 
-    </LinearLayout>
+    </RelativeLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"
