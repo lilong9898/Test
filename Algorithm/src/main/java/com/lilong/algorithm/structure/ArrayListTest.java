@@ -6,10 +6,10 @@ import java.util.Iterator;
 
 /**
  * {@link ConcurrentModificationException}是由某些{@link Iterator}的子类，在{@link Iterator#next()}中抛出的
- * 也就是说，会出现在通过Iterator遍历(foreach遍历的本质也是iterator遍历)过程中，通过非{@link Iterator#remove()}方法删除了元素，会抛出这个异常
+ * 也就是说，会出现在通过Iterator遍历(foreach遍历的本质也是iterator遍历)过程中，通过非{@link Iterator#remove()}方法删除了元素，或者增加了元素(iterator无增加元素的方法)，会抛出这个异常
  * 所以，注意
- * (1) foreach遍历时，不要删除元素
- * (2) iterator遍历时，不要用iterator#remove以外的方法删除元素
+ * (1) foreach遍历时，不要删除／增加元素
+ * (2) iterator遍历时，不要用iterator#remove以外的方法删除元素，不要增加元素
  * */
 public class ArrayListTest extends BaseStructure{
 

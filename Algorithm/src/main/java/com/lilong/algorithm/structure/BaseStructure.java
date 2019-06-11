@@ -3,6 +3,7 @@ package com.lilong.algorithm.structure;
 import com.lilong.algorithm.sort.BaseSort;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 创建和打印各种数据结构
@@ -72,6 +73,17 @@ public class BaseStructure extends BaseSort {
             head = head.next;
         }
 
+        System.out.println();
+    }
+
+    /**
+     * 打印map的key
+     * */
+    public static <K,V> void printMapKeys(Map<K,V> map){
+        System.out.print(map.getClass().getSimpleName() + "(" + map.size() + ") : ");
+        for(K key : map.keySet()){
+            System.out.print(key + " ");
+        }
         System.out.println();
     }
 
