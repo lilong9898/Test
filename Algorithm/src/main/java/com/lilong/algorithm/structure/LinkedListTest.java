@@ -6,7 +6,7 @@ import java.util.Stack;
 /**
  * 链表
  */
-public class LinkedList extends BaseStructure {
+public class LinkedListTest extends BaseStructure {
 
     public static void main(String[] args) {
         ListNode head = buildLinkedList();

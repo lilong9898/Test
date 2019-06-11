@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Stack;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class Tree extends BaseStructure {
+public class TreeTest extends BaseStructure {
 
     public static void main(String[] args) {
 

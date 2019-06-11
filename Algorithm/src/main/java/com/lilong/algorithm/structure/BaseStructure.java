@@ -2,6 +2,8 @@ package com.lilong.algorithm.structure;
 
 import com.lilong.algorithm.sort.BaseSort;
 
+import java.util.List;
+
 /**
  * 创建和打印各种数据结构
  */
@@ -38,6 +40,19 @@ public class BaseStructure extends BaseSort {
         n4.next = n5;
 
         return n1;
+    }
+
+    /**
+     * 打印列表
+     * */
+    public static <T> void printList(List<T> list){
+        for(int i = 0; i < list.size(); i++){
+            System.out.print(list.get(i));
+            if(i != list.size() - 1){
+                System.out.print(" ");
+            }
+        }
+        System.out.println();
     }
 
     /**
