@@ -74,7 +74,7 @@ import java.util.Date;
  *       并注册到system_server进程的InputDispatcher中, InputChannel-ViewRoot-Window三者一一对应
  *     - InputChannel在创建时会生成linux管道(早期版本)或socket(晚期版本)用于事件从system_server进程到应用进程的传递
  *       其中IMS一侧是socket客户端, 应用窗口一侧是socket服务端
- *     - InputDispatcher通过InputChannel将事件传到应用进程的消息队列里, 并通知对应的window
+ *     - InputDispatcher通过InputChannel将事件传给应用进程, 并通知对应的window
  *     - InputDispatcher会为每个InputChannel维护两个队列:
  *       - outboundQueue: 等待发送给窗口的事件。每一个从InputReader中取得的新消息，都会先进入到此队列
  *       - waitQueue:     已经发送给窗口的事件
@@ -93,7 +93,8 @@ import java.util.Date;
  *       DecorView的superDispatchTouchEvent->
  *       rootView的dispatchTouchEvent->
  *       ....各层布局的事件处理代码....
- *     - 当应用窗口处理完事件后, rootView的dispatchTouchEvent方法会返回[...不明过程....]最终触发WindowInputEventReceiver的finishInputEvent方法, 表明应用窗口处理这个事件完毕
+ *     - 当应用窗口处理完事件后, rootView的dispatchTouchEvent方法会返回，逐层返回到ViewRootImpl的deliverInputEvent方法，继续执行ViewRootImpl的finishInputEvent方法
+ *       最终触发WindowInputEventReceiver的finishInputEvent方法, 表明应用窗口处理这个事件完毕
  *     [APP java 代码处理 end]
  *     [IMS native代码处理 begin]
  *     - APP调用会触发WindowInputEventReceiver的finishInputEvent方法, 其内部会通过socket向system_server一侧的IMS传递事件完成的消息

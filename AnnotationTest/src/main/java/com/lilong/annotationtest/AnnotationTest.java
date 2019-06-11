@@ -28,8 +28,15 @@ public class AnnotationTest {
         test.testMethod();
     }
 
+    static class TestClass2 {
+        public TestClass2(){
+            System.out.println("TestClass2 constructor");
+        }
+    }
+
     /**
      * 类的初始化过程中，按照静态初始块->非静态初始块->构造方法的顺序执行
+     * 非静态初始块包括创建其它类的对象时，其它类的构造函数
      * */
     @AnnotationOnClass
     static class TestClass {
@@ -41,6 +48,8 @@ public class AnnotationTest {
         {
             System.out.println("dynamic block 1");
         }
+
+        private TestClass2 testClass2 = new TestClass2();
 
         public TestClass(){
             System.out.println("constructor");
