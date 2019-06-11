@@ -1,5 +1,6 @@
 package com.lilong.algorithm.structure;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -10,7 +11,7 @@ import java.util.TreeMap;
  * 遍历HashMap的key，返回{@link HashMap.KeySet}，不保证元素相对顺序
  * 原因：HashMap的内部结构是数组+链表，扩容时会重建一个更大的数组，所以数组中各元素的相对顺序会变
  *
- * 遍历TreeMap的key，返回{@link TreeMap.KeySet}，保证元素相对顺序
+ * 遍历TreeMap的key，返回{@link TreeMap.KeySet}，保证元素相对顺序，且可以用{@link Comparator}规定相对顺序的规则
  * 原因：TreeMap的内部结构是红黑树（自平衡二叉查找树），红黑树上各个节点的相对位置受红黑树规则限制，增加或删除节点，其他节点相对位置不变
  * */
 public class MapTest extends BaseStructure{
@@ -30,7 +31,7 @@ public class MapTest extends BaseStructure{
         hashMap.put("element4", new Object());
 
         if(treeMap == null){
-            treeMap = new TreeMap<String, Object>(4);
+            treeMap = new TreeMap<String, Object>();
         }
         treeMap.clear();
         treeMap.put("element1", new Object());
