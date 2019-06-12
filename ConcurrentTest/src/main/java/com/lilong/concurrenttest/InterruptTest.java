@@ -3,6 +3,9 @@ package com.lilong.concurrenttest;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 测试{@link Thread#isInterrupted()}方法
+ * */
 public class InterruptTest {
 
     public static void main(String[] args) {
