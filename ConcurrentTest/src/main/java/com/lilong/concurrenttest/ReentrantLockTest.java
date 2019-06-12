@@ -1,7 +1,17 @@
 package com.lilong.concurrenttest;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
+/**
+ * ReentrantLock与synchronized的区别:
+ *                                 ReentrantLock                                     synchronized
+ *  底层实现:                       java代码                                           字节码的关键字，由jvm直接支持
+ *  控制粒度：                      细                                                 粗
+ *  获取锁失败后不阻塞               支持{@link ReentrantLock#tryLock()}                 不支持
+ *  timeout时间内获取锁失败后不阻塞   支持{@link ReentrantLock#tryLock(long, TimeUnit)}   不支持
+ *  让等待(BLOCKED)最久的线程获取锁   支持{@link ReentrantLock#ReentrantLock(boolean)}    不支持
+ * */
 public class ReentrantLockTest {
 
     public static void main(String[] args) {
