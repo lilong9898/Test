@@ -5,7 +5,7 @@
  * (2) 某个布局容器, 先加上fragmentA, 再加上fragmentB, 会依次将fragmentA和fragmentB的rootView加到容器里
  * 所以两者的rootView都响应触摸事件
  *
- * (3) 使用backstack, 要调{@link FragmentTransaction#addToBackStack(java.lang.String)}, 当按back键时会将之前transaction的反向操作
+ * (3) 使用backstack, 要调{@link FragmentTransaction#addToBackStack(String)}, 当按back键时会将之前transaction的反向操作
  *     使用backstack会影响fragment操作时的生命周期, 与不用backstack时不同
  *
  * {@link FragmentManager}是抽象类, 它的实现类是{@link FragmentManagerImpl}

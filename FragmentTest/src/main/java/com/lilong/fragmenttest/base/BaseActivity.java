@@ -6,7 +6,7 @@ import android.util.Log;
 
 public abstract class BaseActivity extends Activity {
 
-    private static final String TAG = "tag";
+    private static final String TAG = "FTest";
 
     public abstract int getLayoutResourceId();
     public abstract void initView();

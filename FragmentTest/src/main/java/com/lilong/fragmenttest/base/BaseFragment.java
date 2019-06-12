@@ -13,7 +13,7 @@ import com.lilong.fragmenttest.R;
 
 public abstract class BaseFragment extends Fragment {
 
-    public static final String TAG = "tag";
+    public static final String TAG = "FTest";
 
     public abstract int getLayoutResourceId();
 
