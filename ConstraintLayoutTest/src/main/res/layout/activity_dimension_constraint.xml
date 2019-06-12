@@ -5,7 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!--match_parent和wrap_content仍然有效，但是设置成这两个会导致无视约束-->
+    <!--ConstraintLayout中的约束，对控件位置和大小都有影响-->
+    <!--match_parent和wrap_content仍然有效，但是设置成这两个会导致约束不再影响控件大小-->
+    <!--match_parent也会导致控件位置上的约束失效-->
     <!--同时新增了match_constraint(0dp)，
     设置成0dp后，这个方向上有约束，就按符合约束的match_parent处理
     设置成0dp后，这个方向上没约束，就按wrap_content处理-->
@@ -105,7 +107,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintWidth_percent="0.7"/>
 
-            <!--此控件占满tv7的占据70%后的剩余30%-->
+            <!--此控件占满tv8的占据70%后的剩余30%-->
             <TextView
                 android:id="@+id/tv9"
                 style="@style/tvStyle"

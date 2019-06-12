@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 /**
  * 原型模式
- * 当newd对象或者初始化其参数的代价太大时, 不用new,而用clone的方式复制一个对象
+ * 当new对象或者初始化其参数的代价太大时, 不用new,而用clone的方式复制一个对象
  * clone方法实现的是shallow copy, 要实现deep copy需要手动clone每个参数并设置给clone生成的对象
  */
 
@@ -15,6 +15,7 @@ public class PatternPrototype {
         Document documentForShallowCopy = new Document(false, "titleA", "str1", "str2");
         Document shallowCopy = documentForShallowCopy.clone();
 
+        // 浅拷贝，在拷贝的list中加入元素，原版的list中也加入了元素，因为拷贝和原版的list指向同一个对象
         System.out.println("------------------------------------");
         System.out.println("default behavior : shallow copy");
         System.out.println("------------------------------------");
@@ -24,6 +25,7 @@ public class PatternPrototype {
         System.out.println("after altering the copy");
         System.out.println("document : " + documentForShallowCopy + "|copy : " + shallowCopy);
 
+        // 深拷贝，在拷贝的list中加入元素，原版的list中没加入元素，因为拷贝和原版的list指向不同对象
         Document documentForDeepCopy = new Document(true, "titleA", "str1", "str2");
         Document deepCopy = documentForDeepCopy.clone();
         System.out.println("-----------------------------");

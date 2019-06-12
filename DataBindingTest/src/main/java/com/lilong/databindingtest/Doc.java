@@ -1,6 +1,7 @@
 package com.lilong.databindingtest;
 
 import android.app.Activity;
+import android.app.FragmentTransaction;
 import android.databinding.Bindable;
 import android.databinding.DataBinderMapper;
 import android.databinding.DataBindingComponent;

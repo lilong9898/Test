@@ -87,7 +87,7 @@ class ConcreteObserverA implements AbstractObserver {
 }
 
 /**
- * 具体的观察者A
+ * 具体的观察者B
  */
 class ConcreteObserverB implements AbstractObserver {
     @Override

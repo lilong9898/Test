@@ -4,6 +4,8 @@ package com.lilong.designpattern;
  * 模板模式
  * 算法基类规定了算法的步骤和其顺序, 算法子类提供这些步骤的具体实现
  * 这个算法的基类就是模板
+ *
+ * 与策略模式的区别：模板本身作为整体在运行，策略作为整体的一部分被接入整体
  */
 
 public class PatternTemplate {

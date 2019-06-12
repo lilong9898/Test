@@ -34,6 +34,10 @@ import static com.lilong.contentprovider.db.MyDBHelper.TABLE_NAME;
  *     (2.1) 通过反射调用ContentProvider的构造函数
  *     (2.2) 调用{@link ContentProvider#onCreate()}方法
  * (3) 调用{@link Application#onCreate()}
+ * ------------------contentProvider所在进程不存在时----------------------------
+ *　会按照上面的过程创建contentProvider所属进程，构造Application和contentProvider实例，并调用生命周期方法
+ * 但在有些手机上，比如oppo上，contentProvider进程不存在时，也不会因为别的应用调用了而创建，功能会不可用
+ * 除非已经存在contentProvider的进程
  */
 public class MyContentProvider extends ContentProvider {
 
