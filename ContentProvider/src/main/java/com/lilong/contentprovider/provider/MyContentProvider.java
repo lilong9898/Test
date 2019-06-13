@@ -2,6 +2,7 @@ package com.lilong.contentprovider.provider;
 
 import android.app.Application;
 import android.content.ContentProvider;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
@@ -38,6 +39,8 @@ import static com.lilong.contentprovider.db.MyDBHelper.TABLE_NAME;
  *　会按照上面的过程创建contentProvider所属进程，构造Application和contentProvider实例，并调用生命周期方法
  * 但在有些手机上，比如oppo上，contentProvider进程不存在时，也不会因为别的应用调用了而创建，功能会不可用
  * 除非已经存在contentProvider的进程
+ * ------------------contentProvider各方法所属的线程-----------------------------
+ * {@link ContentResolver}与{@link ContentProvider}的通信通过binder机制，作为binder通信中的接收方，{@link ContentProvider}的方法都是运行在binder线程上的
  */
 public class MyContentProvider extends ContentProvider {
 
@@ -112,7 +115,7 @@ public class MyContentProvider extends ContentProvider {
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        Log.i(TAG, "ContentProvider : query, uri = " + uri);
+        Log.i(TAG, "ContentProvider : query, uri = " + uri + ", on thread " + Thread.currentThread().getName());
         int code = URI_MATCHER.match(uri);
         Cursor cursor = null;
         if (code == URI_CODE_TABLE_TEST_QUERY) {
