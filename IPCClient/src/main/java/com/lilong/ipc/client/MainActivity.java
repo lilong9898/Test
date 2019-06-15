@@ -1,8 +1,5 @@
 package com.lilong.ipc.client;
 
-import com.lilong.ipc.ITest;
-import com.lilong.ipc.R;
-
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -17,6 +14,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.lilong.ipc.ITest;
+import com.lilong.ipc.R;
 
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
@@ -70,6 +70,9 @@ public class MainActivity extends Activity {
             this.num2 = num2;
         }
 
+        /**
+         * 在主线程上被调用
+         * */
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             Log.i(TAG, "onServiceConnected");
@@ -96,4 +99,5 @@ public class MainActivity extends Activity {
             Log.i(TAG, "onServiceDisconnected");
         }
     }
+
 }

@@ -1,0 +1,21 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+    </style>
+
+    <style name="iv">
+        <item name="android:layout_width">204dp</item>
+        <item name="android:layout_height">144dp</item>
+        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:scaleType">fitXY</item>
+    </style>
+
+    <style name="tv">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:layout_marginTop">5dp</item>
+    </style>
+</resources>

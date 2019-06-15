@@ -2,6 +2,7 @@ package com.lilong.layoutinflatertest;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +13,26 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+/**
+ * 分析measure/onMeasure，layout/onLayout, draw/onDraw的关系，以{@link LinearLayout}为例
+ *
+ *  {@link LinearLayout#measure(int, int)}过程中调用{@link LinearLayout#onMeasure(int, int)}，
+ *  后者内部会调{@link LinearLayout#setMeasuredDimension(int, int)}给自己设置大小，并调children的measure方法
+ *  结论：onMeasure承担了全部工作
+ *
+ *  {@link LinearLayout#layout(int, int, int, int)}过程中调用{@link LinearLayout#setFrame}方法给自己设置位置，
+ *  然后调{@link LinearLayout#onLayout(boolean, int, int, int, int)}，其中调children的layout方法
+ *  结论：layout承担了自己的位置工作，onLayout承担了children的位置工作
+ *
+ *  {@link LinearLayout#draw(Canvas)}过程中：
+ *     (1) 画自己的背景
+ *     (2) save canvas
+ *     (3) 画自己的内容，通过{@link LinearLayout#onDraw(Canvas)}
+ *     (4) 画children，通过{@link LinearLayout#dispatchDraw(Canvas)}，其中会调children的draw方法
+ *     (5) restore canvas
+ *     (6) 画装饰物
+ *  结论：绘制工作分散到不同的方法中去了
+ * */
 public class MainActivity extends BaseActivity {
 
     private ViewGroup container;

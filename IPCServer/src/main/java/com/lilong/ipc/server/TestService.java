@@ -20,6 +20,9 @@ public class TestService extends Service {
 
     class StubImpl extends ITest.Stub{
 
+        /**
+         * 运行在binder线程池上
+         * */
         @Override
         public int calculate(int number1, int number2) throws RemoteException {
             Log.i(TAG, "Server calculate currentThread = " + Thread.currentThread().getName());
