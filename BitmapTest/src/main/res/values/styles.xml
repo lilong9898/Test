@@ -8,7 +8,7 @@
     <style name="iv">
         <item name="android:layout_width">204dp</item>
         <item name="android:layout_height">144dp</item>
-        <item name="android:layout_marginTop">5dp</item>
+        <item name="android:layout_marginTop">10dp</item>
         <item name="android:scaleType">fitXY</item>
     </style>
 

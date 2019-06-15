@@ -41,26 +41,72 @@ public class MainActivity extends Activity {
 
     private ImageView ivRaw;
     private ImageView ivInSampleSize;
+    private ImageView ivInMutable;
+    private ImageView ivInPurgable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Bitmap bitmap;
         ivRaw = findViewById(R.id.ivRaw);
-        ivRaw.setImageBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.raw));
+        bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.raw);
+        ivRaw.setImageBitmap(bitmap);
+        printBitmapInfo("Raw", bitmap);
 
-        /** 测试{@link Options#inJustDecodeBounds}和{@link Options#inSampleSize}*/
+        /**
+         * 测试{@link Options#inJustDecodeBounds}和{@link Options#inSampleSize}
+         * 采样率，你懂的
+         * */
         ivInSampleSize = findViewById(R.id.ivInSampleSize);
         Options options = new Options();
         options.inJustDecodeBounds = true;
-        Bitmap b = BitmapFactory.decodeResource(getResources(), R.drawable.raw, options);
+        bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.raw, options);
         int outWidth = options.outWidth;
         int outHeight = options.outHeight;
-        Log.i(TAG, "bitmap = " + b + ", outWidth = " + outWidth + ", outHeight = " + outHeight);
+        Log.i(TAG, "bitmap = " + bitmap + ", outWidth = " + outWidth + ", outHeight = " + outHeight);
         options = new Options();
         options.inSampleSize = 16;
-        b = BitmapFactory.decodeResource(getResources(), R.drawable.raw, options);
-        ivInSampleSize.setImageBitmap(b);
+        bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.raw, options);
+        ivInSampleSize.setImageBitmap(bitmap);
+        printBitmapInfo("InSampleSize", bitmap);
+
+        /**
+         * 测试{@link Options#inMutable}
+         * 位图的像素数据是否可变
+         * */
+        ivInMutable = findViewById(R.id.ivInMutable);
+        options = new Options();
+        options.inMutable = true;
+        bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.raw, options);
+        ivInMutable.setImageBitmap(bitmap);
+        printBitmapInfo("InMutable", bitmap);
+
+        /**
+         * 测试{@link Options#inPurgeable}
+         * 设置为true使得其像素数据被分配到ashmem中（而不是android3.0-8.0平台上默认分配到dalvik堆上）
+         * 这也是Fresco图片库能节省dalvik内存的原因
+         * 从android5.0开始，这个标志被废弃，不再起作用，官方建议改用{@link Options#inBitmap}
+         * */
+        ivInPurgable = findViewById(R.id.ivInPurgable);
+        options = new Options();
+        options.inPurgeable = true;
+        bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.raw, options);
+        ivInPurgable.setImageBitmap(bitmap);
+        printBitmapInfo("InPurgable", bitmap);
+
+        
+    }
+
+    private static void printBitmapInfo(String testDesc, Bitmap bitmap){
+        if(bitmap == null){
+            return;
+        }
+
+        Log.i(TAG, "---------------------------------------------------");
+        Log.i(TAG, "--------------------" + testDesc + "-----------------------");
+        Log.i(TAG, bitmap + " : width = " + bitmap.getWidth() + ", height = " + bitmap.getHeight() + ", isMutable = " + bitmap.isMutable());
+
     }
 }

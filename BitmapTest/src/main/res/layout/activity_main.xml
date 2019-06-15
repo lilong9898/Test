@@ -32,7 +32,24 @@
 
             <TextView
                 style="@style/tv"
-                android:text="in sample size = 16"/>
+                android:text="inSampleSize = 16"/>
+
+            <ImageView
+                android:id="@+id/ivInMutable"
+                style="@style/iv"/>
+
+            <TextView
+                style="@style/tv"
+                android:text="inMutable = true"/>
+
+            <ImageView
+                android:id="@+id/ivInPurgable"
+                style="@style/iv"/>
+
+            <TextView
+                style="@style/tv"
+                android:text="inPurgable = true"/>
+
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>
