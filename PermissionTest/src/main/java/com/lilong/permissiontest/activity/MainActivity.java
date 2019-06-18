@@ -25,10 +25,20 @@ import static com.lilong.permissiontest.util.Util.generateTargetSdkVersionInfo;
 
 /**
  * 测试在android各版本上，危险权限的声明，获取和授予情况
+ *
+ * 属于同一个组的权限，如{@link Manifest.permission#READ_EXTERNAL_STORAGE}和{@link Manifest.permission#WRITE_EXTERNAL_STORAGE}
+ * 其中一个请求权限成功后，另一个就会获得权限
+ * 按照大多数手机的权限管理器的样式，同一个组的权限，只会显示为一个项目，所以关掉后会同时失去
+ *
+ * 权限管理器里，有三个选项:
+ * (1) 允许：直接获得权限
+ * (2) 询问：无权限，调{@link Activity#requestPermissions(String[], int)}时会弹出权限框让用户决定
+ * (3) 禁止：无权限，调{@link Activity#requestPermissions(String[], int)}不弹权限框，
+ *                 {@link Activity#onRequestPermissionsResult(int, String[], int[])}直接返回{@link PackageManager#PERMISSION_DENIED}
  */
 public class MainActivity extends Activity {
 
-    public static final String TAG = "PermissionTest";
+    public static final String TAG = "PTest";
 
     private TextView mTvCurAndroidVersion;
     private TextView mTvTargetSdkVersion;

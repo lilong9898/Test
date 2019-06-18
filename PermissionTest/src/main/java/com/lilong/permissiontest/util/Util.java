@@ -55,6 +55,9 @@ public class Util {
             case 28:
                 androidVersionName = "9.0 PIE";
                 break;
+            case 29:
+                androidVersionName = "10.0 Q";
+                break;
             default:
                 break;
         }
