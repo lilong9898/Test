@@ -1,6 +1,10 @@
 package com.lilong.javanewfeaturetest;
 
-/** lambda表达式*/
+/**
+ * java 8 新特性：lambda表达式，任意android sdk版本都支持
+ * java 8 新特性：{@link FunctionalInterface}，android sdk >= 24才支持
+ *
+ * */
 public class LambdaTest {
 
     public static void main(String[] args){

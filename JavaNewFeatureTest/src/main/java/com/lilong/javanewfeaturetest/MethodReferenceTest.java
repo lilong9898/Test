@@ -3,7 +3,7 @@ package com.lilong.javanewfeaturetest;
 import java.util.ArrayList;
 
 /**
- * 方法引用
+ * java 8 新特性：方法引用，任意android sdk版本都支持
  * 常使用lambda表达式来创建匿名方法。然而，有时候我们仅仅是调用了一个已存在的方法
  * 以直接通过方法引用来简写lambda表达式中已经存在的方法
  *

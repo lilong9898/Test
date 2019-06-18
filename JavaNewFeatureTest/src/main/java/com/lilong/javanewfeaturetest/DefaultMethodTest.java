@@ -1,7 +1,7 @@
 package com.lilong.javanewfeaturetest;
 
 /**
- * 默认方法
+ * java 8 新特性：接口的默认方法，任意android sdk版本都支持
  */
 public class DefaultMethodTest {
 

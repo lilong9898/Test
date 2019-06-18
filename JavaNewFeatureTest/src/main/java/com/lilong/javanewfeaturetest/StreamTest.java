@@ -6,11 +6,13 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
- * Stream API : {@link java.util.stream.Stream}
- * (1)只有执行了{@link java.util.stream.Stream#collect(Collector)}方法后，才开始执行遍历操作，所以这个方法叫terminal方法
- * (2)其他方法比如{@link java.util.stream.Stream#map(Function)}等，只是标记了遍历中要执行的动作，等待terminal方法启动遍历后执行，所以都叫intermediate方法
+ * java 8 新特性：Stream API{@link Stream}, android sdk >=24 才支持
+ *
+ * (1)只有执行了{@link Stream#collect(Collector)}方法后，才开始执行遍历操作，所以这个方法叫terminal方法
+ * (2)其他方法比如{@link Stream#map(Function)}等，只是标记了遍历中要执行的动作，等待terminal方法启动遍历后执行，所以都叫intermediate方法
  * (3)intermediate方法中对原集合的影响，分为按值传递（原集合元素为基本类型）和按引用传递（原集合元素非基本类型）两种情况，前者对原集合无影响，后者有可能有影响
  * (4)terminal方法返回的集合跟原集合是不同的对象
  */
