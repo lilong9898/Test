@@ -50,6 +50,22 @@
                 style="@style/tv"
                 android:text="inPurgable = true"/>
 
+            <ImageView
+                android:id="@+id/ivInBitmap"
+                style="@style/iv"/>
+
+            <TextView
+                style="@style/tv"
+                android:text="inBitmap = true"/>
+
+            <ImageView
+                android:id="@+id/ivInDensity"
+                style="@style/iv"/>
+
+            <TextView
+                style="@style/tv"
+                android:text="inDensity = 5, inTargetDensity = 1"/>
+
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

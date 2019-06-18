@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -43,12 +44,17 @@ public class MainActivity extends Activity {
     private ImageView ivInSampleSize;
     private ImageView ivInMutable;
     private ImageView ivInPurgable;
+    private ImageView ivInBitmap;
+    private ImageView ivInDensity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        Log.i(TAG, "----------------SCREEN DENSITY-----------------");
+        Log.i(TAG, "density = " + metrics.density + ", density dpi = " + metrics.densityDpi);
         Bitmap bitmap;
         ivRaw = findViewById(R.id.ivRaw);
         bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.raw);
@@ -96,7 +102,50 @@ public class MainActivity extends Activity {
         ivInPurgable.setImageBitmap(bitmap);
         printBitmapInfo("InPurgable", bitmap);
 
-        
+        /**
+         * 测试{@link Options#inBitmap}
+         * 如果这个参数被设置成位图B，用这个option去解码位图A
+         * 这时会将像素信息写入另一个位图B的像素内存中去，并返回位图B的对象
+         * 也就是说，B被重用了
+         * 下面的例子里，最终生成的bitmap和之前准备的reusedBitmap是同一个对象
+         * 要求B必须是mutable的
+         * */
+        // 准备reused bitmap
+        options = new Options();
+        options.inMutable = true;
+        Bitmap reusedBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.raw2, options);
+        Log.i(TAG, "reusedBitmap = " + reusedBitmap);
+
+        ivInBitmap = findViewById(R.id.ivInBitmap);
+        options = new Options();
+        options.inBitmap = reusedBitmap;
+        bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.raw, options);
+        ivInBitmap.setImageBitmap(bitmap);
+        printBitmapInfo("InBitmap", bitmap);
+
+        /**
+         * 测试
+         * {@link Options#inDensity}：指定图片本身的密度，默认是0，表示由图片所属的目录决定（比如xhdpi, xxhdpi等），
+         *                            对于非本地资源里的图片，这个属性是获取不到的，所以无效
+         * {@link Options#inTargetDensity}：指定适配的目标密度，默认是0，表示等于屏幕密度
+         * 　　　　　　　　　　　　　　　　对于非本地资源里的图片，因为inDensity是无效的，所以这个也无效
+         * {@link Options#inScaled}：如果图片本身密度和适配目标密度不同，是否拉伸到目标密度，默认是true
+         *                            对于非本地资源里的图片，因为inDensity和inTargetDensity是无效的，所以这个也无效
+         * 这三个参数是联合使用，用于确定解码得到的位图大小的
+         * 位图大小=原图片的宽高 / inSampleSize(round to power of 2) * (inTargetDensity / inDensity)
+         * raw例子中的，原图片宽1024，inSampleSize = 1，inTargetDensity = 2.625(屏幕密度)，inDensity = 2(因为放在了xhdpi目录里)
+         *             得到的位图宽 = 1024 / 1 * 2.625 / 2 = 1344
+         * 这个例子中的，原图片宽1024，inSampleSize = 1，inTargetDensity = 1(指定)，inDensity = 5(指定)
+         *            得到的位图宽 = 1024 / 1 * 1 / 5 = 205
+         * */
+        ivInDensity = findViewById(R.id.ivInDensity);
+        options = new Options();
+        options.inDensity = 5;
+        options.inTargetDensity = 1;
+        options.inScaled = true;
+        bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.raw, options);
+        ivInDensity.setImageBitmap(bitmap);
+        printBitmapInfo("InDensity", bitmap);
     }
 
     private static void printBitmapInfo(String testDesc, Bitmap bitmap){
@@ -106,7 +155,15 @@ public class MainActivity extends Activity {
 
         Log.i(TAG, "---------------------------------------------------");
         Log.i(TAG, "--------------------" + testDesc + "-----------------------");
-        Log.i(TAG, bitmap + " : width = " + bitmap.getWidth() + ", height = " + bitmap.getHeight() + ", isMutable = " + bitmap.isMutable());
+        Log.i(TAG, bitmap + " : width = " + bitmap.getWidth() + ", height = " + bitmap.getHeight() + ", isMutable = " + bitmap.isMutable() + ", density = " + bitmap.getDensity());
+    }
 
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if(hasFocus){
+            Log.i(TAG, "--------------------imageView size-----------------------");
+            Log.i(TAG, "imageView width = " + ivRaw.getWidth() + ", imageView height = " + ivRaw.getHeight());
+        }
     }
 }
