@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import com.bumptech.glide.*;
 import com.bumptech.glide.disklrucache.DiskLruCache;
@@ -190,7 +191,7 @@ import java.util.concurrent.ThreadPoolExecutor;
  * (1) 第一步：获取控件尺寸
  * {@link Target#getSize(SizeReadyCallback)}
  *     (1.1) 设置回调，通过异步方式获取目标控件的尺寸
- *     (1.2) 底层是通过{@link ViewTarget.SizeDeterminer#getSize(SizeReadyCallback)}来实现
+ *     (1.2) 底层是通过{@link ViewTarget.SizeDeterminer#getSize(SizeReadyCallback)}来实现，本质上是通过{@link ViewTreeObserver#addOnPreDrawListener(ViewTreeObserver.OnPreDrawListener)}，监听到PreDraw时获取控件大小
  *     (1.3) 因为{@link SingleRequest}实现了{@link SizeReadyCallback}，所以它自己就是(1.1)中的回调，具体是{@link SingleRequest#onSizeReady(int, int)}方法
  *
  * (2) 第二步：尝试从内存缓存加载图片

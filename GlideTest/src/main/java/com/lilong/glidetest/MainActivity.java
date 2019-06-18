@@ -12,6 +12,8 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -62,6 +64,7 @@ public class MainActivity extends Activity {
     }
 
     private ImageView ivTest;
+    private Button btnLoad;
 
     @TargetApi(Build.VERSION_CODES.M)
     @Override
@@ -69,6 +72,13 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ivTest = findViewById(R.id.ivTest);
+        btnLoad = findViewById(R.id.btnLoad);
+        btnLoad.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                testGlide();
+            }
+        });
         // 检查危险权限是否授予
         // 授予，继续
         if (checkPermission(Manifest.permission.READ_EXTERNAL_STORAGE) && checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
@@ -181,7 +191,7 @@ public class MainActivity extends Activity {
                          * (2) 返回值是true的话会导致{@link Target#onResourceReady(Object, Transition)}不触发
                          * (3) 否则触发
                          * */
-                        Log.i(TAG, "onResourceReady : model = " + model + ", target = " + target);
+                        Log.i(TAG, "onResourceReady : model = " + model + ", target = " + target + ", thread = " + Thread.currentThread().getName());
                         return false;
                     }
                 })
