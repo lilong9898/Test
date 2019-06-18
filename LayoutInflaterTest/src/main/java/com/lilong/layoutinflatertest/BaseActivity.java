@@ -19,7 +19,7 @@ public abstract class BaseActivity extends Activity {
         inflater = LayoutInflater.from(this);
     }
 
-    public static final String TAG = "LayoutInflaterTest";
+    public static final String TAG = "LTest";
 
     public static final int dipToPixel(Context context, int dip) {
         final float scale = context.getResources().getDisplayMetrics().density;
