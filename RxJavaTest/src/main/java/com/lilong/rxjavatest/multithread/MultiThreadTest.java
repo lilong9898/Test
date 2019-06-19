@@ -14,6 +14,7 @@ import io.reactivex.Observer;
 import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 
 import static com.lilong.rxjavatest.activity.MainActivity.TAG;
@@ -38,11 +39,34 @@ public class MultiThreadTest {
      * 所以此方法的调用位置不影响程序执行情况
      *
      * 最终的线程情况要综合考虑(2)和(3)的影响
+     *
      */
     public static void testObservableAndObserverInDifferentThread() {
         ObservableExamples.getObservableFromObservableOnSubscribe()
-                .subscribeOn(Schedulers.newThread())
+                .map(new Function<String, String>() {
+                    @Override
+                    public String apply(String s) throws Exception {
+                        Log.i(TAG, "map1 thread = " + Thread.currentThread().getName());
+                        return s;
+                    }
+                })
+                .observeOn(Schedulers.computation())
+                .map(new Function<String, String>() {
+                    @Override
+                    public String apply(String s) throws Exception {
+                        Log.i(TAG, "map2 thread = " + Thread.currentThread().getName());
+                        return s;
+                    }
+                })
                 .observeOn(AndroidSchedulers.mainThread())
+                .map(new Function<String, String>() {
+                    @Override
+                    public String apply(String s) throws Exception {
+                        Log.i(TAG, "map3 thread = " + Thread.currentThread().getName());
+                        return s;
+                    }
+                })
+                .subscribeOn(Schedulers.newThread())
                 .subscribe(ObserverExamples.getShowThreadObserver());
     }
 

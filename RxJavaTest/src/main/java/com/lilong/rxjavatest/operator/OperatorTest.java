@@ -17,6 +17,7 @@ import io.reactivex.functions.BiFunction;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.functions.Predicate;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 
 import static com.lilong.rxjavatest.activity.MainActivity.TAG;
@@ -40,6 +41,11 @@ import static com.lilong.rxjavatest.activity.MainActivity.TAG;
  * {@link Observable#observeOn(Scheduler)}
  * {@link Observable#subscribeOn(Scheduler)}
  * .................so many more
+ *
+ * 这些操作符的内部实现，都会有
+ * {@link RxJavaPlugins#onAssembly(Observable)}这类代码
+ * 这是一类hook方法，用于对onAssembly的参数Observable按照{@link RxJavaPlugins#onObservableAssembly}方法做处理，再返回这个Observable
+ * 默认情况下，onObservableAssembly是null, 所以会直接返回输入的Observable
  */
 public class OperatorTest {
 
