@@ -20,7 +20,6 @@ import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
 import io.reactivex.exceptions.MissingBackpressureException;
 import io.reactivex.functions.Consumer;
-import io.reactivex.internal.operators.flowable.FlowableCreate;
 import io.reactivex.internal.operators.flowable.FlowableObserveOn;
 import io.reactivex.internal.operators.observable.ObservableObserveOn;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
@@ -29,7 +28,7 @@ import io.reactivex.schedulers.Schedulers;
 import static com.lilong.rxjavatest.activity.MainActivity.TAG;
 
 /**
- * reactive pull(响应式拉取)：Flowable按照响应式拉取的规则运作，这是它与Observable最根本的不同，backpressure功能的基础就是响应式拉取
+ * reactive pull(响应式拉取)：{@link Flowable}按照响应式拉取的规则运作，这是它与{@link Observable}最根本的不同，backpressure功能的基础就是响应式拉取
  * Observable的流程中，事件流动由上游Observable通过自身被下游subscribe时的回调内发起
  * Flowable的流程中，事件流动由下游Subscriber通过调用{@link Subscription#request(long)}发起
  *
@@ -41,27 +40,27 @@ import static com.lilong.rxjavatest.activity.MainActivity.TAG;
  * (2) 如果此时上游的下一个事件是普通事件，后面才有onComplete/onError，则在下次拉取时发送给下游
  *
  * 如果BackPressure策略是MISSING,ERROR或者是DROP，上游产生onComplete/onError事件时，会立即发送给下游，不管其有没拉取
- * 原因是{@link FlowableCreate.BaseEmitter#onComplete()}方法是无视响应式拉取的
- * 但在{@link FlowableCreate.BufferAsyncEmitter#onComplete()}和{@link FlowableCreate.LatestAsyncEmitter#onError(Throwable)}中被覆盖成了考虑响应式拉取的
+ * 原因是{@link BaseEmitter#onComplete()}方法是无视响应式拉取的
+ * 但在{@link BufferAsyncEmitter#onComplete()}和{@link LatestAsyncEmitter#onError(Throwable)}中被覆盖成了考虑响应式拉取的
  *
  * backpressure功能是指某个时刻，上游需发送的事件数量超出了下游request的事件数量，上游多出来的事件的处理方法
  * 共有5中处理方法，就是{@link BackpressureStrategy}中的五个不同枚举值
  *
  * 不同的{@link BackpressureStrategy}对应的不同{@link Emitter}:
  *
- * {@link BackpressureStrategy#MISSING} : {@link FlowableCreate.MissingEmitter}
+ * {@link BackpressureStrategy#MISSING} : {@link MissingEmitter}
  * 无任何backpressure功能，不像其它策略那样考虑下游的响应式拉取（也就是{@link Subscription#request(long)}），立即向下游发送所有数据
  * 如果无observeOn操作符制造的缓存区，而下游又不能及时处理，整个过程就会卡住，必须等下游处理完当前事件，才能继续发送下个事件
  * [这是唯一一个无视响应式拉取(subscription#request)的策略]
  * 原理：MissingEmitter本身有计数器功能，调用Subscriber的onNext时只考虑事件是否发送完，不考虑/检查任何其它东西
  *
- * {@link BackpressureStrategy#ERROR} : {@link FlowableCreate.ErrorAsyncEmitter}
+ * {@link BackpressureStrategy#ERROR} : {@link ErrorAsyncEmitter}
  * 当上游的事件未被下游及时拉取，也未通过observeOn操作符制造缓存区时，会触发Subscriber的onError，具体throwable是{@link MissingBackpressureException}
  * 原理：ErrorAsyncEmitter本身有计数器功能，{@link Subscription#request(long)}会使计数器增加，{@link Emitter#onNext(Object)}会使计数器减少
  * 当计数器减到零时，如果还有新事件通过onNext要发送，说明截止到这时，上游发出的总事件数量已经超过了下游拉取的数量，溢出了，立即触发Subscriber的onError=MissingBackpressureException
  *
- * {@link BackpressureStrategy#BUFFER} : {@link FlowableCreate.BufferAsyncEmitter}
- * BufferAsyncEmitter内部有缓存区，是SpscLinkedArrayQueue
+ * {@link BackpressureStrategy#BUFFER} : {@link BufferAsyncEmitter}
+ * BufferAsyncEmitter内部有缓存区，是{@link SpscLinkedArrayQueue}
  * 每当上游发来一个事件时，这个事件会进入缓存区，然后按照下游响应式拉取的要求，将缓存区中的数据发给下游
  * 所以如果用户定义的上下游在同一个线程里，则运行情况分三种情况：
  * (1) 下游拉取的事件数量大于上游需要发送的，按照上游emitter.onNext->下游subscriber.onNext->emitter.onNext->下游subscriber.onNext...这样的顺序，这是个同步过程，上下游速度一致
@@ -76,19 +75,20 @@ import static com.lilong.rxjavatest.activity.MainActivity.TAG;
  * 后者不仅能缓存上游发来的事件，向下游发送的速度跟上游发来事件的速度脱钩了，两者可以不同
  * [根本原因：observeOn操作符产生的缓存，装入数据和取出数据的操作在【不同线程】]
  *
- * {@link BackpressureStrategy#DROP} : {@link FlowableCreate.DropAsyncEmitter}
+ * {@link BackpressureStrategy#DROP} : {@link DropAsyncEmitter}
  * 上游需要发送的，未被下游及时拉取，则被抛弃
  * 这个策略是ERROR策略的变形，即相当于不发出onError事件的ERROR策略
- * [根本原因：这个策略用的DropAsyncEmitter和ERROR策略用的ErrorAsyncEmitter都是{@link FlowableCreate.NoOverflowBaseAsyncEmitter}的子类
- *     前者将父类的{@link FlowableCreate.NoOverflowBaseAsyncEmitter#onOverflow()}覆盖成空实现
+ * [根本原因：这个策略用的DropAsyncEmitter和ERROR策略用的ErrorAsyncEmitter都是{@link NoOverflowBaseAsyncEmitter}的子类
+ *     前者将父类的{@link NoOverflowBaseAsyncEmitter#onOverflow()}覆盖成空实现
  *     后者将这个方法覆盖成发出onError事件
  * ]
  * [onComplete/onError事件是上游出现后立即发送给下游]
  *
- * {@link BackpressureStrategy#LATEST} : {@link FlowableCreate.LatestAsyncEmitter}
+ * {@link BackpressureStrategy#LATEST} : {@link LatestAsyncEmitter}
  * 上游需要发送的，下游未及时拉取，则上游会保留最新的要发送的事件(指普通事件)，等下游再次拉取时，发送给下游
  * [onComplete/onError事件是下游最终拉取完上游的最后一个事件后才发送给下游]
- * [根本原因：LatestAsyncEmitter里有个引用一直指向上游最新的事件，这个引用所指向的事件没被发给下游，同时下游有新拉取时，这个引用所指向的事件就会发给下游]
+ * [根本原因：LatestAsyncEmitter里有个引用一直指向上游最新的事件（注意，因为没有缓存区，之前未被下游拉取的所有事件都被丢弃了，只剩这个），
+ * 这个引用所指向的事件没被发给下游，同时下游有新拉取时，这个引用所指向的事件就会发给下游]
  * */
 @SuppressWarnings("ALL")
 public class BackPressureTest {
@@ -150,7 +150,7 @@ public class BackPressureTest {
      * 与{@link #testObservableWithMaxFlowAndObserverInDifferentThread()}基础上，把observer的接收速度降低
      * 于是Observable发送的事件会在rxJava内部的缓存区堆积起来得不到处理，内存会越用越多
      * 这个所谓“缓存区”实际上是observeOn操作符生成的{@link ObservableObserveOn}内部订阅的观察者{@link ObservableObserveOn#ObserveOnObserver}的内部的一个{@link SpscLinkedArrayQueue}
-     * 而{@link ObservableObserveOn#ObserveOnObserver}会调用用户指定的最终观察者的onSubscribe和onNext等方法
+     * 而后者会调用用户指定的最终观察者的onSubscribe和onNext等方法
      */
     public static void testObservableWithMaxFlowAndObserverInDifferentThreadAndObserverSlow() {
         Observable.create(new ObservableOnSubscribe<Integer>() {
@@ -195,11 +195,11 @@ public class BackPressureTest {
      *
      * Observable和Flowable的共同点是，如果通过各自的observeOn方法使得数据源和观察者不在同一个线程里，则会生成包含缓存区的中间环节Observer/Subscriber，
      * 具体：
-     * Observable的observeOn方法会将数据源转换成{@link ObservableObserveOn}，并给其创建一个观察者{@link ObservableOnObserver}，由它来调用用户定义的观察者
-     * ObservableOnObserver内部有一个{@link SpscLinkedArrayQueue}类型的缓存区
+     * Observable的observeOn方法会将数据源转换成{@link ObservableObserveOn}，并给其创建一个观察者{@link ObservableObserveOn.ObserveOnObserver}，由它来调用用户定义的观察者
+     * ObserveOnObserver内部有一个{@link SpscLinkedArrayQueue}类型的缓存区，因为SpscLinkedArrayQueue的性质，缓存区有个初始容量，并可以无限扩容
      *
-     * Flowable的observeOn方法会将上游转换成{@link FlowableObserveOn}，并给其创建一个下游{@link ObserveOnSubscriber}，由它来调用用户定义的下游
-     * ObserveOnSubscriber内部有一个{@link SpscLinkedArrayQueue}类型的缓存区
+     * Flowable的observeOn方法会将上游转换成{@link FlowableObserveOn}，并给其创建一个下游{@link FlowableObserveOn.ObserveOnSubscriber}，由它来调用用户定义的下游
+     * ObserveOnSubscriber内部有一个{@link SpscLinkedArrayQueue}类型的缓存区，因为SpscLinkedArrayQueue的性质，缓存区有个初始容量，并可以无限扩容
      *
      */
     public static void testFlowableOnSameThreadWithStrategyError() {
@@ -227,11 +227,14 @@ public class BackPressureTest {
             @Override
             public void onSubscribe(Subscription s) {
                 Log.i(TAG, "Subscriber : onSubscribe");
-                // 请求upstream flowable发送多少个事件
-                // 如果不调用此方法，意味着不向上游请求任何事件，上游flowable发出的事件不能及时处理
-                // [而且上下游工作在同个线程中（意味者不会有observeOn操作符创建的缓存）]时
-                // 会抛出MissingBackpressureException
-                s.request(Long.MAX_VALUE);
+                /**
+                 * 请求upstream flowable发送多少个事件
+                 * 如果不调用此方法，意味着不向上游请求任何事件，上游flowable发出的事件不能及时处理
+                 * [而且上下游工作在同个线程中（意味者不会有observeOn操作符创建的缓存）]时
+                 * 下游会调{@link Observer#onError(Throwable)}，打印出{@link MissingBackpressureException}
+                 * 此时上游的发送还是继续正常进行的
+                 * */
+                s.request(2);
             }
 
             @Override
@@ -281,15 +284,19 @@ public class BackPressureTest {
             public void onSubscribe(Subscription s) {
                 Log.i(TAG, "Subscriber : onSubscribe");
                 subscription = s;
-                // 上一个例子的情况：
-                // 请求upstream flowable发送多少个事件
-                // 如果不调用此方法，意味着不向上游请求任何事件，上游flowable发出的事件不能及时处理
-                // [而且上下游工作在同个线程中（意味者不会有observeOn操作符创建的缓存）]时
-                // 会抛出MissingBackpressureException
+                /**
+                 * 上一个例子的情况：
+                 * 请求upstream flowable发送多少个事件
+                 * 如果不调用此方法，意味着不向上游请求任何事件，上游flowable发出的事件不能及时处理
+                 * [而且上下游工作在同个线程中（意味者不会有observeOn操作符创建的缓存）]时
+                 * 会抛出MissingBackpressureException
+                 * */
 
-                // 这个例子的情况：
-                // 此例子上下游不工作在同一个线程，所以即使不调subscription.request，也不会抛出MissingBackpressureException
-                // 事件会存放在前面解释过的，observeOn操作符所产生的中间环节Subscriber的内部的缓存区里
+                /**
+                 * 这个例子的情况：
+                 * 此例子上下游不工作在同一个线程，所以即使不调{@link Subscription#request(long)}，也不会抛出MissingBackpressureException
+                 * 事件会存放在前面解释过的，observeOn操作符所产生的中间环节Subscriber的内部的缓存区里
+                 * */
 //                s.request(Long.MAX_VALUE);
                 // 下面演示subscription.request方法
                 // request方法要求取几个事件，Flowable就会发几个事件
@@ -590,7 +597,7 @@ public class BackPressureTest {
                 Log.i(TAG, "emit 4");
                 emitter.onNext(4);
                 Log.i(TAG, "emit onComplete");
-                emitter.onError(new Throwable());
+                emitter.onComplete();
             }
         }, BackpressureStrategy.LATEST);
 

@@ -42,10 +42,10 @@ import static com.lilong.rxjavatest.activity.MainActivity.TAG;
  * {@link Observable#subscribeOn(Scheduler)}
  * .................so many more
  *
- * 这些操作符的内部实现，都会有
+ * 这些操作符的内部实现，可能会有
  * {@link RxJavaPlugins#onAssembly(Observable)}这类代码
  * 这是一类hook方法，用于对onAssembly的参数Observable按照{@link RxJavaPlugins#onObservableAssembly}方法做处理，再返回这个Observable
- * 默认情况下，onObservableAssembly是null, 所以会直接返回输入的Observable
+ * 默认情况下，onObservableAssembly是null, 所以会直接返回输入的Observable，这个方法相当于无作用
  */
 public class OperatorTest {
 
@@ -158,8 +158,15 @@ public class OperatorTest {
     }
 
     /**
-     * 测试concatMap操作符讲原Observable发出的事件映射成乱序发射的新Observable的情况
+     * 测试concatMap操作符将原Observable发出的事件映射成乱序发射的新Observable的情况
      * 使用concatMap，原Observable发出的事件会按照原顺序由映射到的新Observable发出
+     * 同时在不违反顺序原则的情况下尽量按代码中指定的延时来发射事件
+     *
+     * 比如这个例子：
+     * 0s: 发射 event1, event2, event3
+     * 2s: 收到 event1(符合event1设置的延时)
+     * 3s: 收到 event2(改成在收到event1后，才按照event2设置的延时处理，否则会导致event2先于event1收到)
+     * 3s: 收到 event3(改成在收到event2后，才按照event3设置的延时处理，否则会导致event3先于event2收到)
      */
     public static void testConcatMapOperatorWithDifferentOrder() {
         Observable.create(new ObservableOnSubscribe<String>() {
