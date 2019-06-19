@@ -21,9 +21,9 @@ import io.reactivex.Maybe;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
 import io.reactivex.Single;
-import io.reactivex.SingleEmitter;
-import io.reactivex.SingleOnSubscribe;
+import io.reactivex.disposables.Disposable;
 
 import static com.lilong.rxjavatest.activity.MainActivity.TAG;
 
@@ -67,7 +67,9 @@ public class ObservableExamples {
         if (observableFromObservableOnSubscribe == null) {
             observableFromObservableOnSubscribe = Observable.create(new ObservableOnSubscribe<String>() {
 
-                // onSubscribe方法运行在调用被观察者subscribe方法的线程里
+                /**
+                 * 对应的{@link Observer#onSubscribe(Disposable)}方法运行在被观察者subscribe方法的线程里
+                 * */
                 @Override
                 public void subscribe(final ObservableEmitter<String> emitter) throws Exception {
 
@@ -281,11 +283,5 @@ public class ObservableExamples {
         }
         return showThreadObservable;
     }
-
-    //--------------------------------------------------------------------------------------
-    //-----------------以下测试Observable的简化版本：Single Completable Maybe三种被观察者----------
-    //-----------------"简化"指这三种被观察者在被订阅后，只能处理一个事件，然后生命结束，除非重新订阅，适用于只需发射单个事件的而场景-------
-
-
 
 }

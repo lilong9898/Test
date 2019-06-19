@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 
 import com.lilong.rxjavatest.R;
-import com.lilong.rxjavatest.observables.maybe.MaybeTypeTest;
+import com.lilong.rxjavatest.multithread.MultiThreadTest;
 import com.lilong.rxjavatest.observables.observable.ObservableExamples;
 
 import io.reactivex.Completable;
@@ -25,7 +25,7 @@ import io.reactivex.Single;
  */
 public class MainActivity extends Activity {
 
-    public static final String TAG = "RxTag";
+    public static final String TAG = "RTest";
 
 
     @Override
@@ -70,7 +70,7 @@ public class MainActivity extends Activity {
 //        CompletableTypeTest.testCompletable();
 
         // (11)
-        MaybeTypeTest.testMaybe();
+//        MaybeTypeTest.testMaybe();
         //-------------------测试被观察者的不同方法------------------------
 //        ObservableApiTest.testObservableMethodDoOnXXX();
 //        ObservableApiTest.testObservableMethodSubscribeOnNextConsumerAndOnErrorConsumer();
@@ -95,7 +95,7 @@ public class MainActivity extends Activity {
 //        ObserverTest.testObserverFromObserver();
 
         //-----------------测试被观察者和观察者不在同个线程的情况----------------------
-//        MultiThreadTest.testObservableAndObserverInDifferentThread();
+        MultiThreadTest.testObservableAndObserverInDifferentThread();
 //        MultiThreadTest.testObservableOnIoThreadAndObserverOnMainThread();
 //        MultiThreadTest.testObservableAndObserverUsingSameScheduler();
 

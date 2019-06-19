@@ -5,6 +5,8 @@ import android.util.Log;
 import com.lilong.rxjavatest.observables.observable.ObservableExamples;
 import com.lilong.rxjavatest.observers.ObserverExamples;
 
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
@@ -22,18 +24,20 @@ public class MultiThreadTest {
      * 测试被观察者和观察者在不同线程的情况
      * 这里被观察者在工作线程，观察者在主线程
      * (1)在RxJava中, 已经内置了很多线程选项供我们选择, 例如有
-     * Schedulers.io() 代表io操作的线程, 通常用于网络,读写文件等io密集型的操作
-     * Schedulers.computation() 代表CPU计算密集型的操作, 例如需要大量计算的操作
-     * Schedulers.newThread() 代表一个常规的新线程
+     * {@link Schedulers#io()} 代表io操作的线程, 通常用于网络,读写文件等io密集型的操作
+     * {@link Schedulers#computation()} 代表CPU计算密集型的操作, 例如需要大量计算的操作
+     * {@link Schedulers#newThread()} 代表一个常规的新线程
      * 这些线程里都是没有looper的!所以里面不能用new Handler()
+     * 这些方法返回的不是线程或线程池，而是{@link Scheduler}，其内部使用单个的或对象池形式的{@link ScheduledThreadPoolExecutor}作为线程执行器
      * <p>
      * (2){@link Observable#observeOn(Scheduler)}方法的作用
      * 是后续流程所有代码所在的线程
      * 所以此方法的调用位置会影响程序执行情况
      * (3){@link Observable#subscribeOn(Scheduler)}方法的作用
      * 是改变整个流程所有代码所执行的线程
-     * 当然这个还要按第(2)条考虑{@link Observable#observeOn(Scheduler)}方法的影响
      * 所以此方法的调用位置不影响程序执行情况
+     *
+     * 最终的线程情况要综合考虑(2)和(3)的影响
      */
     public static void testObservableAndObserverInDifferentThread() {
         ObservableExamples.getObservableFromObservableOnSubscribe()
@@ -59,7 +63,9 @@ public class MultiThreadTest {
                 emitter.onNext("haha");
                 emitter.onComplete();
             }
-        }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<String>() {
+        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<String>() {
             @Override
             public void onSubscribe(Disposable d) {
 
@@ -83,9 +89,9 @@ public class MultiThreadTest {
     }
 
     /**
-     * 虽然事件源和观察者都使用了同一个Scheduler{@link Schedulers#COMPUTATION}，但事件源发送事件和观察者接收事件只是在同一个线程池，线程还是不同的
+     * 虽然事件源和观察者都使用了同一个Scheduler{@link Schedulers#COMPUTATION}，但事件源发送事件和观察者接收事件只是在同一个线程池的对象池里取线程池来用于执行，取出来的线程池是不同的，自然线程也不同
      * 对于某些特殊的Scheduler，比如{@link Schedulers#SINGLE}，它所指定的线程池里只有一个线程，这时事件源和观察者就会运行在同一个线程里
-     * */
+     */
     public static void testObservableAndObserverUsingSameScheduler() {
         Observable.create(new ObservableOnSubscribe<String>() {
             @Override
@@ -100,25 +106,25 @@ public class MultiThreadTest {
                 .subscribeOn(Schedulers.computation())
                 .observeOn(Schedulers.computation())
                 .subscribe(new Observer<String>() {
-            @Override
-            public void onSubscribe(Disposable d) {
-                Log.i(TAG, "observer onSubscribe on thread " + Thread.currentThread().getName());
-            }
+                    @Override
+                    public void onSubscribe(Disposable d) {
+                        Log.i(TAG, "observer onSubscribe on thread " + Thread.currentThread().getName());
+                    }
 
-            @Override
-            public void onNext(String s) {
-                Log.i(TAG, "observer onNext on thread " + Thread.currentThread().getName());
-            }
+                    @Override
+                    public void onNext(String s) {
+                        Log.i(TAG, "observer onNext on thread " + Thread.currentThread().getName());
+                    }
 
-            @Override
-            public void onError(Throwable e) {
-                Log.i(TAG, "observer onError on thread " + Thread.currentThread().getName());
-            }
+                    @Override
+                    public void onError(Throwable e) {
+                        Log.i(TAG, "observer onError on thread " + Thread.currentThread().getName());
+                    }
 
-            @Override
-            public void onComplete() {
-                Log.i(TAG, "observer onComplete on thread " + Thread.currentThread().getName());
-            }
-        });
+                    @Override
+                    public void onComplete() {
+                        Log.i(TAG, "observer onComplete on thread " + Thread.currentThread().getName());
+                    }
+                });
     }
 }
