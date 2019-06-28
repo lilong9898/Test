@@ -5,8 +5,10 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
+import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -16,7 +18,7 @@ import android.webkit.WebViewClient;
 public class MainActivity extends Activity {
 
     private static final String TAG = "WTest";
-    private static final String URL = "http://www.baidu.com";
+    private static final String URL = "https://www.baidu.com";
 
     private SwipeRefreshLayout swipeRefreshLayout;
     private WebView webView;
@@ -88,7 +90,22 @@ public class MainActivity extends Activity {
                 Log.i(TAG, "WebViewClient : onReceivedError of " + request.getUrl());
                 swipeRefreshLayout.setRefreshing(false);
             }
+
         });
+        webView.setWebChromeClient(new WebChromeClient(){
+            @Override
+            public void onReceivedTitle(WebView view, String title) {
+                super.onReceivedTitle(view, title);
+                Log.i(TAG, "WebChromeClient : onReceivedTitle of " + title);
+                getActionBar().setTitle("网页标题 = " + title);
+            }
+        });
+
+        /**
+         * WebView的缓存：
+         * 缓存对象：图片
+         * */
+        webView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
         webView.loadUrl(URL);
     }
 
