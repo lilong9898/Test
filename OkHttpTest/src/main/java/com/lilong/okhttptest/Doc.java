@@ -16,24 +16,26 @@ import okhttp3.Connection;
 import okhttp3.ConnectionPool;
 import okhttp3.Dispatcher;
 import okhttp3.EventListener;
+import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.internal.cache.CacheInterceptor;
 import okhttp3.internal.cache.DiskLruCache;
-import okhttp3.internal.cache.InternalCache;
 import okhttp3.internal.connection.ConnectInterceptor;
 import okhttp3.internal.connection.RealConnection;
 import okhttp3.internal.connection.StreamAllocation;
 import okhttp3.internal.http.BridgeInterceptor;
 import okhttp3.internal.http.CallServerInterceptor;
 import okhttp3.internal.http.HttpCodec;
+import okhttp3.internal.http.RealInterceptorChain;
 import okhttp3.internal.http.RetryAndFollowUpInterceptor;
 import okio.AsyncTimeout;
 import okio.Buffer;
 import okio.BufferedSink;
 import okio.BufferedSource;
+import okio.ByteString;
 import okio.Okio;
 import okio.Sink;
 import okio.Source;
@@ -48,7 +50,10 @@ import okio.Timeout;
  *
  * (2) {@link Interceptor.Chain}处理的入口点是{@link RealCall#getResponseWithInterceptorChain(boolean)}，同时也是同步或异步网络访问的实际执行流程的入口点
  *
- * (2) {@link Interceptor.Chain}由很多{@link Interceptor}组成（在组织概念上，而非在代码上，在代码上由{@link OkHttpClient#interceptors}和{@link OkHttpClient#networkInterceptors}持有
+ * (2) {@link Interceptor.Chain}由很多{@link Interceptor}组成（在组织概念上，而非在代码上，
+ *     在代码上，用户定义的interceptor由{@link OkHttpClient#interceptors}和{@link OkHttpClient#networkInterceptors}持有
+ *     内置的intercepter由getResponseWithInterceptorChain方法中的interceptors容器来持有，并且用户自定义的在此也会加进去，
+ *     最终构造{@link RealInterceptorChain}时输入给它
  *
  * (3) {@link Interceptor.Chain}内部有个index，表示这个chain中待处理的部分是从第index个interceptor往后的那些interceptors
  *
@@ -130,7 +135,7 @@ import okio.Timeout;
  *    (4.3) {@link RealConnection}与{@link Socket}一一对应，并与这个包裹这个{@link Socket}的{@link BufferedSource}和{@link BufferedSink}一一对应
  *    (4.4) {@link ConnectionPool}是连接池，它用{@link Deque}来存储{@link RealConnection}
  *    (4.5) 上述连接池中有专门线程用来清理无用的连接
- *    (4.5) 连接的复用本质上是相同地址的{@link Socket}的复用(不同地址的无法复用，因为{@link Socket#connect(SocketAddress)}不能重复调用)
+ *    (4.5) 连接的复用本质上是相同地址(地址指ip+port，由{@link HttpUrl}表示)的{@link Socket}的复用(不同地址的无法复用，因为{@link Socket#connect(SocketAddress)}不能重复调用)
  *
  * (5) 请求向不同线程的分发：{@link Dispatcher}
  *    (5.1) 内有三个{@link ArrayDeque}用来存储同步请求{@link RealCall}和异步请求{@link RealCall.AsyncCall}
@@ -149,24 +154,29 @@ import okio.Timeout;
  *    (7.2) 概念：接口{@link BufferedSource}和{@link BufferedSink}继承了{@link Source}和{@link Sink}，代表有缓冲能力的字节流提供者和消费者
  *    (7.3) 概念：类{@link RealBufferedSource}和{@link RealBufferedSink}实现了{@link BufferedSource}和{@link BufferedSource}，缓冲能力由其内部的{@link Buffer}提供
  *    (7.4) 概念：类{@link Buffer}实现了{@link BufferedSource}和{@link BufferedSink}，代表可读可写的两用缓冲区
- *          (7.4.1) 有多个字节数组（实际上是{@link Segment}）连接成的圆形链表，用作缓冲区
- *          (7.4.2) 有多个字节数组（实际上是{@link Segment}）连接成的单向链表，用作给缓冲区提供新元素的字节数组池
+ *          (7.4.1) 有多个字节数组（实际上是{@link Segment}）连接成的圆形链表，这就是{@link Buffer}中的缓冲区
+ *          (7.4.2) 有多个字节数组（实际上是{@link Segment}）连接成的单向链表，是个字节数组池，用来给{@link Buffer}中的圆形链表提供新元素
  *          (7.4.3) 复用字节数组：拷贝数据时不实际拷贝，只改变字节数组的归属，以加快速度
  *          (7.4.4) 复用字节数组：减少内存抖动，减少gc
+ *          这就是享元模式(对象池模式)
  *    (7.5) 概念：类{@link Segment}代表{@link Buffer}字节数组池中的一个字节数组
  *          (7.5.1) 内部有一个8K大小的字节数组，数组内部读写位置index，以及指向前一个和后一个{@link Segment}的引用
- *          (7.5.2)
+ *          (7.5.2) 可以被多个{@link Buffer}或{@link ByteString}共享，被共享时变成只读的
  *    (7.6) 概念：类{@link Timeout}代表一种超时监视器，如果某个它监视的任务超时了，则抛出异常
  *    (7.7) 概念：类{@link AsyncTimeout}继承了{@link Timeout}，用内置的守护线程执行超时监视任务
- *    (7.8) 转换：{@link Okio#source(Socket)}:{@link Socket}的输入流转换成{@link Source}
- *          转换：{@link Okio#sink(Socket)}:{@link Socket}的输出流转换成{@link Sink}
+ *    (7.8) 转换：{@link Okio#source(Socket)}:{@link Socket}的输入流转换成{@link Source}，这个过程中会加入(7.7)的超时检测
+ *          转换：{@link Okio#sink(Socket)}:{@link Socket}的输出流转换成{@link Sink}，这个过程中会加入(7.7)的超时检测
  *    (7.9) 转换：{@link Okio#buffer(Source)}:将{@link Source}转换成{@link BufferedSource}
  *          转换：{@link Okio#buffer(Sink)}:将{@link Sink}转换成{@link BufferedSink}
- *    (7.10)完整过程：{@link RealConnection#connectSocket(int, int, Call, EventListener)}通过上述过程将{@link Socket}的输入输出流转换成{@link BufferedSource}和{@link BufferedSink}
+ *    (7.10)底层连接：{@link RealConnection#connectSocket(int, int, Call, EventListener)}通过上述过程将{@link Socket}的输入输出流转换成{@link BufferedSource}和{@link BufferedSink}
  *
  *
  * 使用OkHttp应注意的问题：
  * (1) 尽量共用一个OkHttpClient，是为了复用其拥有的缓存，线程池，连接池，对象池
+ * (2) 有代理服务器时，https连接会通过{@link RealConnection#connectTunnel(int, int, int, Call, EventListener)}方法进行，
+ * 　　其中会最终调用到(7.10)的{@link RealConnection#connectSocket(int, int, Call, EventListener)}向代理服务器发出一个CONNECT请求
+ * 　　这种情况往往出现在用fiddler抓包https时，fiddler本身就是个代理服务器，会显示为tunnel to...
+ *    这样做是为了安全，不向代理服务器公开https内容的明文，让他重新组装新的https报文，而是通过CONNECT方法指示其直接转发内容
  * */
 public class Doc {
 }

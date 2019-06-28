@@ -27,7 +27,7 @@ import okhttp3.internal.http.RetryAndFollowUpInterceptor;
 
 public class MainActivity extends Activity {
 
-    public static final String TAG = "OkTest";
+    public static final String TAG = "OTest";
 
     private Button mBtnRequestSync;
     private Button mBtnRequestAsync;
@@ -192,9 +192,14 @@ public class MainActivity extends Activity {
      * 第三级是从服务端强制重新下载所有数据
      * <p>
      * 第一级：http缓存策略：
-     * http的请求头和响应头中都有pragma或者cache-control字段，pragma是旧的字段，逐步废弃，被cache-control替代
+     * http的请求头和响应头中都可能有pragma或者cache-control字段，
+     * pragma是旧的字段，逐步废弃，被cache-control替代
+     * expires的优先级低于cache-control
+     *
      * 请求头中的cache-control表示客户端希望采用什么样的缓存策略
      * 响应头中的cache-control表示服务端告诉客户端最终的缓存策略是什么
+     * 两者可取值的范围不同
+     *
      * 常用的cache-control策略有
      * (1) no cache : 强制客户端每次请求都要向服务器咨询资源是否有变化，服务器说没变化，才能用缓存的资源
      * (2) no store : 强制客户端每次都要从服务器下载全部资源，即完全不用缓存
@@ -207,7 +212,7 @@ public class MainActivity extends Activity {
      * (2)第二次和以后的请求，客户端的请求头里带上if-modified-since=当前时间（也可能没有）和if-none-match＝资源md5（也可能没有）两个字段
      * (3)服务端判断客户端的if-modified-since时间之后，资源是否有改变，以及资源md5是否有变化，综合决策给客户端返回200还是304
      * (3.1) 如果交互中有etag
-     * (3.1.1) 如果etag不变，说明资源内容不变，无视lastModified情况，返回304(意思是无变化)
+     * (3.1.1) 如果etag不变，说明资源内容不变，无视lastModified情况，返回304(Not Modified)
      * (3.1.2) 如果etag有变化，返回200和新的资源，新的响应头（包括新的last-modified和etag）
      * (3.2) 如果交互中无etag
      * (3.2.1) 如果服务端的最后修改时间早于或等于客户端传来的if-modified-since，说明客户端已有最新资源，返回304
