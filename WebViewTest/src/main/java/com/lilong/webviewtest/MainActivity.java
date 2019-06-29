@@ -2,10 +2,15 @@ package com.lilong.webviewtest;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.http.SslError;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
@@ -25,6 +30,7 @@ public class MainActivity extends Activity {
 
     private SwipeRefreshLayout swipeRefreshLayout;
     private WebView webView;
+    private MenuItem menuItemTestJS;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +98,16 @@ public class MainActivity extends Activity {
                 super.onReceivedError(view, request, error);
                 Log.i(TAG, "WebViewClient : onReceivedError of " + request.getUrl());
                 swipeRefreshLayout.setRefreshing(false);
+            }
+
+            /**
+             * 如果是https链接，而且证书验证不通过，就会调到这里
+             * 默认是按照{@link SslErrorHandler#cancel()}来处理，即显示空白页，而不像pc浏览器那样让用户选择是否继续
+             * */
+            @Override
+            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+                Log.i(TAG, "WebViewClient : onReceivedSslError of " + error);
+                handler.proceed();
             }
 
         });
@@ -165,8 +181,16 @@ public class MainActivity extends Activity {
         webView.getSettings().setDatabaseEnabled(true);
         // Indexed数据库缓存
         webView.getSettings().setJavaScriptEnabled(true);
+
+        /**
+         * 是否允许在https的网页中访问http链接
+         * */
+        webView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
     }
 
+    /**
+     * 后退键触发WebView的页面回退
+     * */
     @Override
     public void onBackPressed() {
         if (webView.canGoBack()) {
@@ -174,5 +198,52 @@ public class MainActivity extends Activity {
         } else {
             super.onBackPressed();
         }
+    }
+
+    /**
+     * 暂停一切可以安全暂停的webview活动，比如动画和定位
+     * */
+    @Override
+    protected void onPause() {
+        super.onPause();
+        webView.onPause();
+    }
+
+    /**
+     * 恢复webview活动
+     * */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        webView.onResume();
+    }
+
+    /**
+     * WebView持有Activity的引用，为了防止内存泄露，需要按下面步骤销毁WebView
+     * */
+    @Override
+    protected void onDestroy() {
+        if(webView != null){
+            webView.loadDataWithBaseURL(null, "", "text/html", "utf-8", null);
+            swipeRefreshLayout.removeView(webView);
+            webView.destroy();
+            webView = null;
+        }
+        super.onDestroy();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.action, menu);
+        menuItemTestJS = menu.findItem(R.id.menuItemTestJs);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item == menuItemTestJS){
+            Intent intent = new Intent(this, TestJSActivity.class);
+        }
+        return true;
     }
 }
