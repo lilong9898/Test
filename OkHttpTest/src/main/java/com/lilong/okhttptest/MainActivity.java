@@ -194,7 +194,7 @@ public class MainActivity extends Activity {
      * 第一级：http缓存策略：
      * http的请求头和响应头中都可能有pragma或者cache-control字段，
      * pragma是旧的字段，逐步废弃，被cache-control替代
-     * expires的优先级低于cache-control
+     * expires的功能同cache-control，但优先级更低
      *
      * 请求头中的cache-control表示客户端希望采用什么样的缓存策略
      * 响应头中的cache-control表示服务端告诉客户端最终的缓存策略是什么

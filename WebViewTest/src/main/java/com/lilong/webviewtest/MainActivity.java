@@ -1,6 +1,7 @@
 package com.lilong.webviewtest;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -11,6 +12,8 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import java.io.File;
 
 /**
  * 显示net::err_cache_miss，是因为没加INTERNET权限
@@ -102,11 +105,66 @@ public class MainActivity extends Activity {
         });
 
         /**
-         * WebView的缓存：
-         * 缓存对象：图片
+         * WebView的缓存：有5种，只有(1)是默认启用的，其他需要符合启用条件
+         * (1) 浏览器缓存:
+         *      缓存内容：
+         *              JS CSS 字体 图片 cookies
+         *     缓存条件：
+         *              根据http头中的cache-control(第一级缓存)和last-modified/etag(第二级缓存)来决定
+         *     缓存位置：
+         *              /data/data/包名/app_webview/
+         *              /data/data/包名/cache/org.chromium.android_webview
+         *
+         * (2) Application缓存:
+         *     缓存内容：
+         *              由manifest文件决定
+         *     缓存条件：
+         *              只对于html5页面有效，而且要求其中存在manifest属性和manifest文件，否则只创建个目录，但里面没有内容
+         *              还要求{@link WebSettings#setAppCacheEnabled(boolean)}为true
+         *     缓存位置：
+         *              {@link WebSettings#setAppCachePath(String)}设定
+         *
+         * (3) Dom缓存：
+         *     缓存内容：
+         *             ?
+         *     缓存条件：
+         *             {@link WebSettings#setDomStorageEnabled(boolean)}为true
+         *     缓存位置：
+         *             ?
+         *
+         * (4) SQL数据库缓存：
+         *     缓存内容：
+         *             ?
+         *     缓存条件：
+         *            {@link WebSettings#setDatabaseEnabled(boolean)}为true
+         *     缓存位置：
+         *             {@link WebSettings#setDatabasePath(String)}指定
+         *
+         * (5) Indexed数据库缓存：
+         *     缓存内容：
+         *            ?
+         *     缓存条件：
+         *            {@link WebSettings#setJavaScriptEnabled(boolean)}为true
+         *     缓存位置：
+         *            /data/data/包名/app_webview/Local Storage
+         *
          * */
+        // 浏览器缓存
         webView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
+        // Application缓存
+        webView.getSettings().setAppCacheEnabled(true);
+        String appCacheDir = getDir("cache1", Context.MODE_PRIVATE).getPath();
+        webView.getSettings().setAppCachePath(appCacheDir);
+        webView.getSettings().setAppCacheMaxSize(5 * 1024 * 1024);
+        // Dom缓存
+        webView.getSettings().setDomStorageEnabled(true);
         webView.loadUrl(URL);
+        // SQL数据库缓存
+        String sqlCacheDir = getDir("cache2", Context.MODE_PRIVATE).getPath();
+        webView.getSettings().setDatabasePath(sqlCacheDir);
+        webView.getSettings().setDatabaseEnabled(true);
+        // Indexed数据库缓存
+        webView.getSettings().setJavaScriptEnabled(true);
     }
 
     @Override
