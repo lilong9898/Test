@@ -55,7 +55,8 @@ public class MainActivity extends Activity {
                 ComponentName name = new ComponentName("com.lilong.ipc.server", "com.lilong.ipc.server.TestService");
                 Intent intent = new Intent();
                 intent.setComponent(name);
-                bindService(intent, new TestServiceConnection(number1, number2), Context.BIND_AUTO_CREATE);
+                boolean bindResult = bindService(intent, new TestServiceConnection(number1, number2), Context.BIND_AUTO_CREATE);
+                Log.i(TAG, "bind " + (bindResult ? "succeeds" : "fails"));
             }
         });
     }

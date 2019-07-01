@@ -74,7 +74,7 @@ import retrofit2.http.GET;
  */
 public class MainActivity extends Activity {
 
-    private static final String TAG = "RetroTest";
+    private static final String TAG = "RTest";
 
     private Button btnRequestResponseBody;
     private Button btnRequestStringData;

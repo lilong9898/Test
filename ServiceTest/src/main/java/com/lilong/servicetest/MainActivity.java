@@ -8,7 +8,7 @@ import android.widget.Button;
 
 public class MainActivity extends Activity {
 
-    public static final String TAG = "SerTest";
+    public static final String TAG = "STest";
 
     private Button btnSecondActivity;
 

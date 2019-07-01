@@ -5,14 +5,30 @@
     <title>JS Test</title>
 
     <script>
+       // 被java调
        function JSMethod(arg){
-          alert("js方法被调用, 参数="+arg);
+          alert("js方法被java调用, 参数="+arg);
           return "<h1>JSMethodResult</h1>";
+       }
+       // 直接调java
+       function callJavaMethodDirect(){
+           javaObject.javaMethod("来自js");
+       }
+       // 间接调java
+       // 发起重定向，重定向的url被java发现属于某种类型，就触发java代码
+       function callJavaMethodByRedirect(){
+           document.location="https://www.baidu.com"
        }
     </script>
 
 </head>
 <body>
     <h1>Content</h1>
+    <button type="button" id="button1" onclick="callJavaMethod()" style="font-size:20px">
+        callJavaMethodDirect
+    </button>
+    <button type="button" id="button2" onclick="callJavaMethodByRedirect()" style="font-size:20px; margin-top:20px">
+        callJavaMethodByRedirect
+    </button>
 </body>
 </html>
