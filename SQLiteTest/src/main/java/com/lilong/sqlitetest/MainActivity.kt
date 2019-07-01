@@ -28,7 +28,7 @@ import org.jetbrains.anko.onClick
  * */
 class MainActivity : Activity() {
 
-    val TAG = "SQLTest"
+    val TAG = "STest"
     val DB_NAME = "test.db"
     val DB_VERSION = 1
 
@@ -67,7 +67,7 @@ class MainActivity : Activity() {
                 Log.i(TAG, name + " inserts data successfully")
                 db.setTransactionSuccessful()
             } catch (t: Throwable) {
-                Log.i(TAG, name + " failes, throwable = " + t)
+                Log.i(TAG, name + " fails, throwable = " + t)
             } finally {
                 db.endTransaction()
             }
