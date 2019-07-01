@@ -1,6 +1,7 @@
 package com.lilong.servicetest;
 
 import android.app.Activity;
+import android.app.IntentService;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
@@ -8,6 +9,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Binder;
 import android.os.Bundle;
+import android.os.HandlerThread;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
@@ -20,7 +22,6 @@ import static com.lilong.servicetest.MainActivity.TAG;
  * (1) startService后，再次startService时，{@link Service#onCreate()}不会重复调用，{@link Service#onStartCommand(Intent, int, int)}会重复调用
  *
  * BindService:
- *
  * (1) {@link Service#bindService(Intent, ServiceConnection, int)}方式启动的服务，生命周期不超过调用者的生命周期
  *     比如调用者是Activity，在Activity#onDestroy()后，系统就会触发{@link Service#onUnbind(Intent)}和{@link Service#onDestroy()}
  *
@@ -37,13 +38,19 @@ import static com.lilong.servicetest.MainActivity.TAG;
  *     如果再次bindService，会是(4)
  *
  * Service的对象数量问题:
- * (1) 任何情况下都只有一个service对象
+ * (1) 任何情况下service对象数量都是1
  * (2) 多次bindService/startService都会作用在同一个service对象上
  * (3) {@link Service#onDestroy()}的触发条件:
  *     如果有bind，必须调过一次unBind
  *     如果有start，必须调过一次stop
  *     条件一满足，立刻触发，unBind和stop的顺序无所谓
  * (4) unbind之后再次bind，之后对象会是另外一个（原来那个已经结束生命被销毁）
+ *
+ * 线程问题：
+ * (1) {@link Service}运行在主线程上，即使调用者不在主线程上
+ * (2) {@link IntentService}运行在它创建的一个{@link HandlerThread}上，
+ *     这个线程有消息循环，会逐个处理通过{@link Context#startService(Intent)}传给它Intent，都处理完后就调{@link Service#stopSelf()}结束
+ *
  * */
 public class SecondActivity extends Activity {
 
@@ -51,6 +58,7 @@ public class SecondActivity extends Activity {
     private Button btnStopService;
     private Button btnBindService;
     private Button btnUnbindService;
+    private Button btnStartIntentService;
     private ServiceConnection serviceConnection;
 
     class TestServiceConnection implements ServiceConnection{
@@ -103,7 +111,14 @@ public class SecondActivity extends Activity {
                 SecondActivity.this.unbindService(serviceConnection);
             }
         });
-
+        btnStartIntentService = findViewById(R.id.btnStartIntentService);
+        btnStartIntentService.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SecondActivity.this, TestIntentService.class);
+                SecondActivity.this.startService(intent);
+            }
+        });
     }
 
     @Override

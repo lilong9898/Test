@@ -12,31 +12,31 @@ public class TestService extends Service {
 
     @Override
     public void onCreate() {
-        Log.i(TAG, "onCreate @" + hashCode());
+        Log.i(TAG, "onCreate @" + hashCode() + " onThread " + Thread.currentThread().getName());
         super.onCreate();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.i(TAG, "onStartCommand @" + hashCode());
+        Log.i(TAG, "onStartCommand @" + hashCode() + " onThread " + Thread.currentThread().getName());
         return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-        Log.i(TAG, "onBind @" + hashCode());
+        Log.i(TAG, "onBind @" + hashCode() + " onThread " + Thread.currentThread().getName());
         return new Binder();
     }
 
     @Override
     public boolean onUnbind(Intent intent) {
-        Log.i(TAG, "onUnbind @" + hashCode());
+        Log.i(TAG, "onUnbind @" + hashCode() + " onThread " + Thread.currentThread().getName());
         return super.onUnbind(intent);
     }
 
     @Override
     public void onDestroy() {
-        Log.i(TAG, "onDestroy @" + hashCode());
+        Log.i(TAG, "onDestroy @" + hashCode() + " onThread " + Thread.currentThread().getName());
         super.onDestroy();
     }
 }

@@ -16,11 +16,8 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <service android:name=".server.TestService" android:exported="true">
-            <intent-filter>
-                <action android:name="lets.calculate"/>
-            </intent-filter>
-        </service>
+        <service android:name=".server.TestService" android:exported="true"/>
+        <service android:name=".server.TestMessengerService" android:exported="true"/>
     </application>
 
 </manifest>
