@@ -421,14 +421,17 @@ public class MainActivity extends Activity {
             case Build.VERSION_CODES.N_MR1:
                 androidVersionName = "7.1 NOUGAT_MR1";
                 break;
-            case Build.VERSION_CODES.O:
+            case 26:
                 androidVersionName = "8.0 OREO";
                 break;
-            case Build.VERSION_CODES.O_MR1:
+            case 27:
                 androidVersionName = "8.1 OREO";
                 break;
-            case Build.VERSION_CODES.P:
+            case 28:
                 androidVersionName = "9.0 PIE";
+                break;
+            case 29:
+                androidVersionName = "10.0 Q";
                 break;
             default:
                 break;

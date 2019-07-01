@@ -25,7 +25,7 @@ import java.io.File;
  */
 public class MainActivity extends Activity {
 
-    private static final String TAG = "WTest";
+    public static final String TAG = "WTest";
     private static final String URL = "https://www.baidu.com";
 
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -117,6 +117,12 @@ public class MainActivity extends Activity {
                 super.onReceivedTitle(view, title);
                 Log.i(TAG, "WebChromeClient : onReceivedTitle of " + title);
                 getActionBar().setTitle("网页标题 = " + title);
+            }
+
+            @Override
+            public void onReceivedIcon(WebView view, Bitmap icon) {
+                super.onReceivedIcon(view, icon);
+                Log.i(TAG, "WebChromeClient : onReceivedIcon of " + icon);
             }
         });
 
@@ -243,6 +249,7 @@ public class MainActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item == menuItemTestJS){
             Intent intent = new Intent(this, TestJSActivity.class);
+            startActivity(intent);
         }
         return true;
     }
