@@ -74,6 +74,6 @@ public class CustomRelativeLayout extends RelativeLayout {
     }
 
     private boolean overrideOnTouchEventResult(boolean originalResult, MotionEvent ev){
-        return true;
+        return originalResult;
     }
 }
