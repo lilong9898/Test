@@ -191,11 +191,11 @@ public class TreeTest extends BaseStructure {
      */
     public static void levelOrderTraversalSimple(TreeNode root) {
 
-        if (root == null) {
+        if(root == null){
             return;
         }
 
-        LinkedBlockingQueue<TreeNode> queue = new LinkedBlockingQueue<>();
+        LinkedBlockingQueue<TreeNode> queue = new LinkedBlockingQueue<TreeNode>();
         queue.add(root);
         while(!queue.isEmpty()){
             TreeNode node = queue.poll();
