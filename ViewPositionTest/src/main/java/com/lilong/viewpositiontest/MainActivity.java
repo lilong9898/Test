@@ -24,8 +24,8 @@ import android.view.View;
  * android:translationX
  * translation in x of the view. This value is added post-layout to the left property of the view, which is set by its layout.
  *
- * 会改变控件的事件响应区域的原因:
- * {@link View#setTranslationX(float)}会影响到{@link View}的RenderNode的matrix
+ * {@link View#setTranslationX(float)}会改变控件的事件响应区域的原因:
+ * 它会影响到{@link View}的RenderNode的matrix
  * 使用过这个方法的view, 其{@link View#getMatrix()}返回的矩阵不再是单位矩阵
  * 而事件分发过程中的ViewGroup#transformPointToViewLocal方法会调用View#getInverseMatrix()方法获取matrix的逆矩阵,
  * 并调{@link Matrix#mapPoints(float[])}对触摸事件的坐标进行转换, 这就会考虑{@link View#setTranslationX(float)}的影响
