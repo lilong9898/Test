@@ -71,11 +71,6 @@ class School(private var student: String) {
     }
 }
 
-fun testSecondaryConstructor() {
-    var desk: Desk = Desk(1, 2, 3)
-    desk.displayPrice()
-}
-
 /**
  * 次级构造函数
  * */
@@ -105,6 +100,12 @@ class Desk(var price: Int) {
     }
 
 }
+
+fun testSecondaryConstructor() {
+    var desk: Desk = Desk(1, 2, 3)
+    desk.displayPrice()
+}
+
 
 /**
  * kt中所有类和方法都是默认final的，所以必须加open关键字后才能被继承/覆盖

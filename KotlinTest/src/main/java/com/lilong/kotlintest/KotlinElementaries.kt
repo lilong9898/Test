@@ -78,7 +78,8 @@ class KotlinElementaries {
     var variableD: String? = null
 
     fun printNullableVariable() {
-        println(variableD.toString())
+        // 下面一句不加?编译器会报错，相当于对可空性做强制检查，对于可空对象，必须用?.或!!.来调用其方法
+        println(variableD?.chars())
     }
 
     /**
@@ -208,6 +209,10 @@ class KotlinElementaries {
      * companion object为伴生对象
      * 一个类中只能有一个伴生对象，这样一来伴生对象就跟类有了一一对应的关系
      * 所以kotlin中移除了static关键字，用companion object代替
+     *
+     * 在字节码中对应的是public static final KotlinElementaries.Companion companion对象
+     * 而Companion这个类是个public static final class
+     *
      * */
     companion object {
 
@@ -266,7 +271,7 @@ class KotlinElementaries {
          * 这里重载"+"号
          * */
         operator fun plus(other: Data): Data {
-            var result: Data = Data(0)
+            var result = Data(0)
             result.number = this.number + other.number
             return result;
         }
@@ -276,12 +281,14 @@ class KotlinElementaries {
 
     /**
      * 方法扩展：在现有的类上增加一个方法，比如这里在Int类型上增加一个方法expandedMethod
-     * 其原理是在用户类的字节码中加入扩展方法等效静态方法的字节码：
-     * 在方法扩展所处的类中，比如这里是KotlinElementariesKt中，增加一个静态方法
-     * 这个静态方法名字同扩展方法的名字，比如这里是expandedMethod
-     * 让其参数是扩展方法的参数+扩展方法目标类的对象
+     * 其原理是在用户类的字节码中加入扩展方法等效的字节码：
+     * 在方法扩展所处的类中，比如这里是KotlinElementariesKt中，增加一个方法
+     * 这个方法名字同扩展方法的名字，比如这里是expandedMethod
+     * 让其参数是扩展的类的对象
+     * 让其实现是等效的操作扩展的类的对象
      *
-     * 调用扩展方法时实际上调用的是这个插入到字节码中的静态方法
+     * 调用扩展方法时实际上调用的是这个插入到字节码中的方法
+     * 扩展方法不可以有参数
      * */
     fun Int.expandedMethod(): Int {
         return this + 2
