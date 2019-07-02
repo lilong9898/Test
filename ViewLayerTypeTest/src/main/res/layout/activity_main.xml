@@ -15,7 +15,7 @@
         android:background="#ffff00">
 
         <Button
-            android:id="@+id/btn"
+            android:id="@+id/btnGetDrawingCache"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_centerInParent="true"
