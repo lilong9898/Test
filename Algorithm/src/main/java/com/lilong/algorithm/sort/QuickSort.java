@@ -11,30 +11,25 @@ public class QuickSort extends BaseSort {
     }
 
     public static void sort(int[] numbers, int start, int end) {
-        qsort(numbers, start, end);
-    }
-
-    /**
-     * */
-    public static void qsort(int[] array, int start, int end) {
-        if(start >= end){
+        if (start >= end) {
             return;
         }
-        int i = start;
-        int j = end;
-        int pivot = array[start];
-        while(i < j){
-            while(i < j && array[j] >= pivot){
-                j--;
+        int pivot = numbers[start];
+        int left = start;
+        int right = end;
+        while(left < right){
+            while(left < right && numbers[right] >= pivot){
+                right--;
             }
-            while(i < j && array[i] <= pivot){
-                i++;
+            numbers[left] = numbers[right];
+            while(left < right && numbers[left] <= pivot){
+                left++;
             }
-            swap(array, i, j);
+            numbers[right] = numbers[left];
         }
-        swap(array, i, start);
-        qsort(array, start, i - 1);
-        qsort(array, i + 1, end);
-    }
 
+        numbers[left] = pivot;
+        sort(numbers, start, left - 1);
+        sort(numbers, left + 1, end);
+    }
 }

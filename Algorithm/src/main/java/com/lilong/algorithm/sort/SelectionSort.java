@@ -10,10 +10,10 @@ public class SelectionSort extends BaseSort {
     }
 
     public static int[] sort(int[] numbers) {
-        for (int i = 0; i < numbers.length; i++) {
+        for(int i = 0; i < numbers.length; i++){
             int minIndex = i;
             int minValue = numbers[i];
-            for(int j = i; j < numbers.length; j++){
+            for(int j = i + 1; j < numbers.length; j++){
                 if(numbers[j] < minValue){
                     minIndex = j;
                     minValue = numbers[j];

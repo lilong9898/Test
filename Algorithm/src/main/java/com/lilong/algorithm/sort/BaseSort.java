@@ -2,7 +2,7 @@ package com.lilong.algorithm.sort;
 
 public abstract class BaseSort {
 
-    protected static int[] numbers = new int[]{1, 9,1, -10, 4, 5};
+    protected static int[] numbers = new int[]{1, 9,2, -10, 4, 5};
 
     protected static int[] sortedNumbers1 = new int[]{1, 3, 4, 10, 100};
     protected static int[] sortedNumbers2 = new int[]{7, 8};
