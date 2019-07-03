@@ -2,15 +2,14 @@ package com.lilong.algorithm.array;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 
 /**
  * 在无序数组中找出和为指定值的两个数
  * */
 public class TwoNumberSum {
 
-    private static int[] array = new int[]{2, 1};
-    private static int target = 4;
+    private static int[] array = new int[]{1, 2, 2, 3, 5};
+    private static int target = 8;
 
     public static void main(String[] args) {
         HashMap<Integer, Integer> map = new HashMap();
