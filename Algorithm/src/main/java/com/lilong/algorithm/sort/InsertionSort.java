@@ -11,17 +11,15 @@ public class InsertionSort extends BaseSort {
 
     public static int[] sort(int[] numbers) {
         for(int i = 1; i < numbers.length; i++){
-            int valueToBeInserted = numbers[i];
-            int insertToIndex = i;
+            int indexToInsert = i;
+            int valueToInsert = numbers[i];
             for(int j = i - 1; j >=0; j--){
-                if(numbers[j] > valueToBeInserted){
+                if(numbers[j] > valueToInsert){
                     numbers[j + 1] = numbers[j];
-                    insertToIndex = j;
-                }else{
-                    break;
+                    indexToInsert = j;
                 }
             }
-            numbers[insertToIndex] = valueToBeInserted;
+            numbers[indexToInsert] = valueToInsert;
         }
         return numbers;
     }

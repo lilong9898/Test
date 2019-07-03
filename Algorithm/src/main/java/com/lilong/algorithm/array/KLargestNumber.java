@@ -1,45 +1,50 @@
 package com.lilong.algorithm.array;
 
+import com.lilong.algorithm.sort.BaseSort;
+
 /**
  * 找出数组中第k大的数
+ * 基于快速排序，根据每轮排序结束后的pivot下标和k的关系，决定下一轮排序排哪一侧，递归最终退出时，start==left==k
+ * 相对于堆排序代码简单很多
  * */
-public class KLargestNumber {
+public class KLargestNumber extends BaseSort {
 
-    private static int[] array = {3, 2, 1, 9};
     public static void main(String[] args){
-        int result = qselect(array, 0, array.length - 1, 0);
+        display(numbers);
+        System.out.println();
+        int result = qselect(numbers, 0, numbers.length - 1, 3);
         System.out.println(result);
     }
 
-    private static int qselect(int[] array, int start, int end, int k){
-//        if(start >= end){
-//            return -1;
-//        }
+    /**
+     * @param k 要找的是第k大的数
+     * */
+    private static int qselect(int[] numbers, int start, int end, int k){
+        if(start >= end){
+            return start == k - 1 ? numbers[start]  : -1;
+        }
         int left = start;
         int right = end;
-        int pivot = array[start];
+        int pivot = numbers[start];
         while(left < right){
-            while(left < right && array[right] <= pivot){
+            while(left < right && numbers[right] <= pivot){
                 right--;
             }
-            while(left < right && array[left] >= pivot){
+            numbers[left] = numbers[right];
+            while(left < right && numbers[left] >= pivot){
                 left++;
             }
-            swap(array, left, right);
+            numbers[right] = numbers[left];
         }
-        swap(array, start, left);
+        numbers[left] = pivot;
+
         if(left < k - 1){
-            return qselect(array, left + 1, right, k);
+            return qselect(numbers, left + 1, end, k);
         }else if(left == k - 1){
-            return array[left];
+            return numbers[left];
         }else{
-            return qselect(array, left + 1, end, k);
+            return qselect(numbers, start, left - 1, k);
         }
     }
 
-    private static void swap(int[] array, int i, int j){
-        int temp = array[i];
-        array[i] = array[j];
-        array[j] = temp;
-    }
 }

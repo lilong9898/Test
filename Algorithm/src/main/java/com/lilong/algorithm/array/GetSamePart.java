@@ -3,7 +3,6 @@ package com.lilong.algorithm.array;
 import com.lilong.algorithm.sort.BaseSort;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 
 /**
@@ -27,8 +26,10 @@ public class GetSamePart {
         ArrayList<Integer> samePart = new ArrayList<>();
         HashMap<Integer, Integer> map = new HashMap<>();
 
-        // hashMap查找一个key对应的value的时间复杂度， 是o(1)-o(n)
-        // 所以每遍历a数组中的一个元素， 就来一次， 整体时间复杂度o(n)-o(n^2)
+        /**
+         * {@link HashMap}查找一个key对应的value的时间复杂度， 是o(1)-o(n)
+         * 所以每遍历a数组中的一个元素， 就来一次， 整体时间复杂度o(n)-o(n^2)
+         * */
         for(int i = 0; i < a.length; i++){
             Integer aNumberCount = map.get(a[i]);
             if(aNumberCount == null){
