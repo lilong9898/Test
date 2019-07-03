@@ -5,7 +5,7 @@ import com.lilong.algorithm.sort.BaseSort;
 public class Fabonacci extends BaseSort {
     // 斐波那契数列
     public static void main(String[] args){
-        display(generate(3));
+        display(generate(4));
     }
 
     public static int[] generate(int length){

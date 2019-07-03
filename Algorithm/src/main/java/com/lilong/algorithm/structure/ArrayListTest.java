@@ -3,13 +3,20 @@ package com.lilong.algorithm.structure;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
+import java.util.Vector;
 
 /**
+ * ConcurrentModification问题:
+ *
  * {@link ConcurrentModificationException}是由某些{@link Iterator}的子类，在{@link Iterator#next()}中抛出的
  * 也就是说，会出现在通过Iterator遍历(foreach遍历的本质也是iterator遍历)过程中，通过非{@link Iterator#remove()}方法删除了元素，或者增加了元素(iterator无增加元素的方法)，会抛出这个异常
  * 所以，注意
  * (1) foreach遍历时，不要删除／增加元素
  * (2) iterator遍历时，不要用iterator#remove以外的方法删除元素，不要增加元素
+ *
+ * {@link ArrayList}和{@link Vector}的区别
+ * (1) 前者线程不安全，后者安全（都是synchronized方法）
+ * (2) 前者扩容时按150%，后者按200%
  * */
 public class ArrayListTest extends BaseStructure{
 

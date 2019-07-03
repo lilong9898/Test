@@ -1,7 +1,7 @@
 package com.lilong.algorithm.dynamicProgramming;
 
 /**
- * 台阶问题：走完固定个台阶，每次可以走way_1或way_2步，多少种走法
+ * 台阶问题：走完固定个台阶，每次可以走1或2步，多少种走法
  * 要求是刚好走完，不能少步也不能多步
  */
 public class StairProblem {

@@ -27,6 +27,7 @@ public class LinkedListTest extends BaseStructure {
         ListNode p3 = head.next.next;
         while(p2 != null){
             p2.next = p1;
+            // 注意头节点的next要置空
             if(p1 == head){
                 p1.next = null;
             }
