@@ -1,6 +1,7 @@
 package com.lilong.ipc.client;
 
 import android.app.Activity;
+import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -30,6 +31,18 @@ import java.util.Arrays;
 import static com.lilong.ipc.client.MainActivity.IPCAddBy.AIDL;
 import static com.lilong.ipc.client.MainActivity.IPCAddBy.MESSENGER;
 
+/**
+ * {@link Messenger}是轻量级的类，只是工具类，并不实现{@link IBinder}接口，因此不是IPC传输的主体
+ * IPC传输的主体是{@link Messenger#getBinder()}得到的IBinder，本质是{@link Handler}中的MessengerImpl(继承自IMessenger.Stub)
+ * 服务端：
+ *   (1) 通过{@link Messenger#Messenger(Handler)}构建Messenger
+ *   (2) 通过{@link Messenger#getBinder()}得到的{@link IBinder}对象
+ *   (3) 通过{@link Service#onBind(Intent)}将上一步的IBinder传给客户端
+ * 客户端：
+ *   (1) 通过{@link ServiceConnection#onServiceConnected(ComponentName, IBinder)}得到IBinder对象
+ *   (2) 通过{@link Messenger#Messenger(IBinder)}重建Messenger
+ *   (3) 通过{@link Messenger#send(Message)}给服务端发消息
+ * */
 public class MainActivity extends Activity {
 
     private static final String TAG = "ITest";
