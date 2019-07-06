@@ -38,7 +38,7 @@ import android.widget.RelativeLayout;
  *      - 向WMS注册新的窗口
  *      - 让运行在system_server进程的InputManagerService与运行在应用进程的新窗口使用一个socket pair
  *        前者通过socket通信向后者发送输入事件, 事件分发开始
- * (14) ViewRootImpl的scheduleTraversals方法->ViewRootImpl的performTraversals方法
+ * (14) Choreographer在收到VSYNC信号后，会触发ViewRootImpl的scheduleTraversals方法->ViewRootImpl的performTraversals方法
  *      其中会调用ViewRootImpl的performMeasure performLayout performDraw方法来完整绘制UI *
  *
  * Activity启动过程简述:
