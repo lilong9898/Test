@@ -4,16 +4,20 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.SslErrorHandler;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -22,6 +26,21 @@ import java.io.File;
 
 /**
  * 显示net::err_cache_miss，是因为没加INTERNET权限
+ *
+ * {@link WebView}要关注的几个优化点：
+ * (1) 速度：
+ *     打开缓存开关
+ *     耗时的资源本地化
+ *     在首次使用前就创建WebView对象，在使用时就可以节省创建时间
+ *     网络资源尽可能使用相同域名，并在首次使用WebView前就访问这个域名，以建立DNS缓存，节省DNS查找时间
+ *     前端的工作：网页内的css标签尽量靠前，js标签尽量靠后，设置缓存，传输gzip压缩后的数据，避免重定向
+ * (2) 内存：
+ *     代码中创建单例的WebView对象+复用
+ *     创建时使用Application作为context
+ *     结束时按照完善的步骤销毁
+ *     放在单独的进程中
+ * (3) 安全：
+ *     尽可能关闭javascript，密码保存，文件访问的权限
  */
 public class MainActivity extends Activity {
 
@@ -101,6 +120,16 @@ public class MainActivity extends Activity {
             }
 
             /**
+             * WebView加载某个资源时，可以通过这个方法的返回值，由客户端而非网站来返回这个资源
+             * 默认是null，由网站来返回资源
+             * */
+            @Nullable
+            @Override
+            public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+                return super.shouldInterceptRequest(view, request);
+            }
+
+            /**
              * 如果是https链接，而且证书验证不通过，就会调到这里
              * 默认是按照{@link SslErrorHandler#cancel()}来处理，即显示空白页，而不像pc浏览器那样让用户选择是否继续
              * */
@@ -112,6 +141,8 @@ public class MainActivity extends Activity {
 
         });
         webView.setWebChromeClient(new WebChromeClient(){
+
+            /** 接收到网页标题*/
             @Override
             public void onReceivedTitle(WebView view, String title) {
                 super.onReceivedTitle(view, title);
@@ -119,10 +150,17 @@ public class MainActivity extends Activity {
                 getActionBar().setTitle("网页标题 = " + title);
             }
 
+            /** 接收到网页favicon*/
             @Override
             public void onReceivedIcon(WebView view, Bitmap icon) {
                 super.onReceivedIcon(view, icon);
                 Log.i(TAG, "WebChromeClient : onReceivedIcon of " + icon);
+            }
+
+            /** 网页要求打开手机的文件选择器，通过{@link ValueCallback#onReceiveValue(Object)}来返回用户的选择给WebView*/
+            @Override
+            public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback, FileChooserParams fileChooserParams) {
+                return super.onShowFileChooser(webView, filePathCallback, fileChooserParams);
             }
         });
 

@@ -1,4 +1,4 @@
-include ':app', ':AndroidQTest'
+include ':app', ':AndroidQTest', ':RemoteViewTest'
 include ':ActivityTest'
 include ':Algorithm'
 include ':AnnotationTest'
