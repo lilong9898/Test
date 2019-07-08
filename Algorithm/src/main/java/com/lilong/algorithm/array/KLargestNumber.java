@@ -5,7 +5,9 @@ import com.lilong.algorithm.sort.BaseSort;
 /**
  * 找出数组中第k大的数
  * 基于快速排序，根据每轮排序结束后的pivot下标和k的关系，决定下一轮排序排哪一侧，递归最终退出时，start==left==k
- * 相对于堆排序代码简单很多
+ * 适用于所有数据都加载到内存的情况
+ *
+ * 如果需要从流中读取，那还是需要堆排序
  * */
 public class KLargestNumber extends BaseSort {
 

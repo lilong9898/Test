@@ -9,13 +9,17 @@ import java.util.Stack;
 public class LinkedListTest extends BaseStructure {
 
     public static void main(String[] args) {
+
         ListNode head = buildLinkedList();
-        System.out.println("input:");
+        System.out.println("原链表：");
         printLinkedList(head);
+        System.out.println("反转后：");
         printLinkedList(reverse(head));
-//        removeConsecutiveDuplicates(head);
-//        System.out.println("output:");
-//        printLinkedList(head);
+
+        System.out.println("去除相邻的重复元素：");
+        head = buildLinkedList();
+        removeAdjacentDuplicates(head);
+        printLinkedList(head);
     }
 
     public static ListNode reverse(ListNode head){
@@ -26,11 +30,10 @@ public class LinkedListTest extends BaseStructure {
         ListNode p2 = head.next;
         ListNode p3 = head.next.next;
         while(p2 != null){
-            p2.next = p1;
-            // 注意头节点的next要置空
             if(p1 == head){
                 p1.next = null;
             }
+            p2.next = p1;
             p1 = p2;
             p2 = p3;
             if(p3 != null){
@@ -43,27 +46,23 @@ public class LinkedListTest extends BaseStructure {
     /**
      * 去除链表中相邻的重复元素
      */
-    public static void removeConsecutiveDuplicates(ListNode head) {
+    public static void removeAdjacentDuplicates(ListNode head) {
 
         if (head == null) {
             return;
         }
 
-        ListNode n1;
-        ListNode n2;
+        ListNode left = head;
+        ListNode right = head;
 
-        n1 = head;
-        n2 = head;
-
-        while (n1 != null && n1.next != null) {
-            while (n2.next != null && n2.next.value == n1.value) {
-                n2 = n2.next;
+        while(left.next != null){
+            while(right.next != null && right.next.value == left.value){
+                right = right.next;
             }
-            n1.next = n2.next;
-            n1 = n2.next;
-            n2 = n1;
+            left.next = right.next;
+            right = right.next;
+            left = right;
         }
-
     }
 
     public static void removeNthNodeFromLast() {
