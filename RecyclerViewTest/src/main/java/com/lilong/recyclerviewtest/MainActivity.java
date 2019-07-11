@@ -121,13 +121,7 @@ public class MainActivity extends Activity {
                 @Override
                 public void onClick(View v) {
                     String str = list.get(position);
-                    String[] parts = str.split("_");
-                    String changedStr = "";
-                    if(parts != null && parts.length == 2){
-                        changedStr = parts[0] + "_" + (System.currentTimeMillis() % 100);
-                    }else{
-                        changedStr = str + "_" + (System.currentTimeMillis() % 100);
-                    }
+                    String changedStr = "" + (Integer.parseInt(str) + 1);
                     list.set(position, changedStr);
                     notifyItemChanged(position);
                 }
@@ -136,19 +130,7 @@ public class MainActivity extends Activity {
                 @Override
                 public void onClick(View v) {
                     String str = list.get(position);
-                    String[] partsMacro = str.split(" copy ");
-                    String insertedStr = "";
-                    if(partsMacro != null && partsMacro.length == 2){
-                        String[] parts = partsMacro[1].split("_");
-                        if(parts != null && parts.length == 2){
-                            insertedStr = partsMacro[0] + " copy " + (Integer.parseInt(parts[0]) + 1) + "_" + parts[1];
-                        }else{
-                            insertedStr = partsMacro[0] + " copy " + (Integer.parseInt(partsMacro[1]) + 1);
-                        }
-                    }else{
-                        insertedStr = position +  " copy " + 1;
-                    }
-                    list.add(position + 1, insertedStr);
+                    list.add(position + 1, str);
                     notifyItemInserted(position + 1);
                     notifyItemRangeChanged(position + 1, list.size() - position - 1);
                 }
