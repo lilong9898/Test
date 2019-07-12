@@ -3,8 +3,11 @@ package com.lilong.recyclerviewtest;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.LayoutManager;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,10 +20,36 @@ import java.util.ArrayList;
 /**
  * {@link RecyclerView}
  *
- * View复用由内部的{@link RecyclerView.Recycler}来负责的
+ * 测量和布局：
+ *      {@link RecyclerView#onMeasure(int, int)}交由{@link LayoutManager#onMeasure(int, int)}来具体执行
+ *      {@link RecyclerView#onLayout(boolean, int, int, int, int)}交由{@link LayoutManager#onLayoutChildren(RecyclerView.Recycler, RecyclerView.State)}来具体执行
+ *
+ * LayoutManager的具体类型，默认的有三种：
+ *      {@link LinearLayoutManager}
+ *      {@link GridLayoutManager}
+ *      {@link StaggeredGridLayoutManager}
+ *
+ * 支持WRAP_CONTENT：
+ *      {@link LayoutManager#setAutoMeasureEnabled(boolean)}为true，
+ *      可使的RecyclerView支持WRAP_CONTENT(内部会在RecyclerView自身的测量之前测量items)
+ *      默认会被LinearLayoutManager设置成true
+ *
+ * item复用：
+ *      由内部的{@link RecyclerView.Recycler}来负责
+ *      具体通过{@link RecyclerView.Recycler#tryGetViewHolderForPositionByDeadline(int, boolean, long)}实施
+ *      涉及到多个级别的容器，按照从上到下的顺序查找，直到找出可用来复用的item：
+ *      (1) {@link RecyclerView.Recycler#mChangedScrap}，类型是ArrayList<ViewHolder>
+ *      (2) {@link RecyclerView.Recycler#mAttachedScrap}，类型是ArrayList<ViewHolder>
+ *      (3) {@link RecyclerView.Recycler#mCachedViews}，类型是ArrayList<ViewHolder>
+ *      (4)
  *
  * 局部刷新：
- * {}
+ *      {@link RecyclerView.Adapter#notifyItemChanged(int)}
+ *      {@link RecyclerView.Adapter#notifyItemRangeChanged(int, int)}
+ *      {@link RecyclerView.Adapter#notifyItemInserted(int)}
+ *      {@link RecyclerView.Adapter#notifyItemRangeInserted(int, int)}
+ *      {@link RecyclerView.Adapter#notifyItemRemoved(int)}
+ *      {@link RecyclerView.Adapter#notifyItemRangeRemoved(int, int)}
  *
  * */
 public class MainActivity extends Activity {
@@ -42,7 +71,6 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         swipeRefreshLayout = findViewById(R.id.swipeRefresh);
         rv = findViewById(R.id.rv);
-        rv.getRecycledViewPool().setMaxRecycledViews(DEFAULT_VIEW_TYPE, 3);
         resetDataList();
         adapter = new MyAdapter();
         llm = new LinearLayoutManager(this);
@@ -62,7 +90,7 @@ public class MainActivity extends Activity {
     /** 重置数据源*/
     private void resetDataList(){
         list = new ArrayList<String>();
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 5; i++) {
             list.add("" + i);
         }
     }

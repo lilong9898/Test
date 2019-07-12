@@ -12,9 +12,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/rv"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#40000000"/>
+        </FrameLayout>
     </android.support.v4.widget.SwipeRefreshLayout>
 </RelativeLayout>
