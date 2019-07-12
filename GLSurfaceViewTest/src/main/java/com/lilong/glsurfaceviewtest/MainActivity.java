@@ -4,9 +4,6 @@ import android.app.Activity;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 
-/**
- * {@link GLSurfaceView.Renderer}中的各个方法, 都是在GLThread线程上进行的, 不在主线程上
- * */
 public class MainActivity extends Activity {
 
     public static final String TAG = "GTest";

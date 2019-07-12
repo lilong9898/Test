@@ -81,7 +81,7 @@ import java.util.ArrayList;
  *          {@link android.support.v7.widget.AdapterHelper#onItemRangeChanged(int, int, Object)}，
  *          向ArrayList<UpdateOp> mPendingUpdates加入一个{@link android.support.v7.widget.AdapterHelper.UpdateOp}
  *      (2) {@link RecyclerView.RecyclerViewDataObserver#triggerUpdateProcessor()}，其内部调用requestLayout()
- *      
+ *
  *  多级的复用缓存可以支持局部刷新，减少刷新过程中的重复工作
  * */
 public class MainActivity extends Activity {

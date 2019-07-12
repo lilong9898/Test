@@ -39,6 +39,12 @@ import static com.lilong.glsurfaceviewtest.MainActivity.TAG;
  *         -
  *        -
  *       z
+ *
+ *
+ *
+ * {@link GLSurfaceView.Renderer}中的各个方法, 都是在GLThread线程上进行的, 不在主线程上，GLThread跟RenderThread不是一回事
+ * {@link GL10}接口方法，是JNI方法
+ *
  * */
 public class MainRender implements GLSurfaceView.Renderer{
 
@@ -69,6 +75,8 @@ public class MainRender implements GLSurfaceView.Renderer{
     private static final Buffer VERTEX_BUFFER = ByteBuffer.allocateDirect(VERTEX_COORDINATES.length * 4)
             .order(ByteOrder.nativeOrder()).asFloatBuffer().put(VERTEX_COORDINATES).rewind();
 
+    /**
+     * */
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         Log.i(TAG, "onSurfaceCreated called on thread " + Thread.currentThread().getName());
