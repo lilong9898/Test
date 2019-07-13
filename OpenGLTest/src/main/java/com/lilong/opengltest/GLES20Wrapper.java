@@ -60,4 +60,19 @@ public class GLES20Wrapper {
     public static void glEnableVertexAttribArray(int index){
         GLES20.glEnableVertexAttribArray(index);
     }
+
+    /**
+     * 将java矩阵输入给shader中的uniform变量
+     * */
+    public static void glUniformMatrix4fv(int location, int count, boolean transpose, float[] value, int offset){
+        GLES20.glUniformMatrix4fv(location, count, transpose, value, offset);
+    }
+
+    /**
+     * ----------------------绘制---------------------------------------------
+     * 绘制矩阵代表的数据
+     * */
+    public static void glDrawArrays(int mode, int first, int count){
+        GLES20.glDrawArrays(mode, first, count);
+    }
 }

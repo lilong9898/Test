@@ -209,9 +209,9 @@ public class MainRenderer extends BaseRenderer{
         // MVP矩阵计算完成
 
         // 传入MVP矩阵
-        GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, mvpMatrix, 0);
+        GLES20Wrapper.glUniformMatrix4fv(mvpMatrixHandle, 1, false, mvpMatrix, 0);
 
         // 画!
-        GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 3);
+        GLES20Wrapper.glDrawArrays(GLES20.GL_TRIANGLES, 0, 3);
     }
 }
