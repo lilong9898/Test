@@ -1,6 +1,5 @@
 package com.lilong.opengltest;
 
-import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.util.Log;
@@ -68,6 +67,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
     /**
      * 创建顶点着色器
      * @param vertexShaderNativeCode 字符串形式的着色器c代码
+     *
      * @return 着色器的句柄
      * */
     public int createVertexShader(String vertexShaderNativeCode){
@@ -103,6 +103,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
     /**
      * 创建顶点着色器
      * @param fragmentShaderNativeCode 字符串形式的着色器c代码
+     *
      * @return 着色器的句柄
      * */
     public int createFragmentShader(String fragmentShaderNativeCode){
@@ -139,20 +140,20 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
      * 创建一个open gl程序
      * @param vertexShaderHandle 顶点着色器句柄
      * @param fragmentShaderHandle 片段着色器句柄
-     * @param attribMap　属性绑定表
+     * @param attribHandleMap　属性绑定表
      *
      * @return 程序句柄
      * */
-    public int createProgram(int vertexShaderHandle, int fragmentShaderHandle, HashMap<Integer, String> attribMap){
+    public int createProgram(int vertexShaderHandle, int fragmentShaderHandle, HashMap<Integer, String> attribHandleMap){
         int programHandle = GLES20.glCreateProgram();
         if (programHandle != 0) {
             // 绑定顶点着色器到程序对象中
             GLES20.glAttachShader(programHandle, vertexShaderHandle);
             // 绑定片段着色器到程序对象中
             GLES20.glAttachShader(programHandle, fragmentShaderHandle);
-            // 绑定属性
-            if(attribMap != null){
-                for(Map.Entry<Integer, String> entry : attribMap.entrySet()){
+            // 给着色器代码中的属性规定序号，可省略
+            if(attribHandleMap != null){
+                for(Map.Entry<Integer, String> entry : attribHandleMap.entrySet()){
                     GLES20.glBindAttribLocation(programHandle, entry.getKey(), entry.getValue());
                 }
             }

@@ -1,8 +1,8 @@
 package com.lilong.opengltest;
 
-import android.opengl.GLES20;
 import android.opengl.Matrix;
 import android.os.SystemClock;
+import android.util.Log;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -11,6 +11,8 @@ import java.util.HashMap;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
+
+import static com.lilong.opengltest.MainActivity.TAG;
 
 public class MainRenderer extends BaseRenderer{
 
@@ -50,21 +52,14 @@ public class MainRenderer extends BaseRenderer{
      * */
     private float[] mvpMatrix = new float[16];
 
-    /**
-     * 句柄，是用来沟通java数据和着色器的c程序数据的桥梁
-     * 通过glGetxxx方法获得c程序中数据在java中的标识－－句柄
-     * 再将java数据通过gl的其他方法跟这个句柄关联，这样就实现了java数据-句柄-c数据三者的关联
-     *
-     * 综上
-     * java数据可以通过句柄传给c，不是通过JNI方法参数
-     * */
-    private int mvpMatrixHandle;
+    /** 顶点着色器代码中u_MVPMatrix属性的序号*/
+    private int mvpMatrixAttribIndex;
 
-    /** 顶点的位置信息的句柄*/
-    private int positionHandle;
+    /** 顶点着色器代码中a_Position属性的序号*/
+    private int positionAttribIndex;
 
-    /** 顶点的颜色信息的句柄*/
-    private int colorHandle;
+    /** 顶点着色器代码中a_Color属性的序号*/
+    private int colorAttribIndex;
 
     /** 每个顶点有多少字节组成，每次需要越过这么多个字节后才能读到下一个顶点的数据（每个顶点有7个元素，3个表示位置，4个表示颜色，7 * 4 = 28个字节）*/
     private final int STRIDE_BYTES = 7 * FLOAT_SIZE;
@@ -138,15 +133,16 @@ public class MainRenderer extends BaseRenderer{
         int fragmentShaderHandle = createFragmentShader(fragmentShaderNativeCode);
 
         // 创建程序
-        HashMap<Integer, String> attribMap = new HashMap<Integer, String>();
-        attribMap.put(0, "a_Position");
-        attribMap.put(1, "a_Color");
-        int programHandle = createProgram(vertexShaderHandle, fragmentShaderHandle, attribMap);
+        HashMap<Integer, String> attribHandleMap = new HashMap<Integer, String>();
+        int programHandle = createProgram(vertexShaderHandle, fragmentShaderHandle, attribHandleMap);
 
         // 获取c代码中的数据对应的句柄，这将在之后java传递数据到c代码时使用
-        mvpMatrixHandle = GLES20Wrapper.glGetUniformLocation(programHandle, "u_MVPMatrix");
-        positionHandle = GLES20Wrapper.glGetAttribLocation(programHandle, "a_Position");
-        colorHandle = GLES20Wrapper.glGetAttribLocation(programHandle, "a_Color");
+        mvpMatrixAttribIndex = GLES20.glGetUniformLocation(programHandle, "u_MVPMatrix");
+        positionAttribIndex = GLES20.glGetAttribLocation(programHandle, "a_Position");
+        colorAttribIndex = GLES20.glGetAttribLocation(programHandle, "a_Color");
+        Log.i(TAG, "mvpMatrixAttribIndex = " + mvpMatrixAttribIndex);
+        Log.i(TAG, "positionAttribIndex = " + positionAttribIndex);
+        Log.i(TAG, "colorAttribIndex = " + colorAttribIndex);
 
         // 告诉OpenGL渲染的时候使用这个程序
         GLES20.glUseProgram(programHandle);
@@ -156,9 +152,9 @@ public class MainRenderer extends BaseRenderer{
     public void onSurfaceChanged(GL10 gl, int width, int height) {
         super.onSurfaceChanged(gl, width, height);
         // 设置OpenGL界面和当前视图相同的尺寸
-        GLES20Wrapper.glViewport(0, 0, width, height);
+        GLES20.glViewport(0, 0, width, height);
 
-        // 创建一个新的透视投影矩阵，高度保持不变，而高度根据纵横比而变换
+        // 创建投影矩阵，高度保持不变，而高度根据纵横比而变换
         final float ratio = (float) width / height;
         final float left = -ratio;
         final float right = ratio;
@@ -166,22 +162,24 @@ public class MainRenderer extends BaseRenderer{
         final float top = 1.0F;
         final float near = 1.0F;
         final float far = 10.0F;
-
         Matrix.frustumM(projectionMatrix, 0, left, right, bottom, top, near, far);
+
     }
 
     @Override
     public void onDrawFrame(GL10 gl) {
         super.onDrawFrame(gl);
-        GLES20Wrapper.glClear(GLES20.GL_DEPTH_BUFFER_BIT | GLES20.GL_COLOR_BUFFER_BIT);
+        GLES20.glClear(android.opengl.GLES20.GL_DEPTH_BUFFER_BIT | android.opengl.GLES20.GL_COLOR_BUFFER_BIT);
 
         // 每10s完成一次旋转
         long time = SystemClock.uptimeMillis() % 10000L;
         float angleDegrees = (360.0F / 10000.0F) * ((int)time);
 
-        // 画三角形
+        // 创建模型矩阵，将其设置为单位矩阵，并按照当前旋转角度进行旋转
         Matrix.setIdentityM(modelMatrix, 0);
         Matrix.rotateM(modelMatrix, 0, angleDegrees, 0.0F, 0.0F, 1.0F);
+
+        // 画三角形
         drawTriangle(triangleVerticesBuffer);
     }
 
@@ -192,15 +190,15 @@ public class MainRenderer extends BaseRenderer{
     private void drawTriangle(FloatBuffer triangleVerticesBuffer) {
         // 传入顶点的位置信息
         triangleVerticesBuffer.position(POSITION_OFFSET);
-        GLES20Wrapper.glVertexAttribPointer(positionHandle, POSITION_DATA_SIZE, GLES20.GL_FLOAT, false,
+        GLES20.glVertexAttribPointer(positionAttribIndex, POSITION_DATA_SIZE, android.opengl.GLES20.GL_FLOAT, false,
                 STRIDE_BYTES, triangleVerticesBuffer);
-        GLES20Wrapper.glEnableVertexAttribArray(positionHandle);
+        GLES20.glEnableVertexAttribArray(positionAttribIndex);
 
         // 传入顶点的颜色信息
         triangleVerticesBuffer.position(COLOR_OFFSET);
-        GLES20Wrapper.glVertexAttribPointer(colorHandle, COLOR_DATA_SIZE, GLES20.GL_FLOAT, false,
+        GLES20.glVertexAttribPointer(colorAttribIndex, COLOR_DATA_SIZE, android.opengl.GLES20.GL_FLOAT, false,
                 STRIDE_BYTES, triangleVerticesBuffer);
-        GLES20Wrapper.glEnableVertexAttribArray(colorHandle);
+        GLES20.glEnableVertexAttribArray(colorAttribIndex);
 
         // 将视图矩阵乘以模型矩阵，并将结果存放到MVP Matrix（model * view）
         Matrix.multiplyMM(mvpMatrix, 0, viewMatrix, 0, modelMatrix, 0);
@@ -209,9 +207,9 @@ public class MainRenderer extends BaseRenderer{
         // MVP矩阵计算完成
 
         // 传入MVP矩阵
-        GLES20Wrapper.glUniformMatrix4fv(mvpMatrixHandle, 1, false, mvpMatrix, 0);
+        GLES20.glUniformMatrix4fv(mvpMatrixAttribIndex, 1, false, mvpMatrix, 0);
 
         // 画!
-        GLES20Wrapper.glDrawArrays(GLES20.GL_TRIANGLES, 0, 3);
+        GLES20.glDrawArrays(android.opengl.GLES20.GL_TRIANGLES, 0, 3);
     }
 }
