@@ -78,8 +78,12 @@ public class MainRenderer extends BaseRenderer{
      * 着色器(Shader)是OpenGL程序所必须的
      * OpenGL的主程序代码是C++的，运行在CPU上
      *
+     * 着色器分为顶点着色器和片段着色器，前者的输出是后者的输入
+     *
      * 着色器的代码是OpenGL Shading Language(GLSL)的，跟C语言很像，但不是C语言，运行在GPU上
-     * 同样需要编译链接才得到可执行的二进制程序
+     * 因为GPU是专用电路，没有CPU的Controller，所以某些控制流是不支持的，比如不支持递归
+     *
+     * GLSL程序同样需要编译链接才得到可执行的二进制程序
      *
      * GLSL程序的入口点是"void main()"
      *
@@ -87,6 +91,12 @@ public class MainRenderer extends BaseRenderer{
      *
      * gl_Position是顶点着色器的内置变量，数据类型是vec4，是输出属性，表示变换后的顶点的位置
      * 所有顶点着色器都需要对gl_Position进行赋值
+     *
+     * 变量限定符：
+     * const--     用于声明非可写的编译时常量变量
+     * attribute-- 用于经常更改的信息，只可以再顶点着色器中使用
+     * uniform--  用于不经常更改的信息，用于顶点着色器和片元着色器
+     * varying--   用于从顶点着色器传递到片段着色器的插值信息
      *
      * 顶点着色器的GLSL代码，需要以字符串形式传给创建的顶点着色器*/
     final String vertexShaderNativeCode =
@@ -109,6 +119,9 @@ public class MainRenderer extends BaseRenderer{
      *
      * gl_FragColor是片段着色器的内置变量，数据类型是vec4，是输出属性，表示像素的颜色
      *
+     * 所有着色器中定义的名字和类型都相同的全局变量(main函数以外定义的变量)，会被Open GL程序视作是同一个变量
+     * 所以这里的v_Color接收的就是顶点着色器里v_Color的值
+     * 
      * 片段着色器的GLSL代码，需要以字符串形式传给创建的片段着色器
      * */
     final String fragmentShaderNativeCode =
