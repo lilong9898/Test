@@ -4,6 +4,9 @@ import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.util.Log;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,6 +25,8 @@ import static com.lilong.opengltest.MainActivity.TAG;
  * OPENGL 顶点的坐标转换过程
  * http://www.songho.ca/opengl/gl_transform.html
  *
+ * 着色器所使用的编程语言GLSL的语法
+ * https://www.cnblogs.com/mazhenyu/p/3804518.html
  * */
 public class BaseRenderer implements GLSurfaceView.Renderer {
 
@@ -56,6 +61,24 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
     }
 
     /**
+     * float数组转换成float buffer
+     *
+     * 然后我们将它转换成FloatBuffer，以便我们可以使用它来保存浮点数据
+     * 最后，我们将数组复制到缓冲区
+     * */
+    public FloatBuffer createFloatBuffer(float[] array){
+        FloatBuffer buffer =
+                // 我们在Android上使用Java进行编码，但OpenGL ES 2底层实现其实使用C语言编写的
+                // 在我们将数据传递给OpenGL之前，我们需要将其转换成它能理解的形式，即使用缓冲区
+                ByteBuffer.allocateDirect(array.length * FLOAT_SIZE)
+                        // Java使用Big Edian字节序，OpenGL使用Little Edian字节序，因此告诉它使用native字节顺序存储数据
+                        .order(ByteOrder.nativeOrder()).asFloatBuffer();
+        buffer.put(array);
+        buffer.position(0);
+        return buffer;
+    }
+
+    /**
      * 创建相机矩阵
      * */
     public float[] createViewMatrix(int rmOffset, float eyeX, float eyeY, float eyeZ, float centerX, float centerY, float centerZ, float upX, float upY, float upZ){
@@ -66,7 +89,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 
     /**
      * 创建顶点着色器
-     * @param vertexShaderNativeCode 字符串形式的着色器c代码
+     * @param vertexShaderNativeCode 字符串形式的着色器GLSL代码
      *
      * @return 着色器的句柄
      * */
@@ -102,7 +125,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 
     /**
      * 创建顶点着色器
-     * @param fragmentShaderNativeCode 字符串形式的着色器c代码
+     * @param fragmentShaderNativeCode 字符串形式的着色器GLSL代码
      *
      * @return 着色器的句柄
      * */

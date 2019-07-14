@@ -4,8 +4,6 @@ import android.opengl.Matrix;
 import android.os.SystemClock;
 import android.util.Log;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.HashMap;
 
@@ -76,7 +74,21 @@ public class MainRenderer extends BaseRenderer{
     /** 一个元素的颜色数据大小*/
     private final int COLOR_DATA_SIZE = 4;
 
-    /** 顶点着色器的c代码，需要以字符串形式传给创建的顶点着色器*/
+    /**
+     * 着色器(Shader)是OpenGL程序所必须的
+     * OpenGL的主程序代码是C++的，运行在CPU上
+     *
+     * 着色器的代码是OpenGL Shading Language(GLSL)的，跟C语言很像，但不是C语言，运行在GPU上
+     * 同样需要编译链接才得到可执行的二进制程序
+     *
+     * GLSL程序的入口点是"void main()"
+     *
+     * 顶点着色器是用来将顶点的原始的(x,y,z)坐标变换成最终显示在屏幕上的顶点的坐标
+     *
+     * gl_Position是顶点着色器的内置变量，数据类型是vec4，是输出属性，表示变换后的顶点的位置
+     * 所有顶点着色器都需要对gl_Position进行赋值
+     *
+     * 顶点着色器的GLSL代码，需要以字符串形式传给创建的顶点着色器*/
     final String vertexShaderNativeCode =
                     "uniform mat4 u_MVPMatrix;    \n" + // 一个表示组合model、view、projection矩阵的常量
                     "attribute vec4 a_Position;   \n" + // 我们将要传入的每个顶点的位置信息
@@ -87,12 +99,18 @@ public class MainRenderer extends BaseRenderer{
                     "void main()                  \n" + // 顶点着色器入口
                     "{                            \n" +
                     "   v_Color = a_Color;        \n" + // 将颜色传递给片段着色器
-                    // 它将在三角形内插值
+                    // 它将在三角形内对颜色进行插值
                     "   gl_Position = u_MVPMatrix \n" + // gl_Position是一个特殊的变量用来存储最终的位置
                     "               * a_Position;  \n" + // 将顶点乘以矩阵得到标准化屏幕坐标的最终点
                     "}                            \n";
 
-    /** 片段着色器的c代码，需要以字符串形式传给创建的片段着色器*/
+    /**
+     * 片段着色器是用来计算每个像素的颜色，片段(fragment)的意思就是像素
+     *
+     * gl_FragColor是片段着色器的内置变量，数据类型是vec4，是输出属性，表示像素的颜色
+     *
+     * 片段着色器的GLSL代码，需要以字符串形式传给创建的片段着色器
+     * */
     final String fragmentShaderNativeCode =
                     "precision mediump float;       \n" + // 我们将默认精度设置为中等，我们不需要片段着色器中的高精度
                     "varying vec4 v_Color;          \n" + // 这是从三角形每个片段内插的顶点着色器的颜色
@@ -105,16 +123,7 @@ public class MainRenderer extends BaseRenderer{
 
 
     public MainRenderer(){
-        /**
-         * 我们在Android上使用Java进行编码，但OpengGL ES 2底层实现其实使用C语言编写的
-         * 在我们将数据传递给OpenGL之前，我们需要将其转换成它能理解的形式
-         * Java和native系统可能不会以相同的顺序存储它们的字节，因此我们使用一个特殊的缓冲类并创建一个足够大的ByteBuffer来保存我们的数据，并告诉它使用native字节顺序存储数据。
-         * 然后我们将它转换成FloatBuffer，以便我们可以使用它来保存浮点数据
-         * 最后，我们将数组复制到缓冲区
-         *
-         * */
-         triangleVerticesBuffer = ByteBuffer.allocateDirect(triangleVerticesData.length * FLOAT_SIZE).order(ByteOrder.nativeOrder()).asFloatBuffer();
-         triangleVerticesBuffer.put(triangleVerticesData);
+        triangleVerticesBuffer = createFloatBuffer(triangleVerticesData);
     }
 
     @Override
@@ -124,7 +133,7 @@ public class MainRenderer extends BaseRenderer{
         gl.glClearColor(0.5F, 0.5F, 0.5F, 0.5F);
 
         // 创建相机矩阵
-        viewMatrix = createViewMatrix(0, 0.0f, 0.0f, 1.5f, 0.0f, 0.0f, -5.0f, 0.0f, 1.0f, 0.0f);
+        viewMatrix = createViewMatrix(0, 0.0f, 1.5f, 0.1f, 0.0f, 0.0f, -5.0f, 0.0f, 1.0f, 0.0f);
 
         // 创建顶点着色器
         int vertexShaderHandle = createVertexShader(vertexShaderNativeCode);
@@ -136,7 +145,7 @@ public class MainRenderer extends BaseRenderer{
         HashMap<Integer, String> attribHandleMap = new HashMap<Integer, String>();
         int programHandle = createProgram(vertexShaderHandle, fragmentShaderHandle, attribHandleMap);
 
-        // 获取c代码中的数据对应的句柄，这将在之后java传递数据到c代码时使用
+        // 获取GLSL代码中的数据对应的句柄，这将在之后java传递数据到GLSL代码时使用
         mvpMatrixAttribIndex = GLES20.glGetUniformLocation(programHandle, "u_MVPMatrix");
         positionAttribIndex = GLES20.glGetAttribLocation(programHandle, "a_Position");
         colorAttribIndex = GLES20.glGetAttribLocation(programHandle, "a_Color");
@@ -190,7 +199,7 @@ public class MainRenderer extends BaseRenderer{
     private void drawTriangle(FloatBuffer triangleVerticesBuffer) {
         // 传入顶点的位置信息
         triangleVerticesBuffer.position(POSITION_OFFSET);
-        GLES20.glVertexAttribPointer(positionAttribIndex, POSITION_DATA_SIZE, android.opengl.GLES20.GL_FLOAT, false,
+        GLES20.glVertexAttribPointer(positionAtribIndex, POSITION_DATA_SIZE, android.opengl.GLES20.GL_FLOAT, false,
                 STRIDE_BYTES, triangleVerticesBuffer);
         GLES20.glEnableVertexAttribArray(positionAttribIndex);
 
