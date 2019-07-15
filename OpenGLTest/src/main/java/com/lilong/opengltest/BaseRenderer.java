@@ -26,7 +26,7 @@ import static com.lilong.opengltest.MainActivity.TAG;
  * http://www.songho.ca/opengl/gl_transform.html
  *
  * 着色器所使用的编程语言GLSL的语法
- * https://www.cnblogs.com/mazhenyu/p/3804518.html
+ * https://www.khronos.org/registry/OpenGL/specs/gl/GLSLangSpec.1.20.pdf
  * */
 public class BaseRenderer implements GLSurfaceView.Renderer {
 

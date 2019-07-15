@@ -93,11 +93,11 @@ public class MainRenderer extends BaseRenderer{
      * 所有顶点着色器都需要对gl_Position进行赋值
      *
      * 变量限定符：
-     * const--     常量值必须在声明时初始化
-     *             它是只读的不可修改的
+     * 无--         局部变量，或函数参数
+     * const--     编译时常量，或函数的只读参数，任何时候都不可变
      * attribute-- 表示只读的顶点数据，只用在顶点着色器中
      *             数据来自当前的顶点状态或者顶点数组
-     *             它必须是全局范围声明的，不能再函数内部
+     *             它必须是全局范围声明的，不能在函数内部
      *             一个attribute可以是浮点数类型的标量，向量，或者矩阵
      *             不可以是数组或则结构体
      * uniform--   一致变量，在着色器执行期间一致变量的值是不变的
@@ -110,8 +110,13 @@ public class MainRenderer extends BaseRenderer{
      *             可以是浮点数类型的标量，向量，矩阵
      *             不能是数组或者结构体
      *
+     * 编译如果出错，会有log打出来:
+     * vertex shader compile failed : ERROR: 0:10: '}' : Syntax error:  syntax error
+     *
+     * 0:10表示整个程序中的第一段GLSL代码，即vertexShaderGLSLCode中的第10行(从第0行开始)有语法错误(比如缺分号)
+     *
      * 顶点着色器的GLSL代码，需要以字符串形式传给创建的顶点着色器*/
-    final String vertexShaderNativeCode =
+    final String vertexShaderGLSLCode =
                     "uniform mat4 u_MVPMatrix;    \n" + // 一个表示组合model、view、projection矩阵的常量
                     "attribute vec4 a_Position;   \n" + // 我们将要传入的每个顶点的位置信息
                     "attribute vec4 a_Color;      \n" + // 我们将要传入的每个顶点的颜色信息
@@ -127,16 +132,16 @@ public class MainRenderer extends BaseRenderer{
                     "}                            \n";
 
     /**
-     * 片段着色器是用来计算每个像素的颜色，片段(fragment)的意思就是像素
+     * 片段着色器是用来计算每个像素的颜色，片段(fragment)的意思就是像素，它不允许改动像素位置，那是顶点着色器的工作
      *
      * gl_FragColor是片段着色器的内置变量，数据类型是vec4，是输出属性，表示像素的颜色
      *
-     * 所有着色器中定义的名字和类型都相同的全局变量(main函数以外定义的变量)，会被Open GL程序视作是同一个变量
+     * 所有参与链接的着色器中定义的，有变量限定符的，名字和类型都相同的uniform变量(uniform变量只能是全局变量)，会被Open GL程序视作是同一个变量
      * 所以这里的v_Color接收的就是顶点着色器里v_Color的值
      *
      * 片段着色器的GLSL代码，需要以字符串形式传给创建的片段着色器
      * */
-    final String fragmentShaderNativeCode =
+    final String fragmentShaderGLSLCode =
                     "precision mediump float;       \n" + // 我们将默认精度设置为中等，我们不需要片段着色器中的高精度
                     "varying vec4 v_Color;          \n" + // 这是从三角形每个片段内插的顶点着色器的颜色
                     "void main()                    \n" + // 片段着色器入口
@@ -158,13 +163,13 @@ public class MainRenderer extends BaseRenderer{
         gl.glClearColor(0.5F, 0.5F, 0.5F, 0.5F);
 
         // 创建相机矩阵
-        viewMatrix = createViewMatrix(0, 0.0f, 1.5f, 0.1f, 0.0f, 0.0f, -5.0f, 0.0f, 1.0f, 0.0f);
+        viewMatrix = createViewMatrix(0, 0.0f, 0.0f, 1.5f, 0.0f, 0.0f, -5.0f, 0.0f, 1.0f, 0.0f);
 
         // 创建顶点着色器
-        int vertexShaderHandle = createVertexShader(vertexShaderNativeCode);
+        int vertexShaderHandle = createVertexShader(vertexShaderGLSLCode);
 
         // 创建片段着色器
-        int fragmentShaderHandle = createFragmentShader(fragmentShaderNativeCode);
+        int fragmentShaderHandle = createFragmentShader(fragmentShaderGLSLCode);
 
         // 创建程序
         HashMap<Integer, String> attribHandleMap = new HashMap<Integer, String>();
@@ -224,7 +229,7 @@ public class MainRenderer extends BaseRenderer{
     private void drawTriangle(FloatBuffer triangleVerticesBuffer) {
         // 传入顶点的位置信息
         triangleVerticesBuffer.position(POSITION_OFFSET);
-        GLES20.glVertexAttribPointer(positionAtribIndex, POSITION_DATA_SIZE, android.opengl.GLES20.GL_FLOAT, false,
+        GLES20.glVertexAttribPointer(positionAttribIndex, POSITION_DATA_SIZE, android.opengl.GLES20.GL_FLOAT, false,
                 STRIDE_BYTES, triangleVerticesBuffer);
         GLES20.glEnableVertexAttribArray(positionAttribIndex);
 
