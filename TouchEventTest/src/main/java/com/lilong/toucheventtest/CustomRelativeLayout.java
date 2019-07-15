@@ -70,10 +70,15 @@ public class CustomRelativeLayout extends RelativeLayout {
     }
 
     private boolean overrideOnInterceptTouchEventResult(boolean originalResult, MotionEvent ev){
-        return originalResult;
+        if(ev.getAction() == MotionEvent.ACTION_DOWN){
+            return false;
+        }else{
+            return true;
+        }
+//        return originalResult;
     }
 
     private boolean overrideOnTouchEventResult(boolean originalResult, MotionEvent ev){
-        return originalResult;
+        return true;
     }
 }

@@ -14,6 +14,9 @@ import android.view.ViewGroup;
  * 发生在本级布局收到了DOWN事件，甚至后面几个MOVE事件，但是后续事件被上级布局拦截，这时本级布局会收到上级布局发来的CANCEL事件，
  * 表示本级布局的这个手势中止，做中止处理
  *
+ * {@link ViewGroup#TouchTarget}：表示子布局中哪个曾经消费过事件，如果是null，则表示是本级布局消费过事件
+ * DOWN事件的分发过程完毕后，各级布局都设置了touchTarget，也就明确了DOWN事件的最终消费者和传递路径，后面MOVE/UP事件就各级touchTarget从Activity直接传递到消费过DOWN事件的那个touchTarget
+ *
  * {@link ViewGroup#dispatchTouchEvent(MotionEvent)}的内部流程:
  * (1) 如果是DOWN事件,
  *     (1.1) 如有touchTarget, 向touchTarget发送事件
@@ -34,7 +37,7 @@ import android.view.ViewGroup;
  *     (4.1) 如果无touchTarget记录, 说明之前的事件都被拦截了, 或者是所有子布局都不消费之前的事件, 这时会调dispatchTransformedTouchEvent(.touchTarget=null..), 注意方法的参数child的值是null, 表示事件将发到本布局上, 其中
  *           调{@link View#dispatchTouchEvent(MotionEvent)}方法, 其内部会调本级布局的{@link View#onTouchEvent(MotionEvent)}方法
  *     (4.2) 如果有touchTarget记录, 说明之前的事件被分发给了子布局, 但是从这个事件开始, 被本布局拦截了, 调dispatchTransformedTouchEvent(.touchTarget=xxx cancelChild=true..)
- *           对touchTarget发送CANCEL事件
+ *           对touchTarget发送CANCEL事件，同样从这个事件开始，本布局不会再调本级的onTouchEvent方法，本级的dispatchTouchEvent方法的返回值是子布局处理CANCEL事件的结果(true还是false，不影响传递路径)，相当于这个手势对于本级和之前的touchTarget而言都不完整
  * (5) 最后, 如果本布局收到的是CANCEL或UP事件, 清除touchTarget
  *
  * {@link View#dispatchTouchEvent(MotionEvent)}的内部流程:
@@ -57,7 +60,7 @@ import android.view.ViewGroup;
  *
  *  这使得MOVE/UP事件的传递深度尽量浅, 所需遍历尽量少, 这也是设置touchTarget的目的: 节省时间
  *
- *  从(4.2)看出, CANCEL事件的作用, 是通知子布局, 虽然之前发给过它事件, 但后续事件被上级布局拦截了
+ *  从(4.2)看出, CANCEL事件的作用, 是通知子布局, 虽然之前发给过它事件, 但后续事件被上级布局拦截了，这时子布局处理这个CANCEL事件，上级布局等待处理结果就返回了，也不再处理后续事件
  *
  *  从(1.2)和(5)看出, DOWN/UP/CANCEL事件都会触发清除touchTarget
  * */

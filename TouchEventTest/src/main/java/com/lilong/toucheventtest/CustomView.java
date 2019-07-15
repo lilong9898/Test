@@ -59,6 +59,7 @@ public class CustomView extends View {
     }
 
     private boolean overrideOnTouchEventResult(boolean originalResult, MotionEvent ev){
-        return originalResult;
+//        return originalResult;
+        return true;
     }
 }
