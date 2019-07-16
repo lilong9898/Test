@@ -1,7 +1,11 @@
 package com.lilong.androidqtest;
 
 import android.app.Activity;
+import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -16,23 +20,48 @@ public class MainActivity extends Activity {
 
     private static final String TAG = "QTest";
 
-    private Button btnGetMacAddr;
-    private TextView tvMacAddr;
+    private Button btnGetMac;
+    private TextView tvMac;
+    private Button btnGetIMEI;
+    private TextView tvIMEI;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        btnGetMacAddr = findViewById(R.id.btnGetMacAddr);
-        tvMacAddr = findViewById(R.id.tvMacAddr);
-        btnGetMacAddr.setOnClickListener(new View.OnClickListener() {
+        btnGetMac = findViewById(R.id.btnGetMac);
+        tvMac = findViewById(R.id.tvMac);
+        btnGetMac.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String macAddr = "unknown";
-                macAddr = getLocalMacAddress();
-                tvMacAddr.setText(macAddr);
+                tvMac.setText(getLocalMacAddress());
             }
         });
+        btnGetIMEI = findViewById(R.id.btnGetIMEI);
+        tvIMEI = findViewById(R.id.tvIMEI);
+        btnGetIMEI.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                tvIMEI.setText(getIMEI());
+            }
+        });
+    }
+
+    /**
+     * 获取IMEI
+     */
+    public String getIMEI() {
+        String IMEI = "unknown";
+        try {
+            TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+            IMEI = tm.getDeviceId(); //设备imei
+            if (TextUtils.isEmpty(IMEI) && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                IMEI = tm.getDeviceId(1);
+            }
+        } catch (SecurityException e) {
+            Log.i(TAG, Log.getStackTraceString(e));
+        }
+        return IMEI;
     }
 
     /**

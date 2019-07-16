@@ -15,14 +15,29 @@
         android:orientation="vertical">
 
         <Button
-            android:id="@+id/btnGetMacAddr"
+            android:id="@+id/btnGetMac"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="getMacAddr"
+            android:text="getMac"
             android:textSize="20sp"/>
 
         <TextView
-            android:id="@+id/tvMacAddr"
+            android:id="@+id/tvMac"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textSize="20sp"/>
+
+        <Button
+            android:id="@+id/btnGetIMEI"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="getIMEI"
+            android:textSize="20sp"/>
+
+        <TextView
+            android:id="@+id/tvIMEI"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
