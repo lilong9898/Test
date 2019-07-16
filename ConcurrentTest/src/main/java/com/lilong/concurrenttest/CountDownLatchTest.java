@@ -58,7 +58,7 @@ public class CountDownLatchTest {
         public void run() {
             try{
                 System.out.println("workerThread 2 starts");
-                Thread.sleep(3000);
+                Thread.sleep(10000);
                 System.out.println("workerThread 2 finishes");
                 countDownLatch.countDown();
             }catch (Exception e){
