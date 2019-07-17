@@ -138,8 +138,10 @@ public class MainActivity extends Activity {
 
     private void mkDirInSD(){
         File externalStorageDir = Environment.getExternalStorageDirectory();
+        boolean sdcardCanRead = externalStorageDir.canRead();
+        boolean sdcardCanWrite = externalStorageDir.canWrite();
         String externalStorageDirAbsPath = externalStorageDir.getAbsolutePath();
-        Log.i(TAG, "externalStorageDirAbsPath = " + externalStorageDirAbsPath);
+        Log.i(TAG, "externalStorageDirAbsPath = " + externalStorageDirAbsPath + ", canRead = " + sdcardCanRead + ", canWrite = " + sdcardCanWrite);
         String externalStorageState = Environment.getExternalStorageState();
         Log.i(TAG, "externalStorageState = " + externalStorageState);
         File folderInSD = new File(externalStorageDir, "AAA");
