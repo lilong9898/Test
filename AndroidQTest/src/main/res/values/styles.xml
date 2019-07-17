@@ -4,4 +4,8 @@
     <style name="AppTheme" parent="android:Theme.Holo.Light.DarkActionBar">
     </style>
 
+    <style name="Second" parent="AppTheme">
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowBackground">@null</item>
+    </style>
 </resources>

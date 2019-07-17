@@ -3,6 +3,7 @@ package com.lilong.androidqtest;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -10,6 +11,8 @@ import android.os.Environment;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -26,6 +29,8 @@ public class MainActivity extends Activity {
     private static final String TAG = "QTest";
 
     private static final int REQUEST_CODE_WRITE_EXTERNAL_STORAGE = 1;
+
+    private MenuItem mMenuItemSecond;
 
     private Button btnGetMac;
     private TextView tvMac;
@@ -60,6 +65,22 @@ public class MainActivity extends Activity {
                 mkDirInSD();
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.second, menu);
+        mMenuItemSecond = menu.findItem(R.id.second);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item == mMenuItemSecond){
+            Intent intent = new Intent(MainActivity.this, SecondActivity.class);
+            startActivity(intent);
+        }
+        return true;
     }
 
     /**
