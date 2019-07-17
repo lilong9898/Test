@@ -1,9 +1,12 @@
 package com.lilong.androidqtest;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -11,6 +14,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -20,10 +25,13 @@ public class MainActivity extends Activity {
 
     private static final String TAG = "QTest";
 
+    private static final int REQUEST_CODE_WRITE_EXTERNAL_STORAGE = 1;
+
     private Button btnGetMac;
     private TextView tvMac;
     private Button btnGetIMEI;
     private TextView tvIMEI;
+    private Button btnMkDirInSD;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +51,13 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View view) {
                 tvIMEI.setText(getIMEI());
+            }
+        });
+        btnMkDirInSD = findViewById(R.id.btnMkDirInSD);
+        btnMkDirInSD.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mkDirInSD();
             }
         });
     }
@@ -119,5 +134,72 @@ public class MainActivity extends Activity {
         }
 
         return strMacAddr;
+    }
+
+    private void mkDirInSD(){
+        File externalStorageDir = Environment.getExternalStorageDirectory();
+        String externalStorageDirAbsPath = externalStorageDir.getAbsolutePath();
+        Log.i(TAG, "externalStorageDirAbsPath = " + externalStorageDirAbsPath);
+        String externalStorageState = Environment.getExternalStorageState();
+        Log.i(TAG, "externalStorageState = " + externalStorageState);
+        File folderInSD = new File(externalStorageDir, "AAA");
+        if(folderInSD.exists()){
+            Log.i(TAG, "dir exist");
+        }else{
+            boolean result = folderInSD.mkdirs();
+            Log.i(TAG, "mkdir result = " + result);
+        }
+        File fileInSD = new File(folderInSD, "aaa.txt");
+        try{
+            FileWriter fw = new FileWriter(fileInSD);
+            fw.write("aaa");
+            fw.close();
+        }catch (Exception e){
+            Log.i(TAG, Log.getStackTraceString(e));
+        }
+    }
+
+    /**
+     * 检查应用是否被授予了某项权限
+     */
+    private boolean checkPermission(String permission) {
+
+        // android6.0以前权限是在安装时授予，所以肯定有权限
+        if (TextUtils.isEmpty(permission) || Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return true;
+        }
+
+        return checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            //no-op
+        }
+        // 没权限去请求
+        else {
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE_WRITE_EXTERNAL_STORAGE);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+
+        // 请求权限过程被打断，所以返回空的
+        if (grantResults == null || grantResults.length == 0) {
+            return;
+        }
+
+        switch (requestCode) {
+            case REQUEST_CODE_WRITE_EXTERNAL_STORAGE:
+                // 获得了权限
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                }
+                break;
+            default:
+                break;
+        }
     }
 }
