@@ -2,11 +2,13 @@ package com.lilong.sqlitetest
 
 import android.app.Activity
 import android.content.ContentValues
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteDatabase.CONFLICT_NONE
 import android.os.Bundle
 import android.util.Log
 import kotlinx.android.synthetic.main.activity_main.*
+import org.jetbrains.anko.onCheckedChange
 import org.jetbrains.anko.onClick
 
 /**
@@ -22,6 +24,8 @@ import org.jetbrains.anko.onClick
  * (4) 由(2)和(3)可见, SQLiteDatabase将不同的SQLiteSession串行分配到同一个SQLiteConnection上,等效于将不同线程上的数据库操作("数据库操作"实质上是Transaction)串行分配到同一个SQLiteConnection上
  *
  * 不同线程使用不同SQLiteOpenHelper时,会有不同的SQLiteSession,虽然他们各自串行分配各自的SQLiteSession,但在db看来,会有不同线程上的Session同时发送给自己,会抛出SQLiteDatabase Locked Code = 5异常
+ * 这些SQLiteSession中只会成功一个，即使它们都是读操作，这是由java层控制的，sqlite c++层是可以允许多个读操作同时进行的
+ *
  * 不同线程使用相同SQLiteOpenHelper时,SQLiteDatabase会将这些线程对应的SQLiteSession串行分配到这个SQLiteOpenHelper对应的SQLiteConnection上,一个Session执行完,立即执行下一个Session
  *
  * "串行分配"的底层操作,在SQLiteConnectionPool的waitForConnection方法里
@@ -32,16 +36,36 @@ class MainActivity : Activity() {
     val DB_NAME = "test.db"
     val DB_VERSION = 1
 
+    val USE_SAME_SQLITE_CONNECTION = 1;
+    val USE_DIFFERENT_SQLITE_CONNECTION = 2;
+    var sqliteConnectionType = USE_SAME_SQLITE_CONNECTION
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         var dbOpenHelper = TestDBOpenHelper(MainApplication.sInstance, DB_NAME, null, DB_VERSION)
         var db = dbOpenHelper.writableDatabase;
-//        var dbOpenHelper2 = TestDBOpenHelper(MainApplication.sInstance, DB_NAME, null, DB_VERSION)
-//        var db2 = dbOpenHelper2.writableDatabase
+        var dbOpenHelper2 = TestDBOpenHelper(MainApplication.sInstance, DB_NAME, null, DB_VERSION)
+        var db2 = dbOpenHelper2.writableDatabase
+
+        rg.onCheckedChange {radioGroup, i ->
+            when(i){
+                R.id.rbtnUseSameSQLiteConnection -> sqliteConnectionType = USE_SAME_SQLITE_CONNECTION
+                R.id.rbtnUseDifferentSQLiteConnection -> sqliteConnectionType = USE_DIFFERENT_SQLITE_CONNECTION
+            }
+        }
+
         btnStartConcurrentInsertDBThreads.onClick {
+
             var thread1 = Thread(InsertDataRunnable("thread1", db))
-            var thread2 = Thread(InsertDataRunnable("thread2", db))
+            var thread2 = Thread(InsertDataRunnable("thread2", if(sqliteConnectionType == USE_SAME_SQLITE_CONNECTION) db else db2))
+            thread1.start()
+            thread2.start()
+        }
+        btnStartConcurrentReadDBThreads.onClick {
+            var thread1 = Thread(ReadDataRunnable("thread1", db))
+            var thread2 = Thread(ReadDataRunnable("thread2", if(sqliteConnectionType == USE_SAME_SQLITE_CONNECTION) db else db2))
             thread1.start()
             thread2.start()
         }
@@ -69,9 +93,30 @@ class MainActivity : Activity() {
             } catch (t: Throwable) {
                 Log.i(TAG, name + " fails, throwable = " + t)
             } finally {
-                db.endTransaction()
+                if(db.inTransaction()){
+                    db.endTransaction()
+                }
             }
         }
     }
 
+    inner class ReadDataRunnable(val name: String, val db: SQLiteDatabase) : Runnable {
+        override fun run() {
+            try{
+                Log.i(TAG, name + " begins transaction")
+                db.beginTransaction();
+                var cursor:Cursor = db.query(TestDBOpenHelper.TABLE_NAME, null, null, null, null, null, null, null)
+                // 让线程休眠5秒,让transaction占用数据库的时间为5秒
+                Thread.sleep(5000)
+                Log.i(TAG, name + " read data successfully")
+                db.setTransactionSuccessful();
+            }catch (t: Throwable){
+                Log.i(TAG, name + " fails, throwable = " + t)
+            }finally {
+                if(db.inTransaction()){
+                    db.endTransaction();
+                }
+            }
+        }
+    }
 }

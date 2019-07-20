@@ -13,11 +13,42 @@
         android:layout_centerInParent="true"
         android:orientation="vertical">
 
+        <RadioGroup
+            android:id="@+id/rg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RadioButton
+                android:id="@+id/rbtnUseSameSQLiteConnection"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="UseSameSQLiteConnection"
+                android:textSize="16sp"/>
+
+            <RadioButton
+                android:id="@+id/rbtnUseDifferentSQLiteConnection"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="UseDifferentSQLiteConnection"
+                android:textSize="16sp"/>
+        </RadioGroup>
+
         <Button
             android:id="@+id/btnStartConcurrentInsertDBThreads"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:text="startConcurrentInsertDBThreads"
+            android:textSize="16sp"/>
+
+        <Button
+            android:id="@+id/btnStartConcurrentReadDBThreads"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="startConcurrentReadDBThreads"
             android:textSize="16sp"/>
 
         <Button
