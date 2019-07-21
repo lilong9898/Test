@@ -40,11 +40,23 @@ public abstract class BaseFragment extends Fragment {
         return vg;
     }
 
-    /** 这时rootView已经被加到了parent里, 即{@link R.id#layoutFragmentContainer}这个布局里*/
+    /** 这时rootView[还没有]加到parent里, 即{@link R.id#layoutFragmentContainer}这个布局里*/
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Log.i(TAG, getClass().getSimpleName() + "@" + Integer.toHexString(hashCode()) + " onViewCreated, rootView's parent = " + rootView.getParent());
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.i(TAG, getClass().getSimpleName() + "@" + Integer.toHexString(hashCode()) + " onSaveInstanceState");
+    }
+
+    @Override
+    public void onViewStateRestored(Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        Log.i(TAG, getClass().getSimpleName() + "@" + Integer.toHexString(hashCode()) + " onViewStateRestored");
     }
 
     @Override
