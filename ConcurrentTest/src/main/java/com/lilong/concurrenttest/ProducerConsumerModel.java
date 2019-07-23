@@ -6,6 +6,8 @@ package com.lilong.concurrenttest;
 
 public class ProducerConsumerModel {
 
+    public static Object staticLock = new Object();
+
     public static void main(String[] args) {
 
         Data data = new Data();
@@ -16,6 +18,17 @@ public class ProducerConsumerModel {
 
         consumerThread.start();
         producerThread.start();
+
+        try{
+            Thread.sleep(1000);
+            // 锁的引用指向另一个对象，但因为引用也是一种值，按值传递，而这个锁又是以参数形式传入线程的，所以不影响
+            lock = new Object();
+            // 如果使用的是这个锁，由于线程直接使用它的引用而非通过参数传入，所以引用指向另一个对象是有影响的
+            staticLock = new Object();
+            System.out.println("lock is changed");
+        }catch (Exception e){
+        }
+
     }
 
     static class Data {
@@ -81,4 +94,5 @@ public class ProducerConsumerModel {
             }
         }
     }
+
 }
