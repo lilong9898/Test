@@ -15,6 +15,7 @@ public class MainActivity extends Activity {
 
     private GLSurfaceView glSurfaceView;
     private GLSurfaceView.Renderer glRenderer;
+    private boolean rendererSet = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +30,7 @@ public class MainActivity extends Activity {
             glSurfaceView.setEGLContextClientVersion(2);
             glSurfaceView.setRenderer(glRenderer);
             glSurfaceView.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+            rendererSet = true;
         }
     }
 
@@ -50,12 +52,16 @@ public class MainActivity extends Activity {
     protected void onResume() {
         super.onResume();
         hideSystemUI();
-        glSurfaceView.onResume();
+        if(rendererSet){
+            glSurfaceView.onResume();
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        glSurfaceView.onPause();
+        if(rendererSet){
+            glSurfaceView.onPause();
+        }
     }
 }
