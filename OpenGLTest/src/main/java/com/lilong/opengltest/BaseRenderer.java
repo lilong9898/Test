@@ -1,8 +1,12 @@
 package com.lilong.opengltest;
 
 import android.opengl.GLSurfaceView;
+import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.Matrix;
 import android.util.Log;
+import android.view.SurfaceHolder;
+import android.view.SurfaceHolder.Callback;
+import android.view.SurfaceView;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -27,8 +31,21 @@ import static com.lilong.opengltest.MainActivity.TAG;
  *
  * 着色器所使用的编程语言GLSL的语法
  * https://www.khronos.org/registry/OpenGL/specs/gl/GLSLangSpec.1.20.pdf
+ *
+ * 注意{@link GLSurfaceView}所用的{@link Renderer}的这些回调方法:
+ * {@link Renderer#onSurfaceCreated(GL10, EGLConfig)}
+ * {@link Renderer#onSurfaceChanged(GL10, int, int)}
+ * {@link Renderer#onDrawFrame(GL10)}
+ * 是运行在GLThread上的
+ *
+ * 与此对比，{@link SurfaceView}所用的{@link Callback}的这些回调方法:
+ * {@link Callback#surfaceCreated(SurfaceHolder)}
+ * {@link Callback#surfaceChanged(SurfaceHolder, int, int, int)}
+ * {@link Callback#surfaceDestroyed(SurfaceHolder)}
+ * 是运行在主线程上的
+ *
  * */
-public class BaseRenderer implements GLSurfaceView.Renderer {
+public class BaseRenderer implements Renderer {
 
     public static final int FLOAT_SIZE = 4;
 
@@ -53,7 +70,7 @@ public class BaseRenderer implements GLSurfaceView.Renderer {
 
     /**
      * 每当绘制新帧时被调用，如果{@link GLSurfaceView#setRenderMode(int)}被设置成{@link GLSurfaceView#RENDERMODE_CONTINUOUSLY}的话，就会每16ms被调用一次
-     * 如果设置成{@link GLSurfaceView#RENDERMODE_WHEN_DIRTY}，则在调{@link GLSurfaceView.Renderer#requestRender()}后和{@link GLSurfaceView.Renderer#onSurfaceCreated(GL10, EGLConfig)}时才被调用
+     * 如果设置成{@link GLSurfaceView#RENDERMODE_WHEN_DIRTY}，则在调{@link Renderer#requestRender()}后和{@link Renderer#onSurfaceCreated(GL10, EGLConfig)}时才被调用
      * */
     @Override
     public void onDrawFrame(GL10 gl) {
