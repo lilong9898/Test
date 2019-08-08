@@ -32,6 +32,9 @@ import static com.lilong.opengltest.MainActivity.TAG;
  * 着色器所使用的编程语言GLSL的语法
  * https://www.khronos.org/registry/OpenGL/specs/gl/GLSLangSpec.1.20.pdf
  *
+ * {@link MainRenderer}所用的代码来自于：
+ * https://www.jianshu.com/p/21f4d6ee6863
+ * 
  * 注意{@link GLSurfaceView}所用的{@link Renderer}的这些回调方法:
  * {@link Renderer#onSurfaceCreated(GL10, EGLConfig)}
  * {@link Renderer#onSurfaceChanged(GL10, int, int)}
