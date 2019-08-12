@@ -1,4 +1,4 @@
-package com.lilong.opengltest;
+package com.lilong.opengltest.renderer;
 
 import android.opengl.GLSurfaceView;
 import android.opengl.GLSurfaceView.Renderer;
@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
+
+import com.lilong.opengltest.GLES20;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -81,18 +83,17 @@ public class BaseRenderer implements Renderer {
     }
 
     /**
-     * float数组转换成float buffer
-     *
-     * 然后我们将它转换成FloatBuffer，以便我们可以使用它来保存浮点数据
-     * 最后，我们将数组复制到缓冲区
+     * java的float数组转换成native的float buffer
      * */
     public FloatBuffer createFloatBuffer(float[] array){
         FloatBuffer buffer =
                 // 我们在Android上使用Java进行编码，但OpenGL ES 2底层实现其实使用C语言编写的
-                // 在我们将数据传递给OpenGL之前，我们需要将其转换成它能理解的形式，即使用缓冲区
+                // 在我们将数据传递给OpenGL之前，我们需要创建native存储容器
                 ByteBuffer.allocateDirect(array.length * FLOAT_SIZE)
                         // Java使用Big Edian字节序，OpenGL使用Little Edian字节序，因此告诉它使用native字节顺序存储数据
-                        .order(ByteOrder.nativeOrder()).asFloatBuffer();
+                        .order(ByteOrder.nativeOrder())
+                        // 以float类型为单位处理字节数据，而不是直接处理字节数据
+                        .asFloatBuffer();
         buffer.put(array);
         buffer.position(0);
         return buffer;

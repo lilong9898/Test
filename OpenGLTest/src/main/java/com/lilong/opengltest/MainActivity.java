@@ -9,6 +9,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.lilong.opengltest.renderer.SecondRenderer;
+
 public class MainActivity extends Activity {
 
     public static final String TAG = "OTest";
@@ -23,7 +25,8 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         hideSystemUI();
         glSurfaceView = findViewById(R.id.GLSurface);
-        glRenderer = new MainRenderer();
+//        glRenderer = new MainRenderer();
+        glRenderer = new SecondRenderer();
         boolean isSupportGL_2 = isSupportGL_2();
         Log.i(TAG, "isSupportGL_2 = " + isSupportGL_2);
         if (isSupportGL_2) {

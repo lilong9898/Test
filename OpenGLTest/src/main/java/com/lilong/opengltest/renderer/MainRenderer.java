@@ -1,8 +1,10 @@
-package com.lilong.opengltest;
+package com.lilong.opengltest.renderer;
 
 import android.opengl.Matrix;
 import android.os.SystemClock;
 import android.util.Log;
+
+import com.lilong.opengltest.GLES20;
 
 import java.nio.FloatBuffer;
 import java.util.HashMap;
@@ -12,6 +14,9 @@ import javax.microedition.khronos.opengles.GL10;
 
 import static com.lilong.opengltest.MainActivity.TAG;
 
+/**
+ * 画旋转的三角形
+ * */
 public class MainRenderer extends BaseRenderer{
 
     // 这个等边三角形是红色，蓝色和绿色组成
@@ -115,7 +120,9 @@ public class MainRenderer extends BaseRenderer{
      *
      * 0:10表示整个程序中的第一段GLSL代码，即vertexShaderGLSLCode中的第10行(从第0行开始)有语法错误(比如缺分号)
      *
-     * 顶点着色器的GLSL代码，需要以字符串形式传给创建的顶点着色器*/
+     * 顶点着色器的GLSL代码，需要以字符串形式传给创建的顶点着色器
+     * 也可以用res/raw/下的.glsl后缀的文件来存储GLSL代码
+     * */
     final String vertexShaderGLSLCode =
                     "uniform mat4 u_MVPMatrix;    \n" + // 一个表示组合model、view、projection矩阵的常量
                     "attribute vec4 a_Position;   \n" + // 我们将要传入的每个顶点的位置信息
@@ -153,6 +160,7 @@ public class MainRenderer extends BaseRenderer{
 
 
     public MainRenderer(){
+        super();
         triangleVerticesBuffer = createFloatBuffer(triangleVerticesData);
     }
 
