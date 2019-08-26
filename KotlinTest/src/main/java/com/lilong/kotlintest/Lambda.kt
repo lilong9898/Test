@@ -26,7 +26,7 @@ fun main(args: Array<String>) {
     // 可用invoke函数来执行lambda
     lambdaNoParamsNoReturn.invoke()
     // 可用invoke函数来执行lambda，并接收返回值
-    var result : String = lambdaNoParamsWithReturn.invoke()
+    var result: String = lambdaNoParamsWithReturn.invoke()
     println("received result = " + result)
 
     // 名字(参数)的方式也可执行lambda

@@ -103,7 +103,7 @@ class SingletonLazy private constructor() {
 
 
 //---------------------------------object声明-------------------
-fun testObjectSingleton(){
+fun testObjectSingleton() {
     println("---------------call ObjectSingleton class-----------------")
     ObjectSingleton.toString()
     println("---------------getInstance------------------------------")
