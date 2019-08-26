@@ -40,7 +40,8 @@ fun testSingletonLazy() {
 }
 
 /**
- * 线程安全的饿汉式单例，写法跟java的相似，只是kotlin的静态属性和方法是通过companion object实现的
+ * 单例模式：懒加载
+ * 写法跟java的相似，只是kotlin的静态属性和方法是通过companion object实现的
  * */
 class SingletonLazy private constructor() {
 
@@ -72,7 +73,7 @@ class SingletonLazy private constructor() {
     }
 }
 
-/** 预加载 */
+/** 单例模式：预加载 */
 class SingletonHungry private constructor() {
 
     init {
