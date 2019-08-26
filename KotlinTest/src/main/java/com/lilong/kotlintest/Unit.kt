@@ -6,9 +6,9 @@ package com.lilong.kotlintest
  * */
 fun main(args: Array<String>){
     var a = methodReturnUnit()
-    System.out.println("and returns " + a)
+    println("and returns " + a)
 }
 
 fun methodReturnUnit(){
-    System.out.println("methodReturnUnit executes")
+    println("methodReturnUnit executes")
 }

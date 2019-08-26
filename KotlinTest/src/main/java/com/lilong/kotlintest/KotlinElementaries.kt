@@ -17,7 +17,7 @@ package com.lilong.kotlintest
 /**
  * 包级函数
  * 上面的main方法就是包级函数的例子
- * 所有包级函数实际上都属于{类名Kt.class}这个类（由构建工具生成）
+ * 所有包级函数实际上都属于{类名Kt.class}这个类（由构建工具生成），而且是这个类的静态方法
  * */
 fun packageLevelFunction() {
     println("Package level function print $packageLevelVariable")

@@ -1,16 +1,23 @@
 package com.lilong.kotlintest
 
+/**
+ * kotlin中实现单例模式有四种方法
+ * (1) 包级函数
+ * (2) 伴生对象(可选预加载还是懒加载)
+ * (3) 扩展方法
+ * (4) object声明(必定是懒加载)
+ * */
 fun main(args: Array<String>) {
-    testSingletonLazy()
-    println()
-    println()
-    println()
-    println()
-    testSingletonHungry()
+    testCompanionSingletonHungry()
+    println("\n\n\n\n")
+    testCompanionSingletonLazy()
+    println("\n\n\n\n")
+    testObjectSingleton()
 }
 
+//---------------------------伴生对象-----------------------------------------
 /** 预加载*/
-fun testSingletonHungry() {
+fun testCompanionSingletonHungry() {
     println("------------call SingletonHungry class------------------")
     SingletonHungry.toString()
     println("--------------------------------------------------------")
@@ -24,8 +31,29 @@ fun testSingletonHungry() {
     println("--------------------------------------------------------")
 }
 
+/** 单例模式：预加载 */
+class SingletonHungry private constructor() {
+
+    init {
+        println("SingletonHungry class is loaded")
+    }
+
+    companion object {
+
+        init {
+            println("SingletonHungry.Companion class is loaded")
+        }
+
+        private val instance: SingletonHungry = SingletonHungry()
+
+        fun getInstance(): SingletonHungry {
+            return instance
+        }
+    }
+}
+
 /** 懒加载*/
-fun testSingletonLazy() {
+fun testCompanionSingletonLazy() {
     println("---------------call SingletonLazy class-----------------")
     SingletonLazy.toString()
     println("--------------------------------------------------------")
@@ -47,14 +75,14 @@ class SingletonLazy private constructor() {
 
     // 这个init块的内容最终转换成Singleton的构造函数中的内容
     init {
-        println("SINGLETON LAZY GENERATED")
+        println("SingletonLazy class is loaded")
     }
 
     companion object {
 
         // 这个init块的内容最终转换成Singleton类的静态块中的内容
         init {
-            println("COMPANION OBJECT GENERATED")
+            println("SingletonLazy.Companion class is loaded")
         }
 
         @Volatile
@@ -73,23 +101,24 @@ class SingletonLazy private constructor() {
     }
 }
 
-/** 单例模式：预加载 */
-class SingletonHungry private constructor() {
+
+//---------------------------------object声明-------------------
+fun testObjectSingleton(){
+    println("---------------call ObjectSingleton class-----------------")
+    ObjectSingleton.toString()
+    println("---------------getInstance------------------------------")
+    println("singleton is " + ObjectSingleton)
+    println("---------------getInstance------------------------------")
+    println("singleton2 is " + ObjectSingleton)
+}
+
+object ObjectSingleton {
 
     init {
-        println("SINGLETON HUNGRY GENERATED")
+        println("ObjectSingleton class is loaded")
     }
 
-    companion object {
-
-        init {
-            println("COMPANION OBJECT GENERATED")
-        }
-
-        private val instance: SingletonHungry = SingletonHungry()
-
-        fun getInstance(): SingletonHungry {
-            return instance
-        }
+    fun show() {
+        System.out.println("ObjectSingleton method executes")
     }
 }
