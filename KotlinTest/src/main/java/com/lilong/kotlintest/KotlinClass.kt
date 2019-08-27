@@ -298,8 +298,12 @@ fun testObjectExpression() {
 /**
  * 对象声明：
  *
- * 与对象表达式本质相同，声明了一个匿名类并生成了其对象，对象名字是xx(这里是anonymousClassObj)
- * 与对象表达式的唯一区别，就是在object后面指定了匿名对象的名字，对象表达式未指定匿名对象的名字
+ * 与对象表达式不同，生成一个有名内部类，类名就是[anonymousClassObj]，并生成这个类的一个对象，作为静态变量而存在
+ * 这个对象
+ *        (1) kotlin中，anonymousClassObj直接就代表了这个对象，字节码层面是调用的anonymousClassObj.INSTANCE来访问的
+ *        (2) java中，通过anonymousClassObj.INSTANCE来访问这个对象，与kotlin在字节码层面的实现是一致的
+ *
+ * 因为这个类的对象是以静态变量形式存储在这个类中的，所以相当于单例模式
  * */
 object anonymousClassObj {
     fun method(){
