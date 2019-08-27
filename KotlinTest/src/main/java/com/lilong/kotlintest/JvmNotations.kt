@@ -42,6 +42,12 @@ class JvmNotations {
 }
 
 object namedObject {
+
+    /**
+     * 有名Object中的成员变量，都是静态的
+     * */
+    var member: Int = 1
+
     fun nonStaticMethod() {
 
     }
