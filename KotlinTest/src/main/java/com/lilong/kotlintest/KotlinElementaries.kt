@@ -40,6 +40,17 @@ var packageLevelVariable = 1
  *     中的一种方式确定类型
  * (5) kt中的类的成员变量叫属性(property)
  * */
+
+/** 这个扩展方法是包级声明的，所以最终转化成java的静态方法*/
+fun Int.expandedMethodPackageLevel(): Int {
+    return this - 2
+}
+
+/** 这个扩展属性是包级声明的，所以getter setter方法最终转化为java的静态方法*/
+var Int.expandedPropertyPackageLevel: Int
+    get() {return this - 2}
+    set(value) {}
+
 class KotlinElementaries {
 
     /**
@@ -282,25 +293,30 @@ class KotlinElementaries {
     /**
      * 方法扩展：在现有的类上增加一个方法，比如这里在Int类型上增加一个方法expandedMethod
      * 其原理是在用户类的字节码中加入扩展方法等效的字节码：
+     *
      * 在方法扩展所处的类中，比如这里是KotlinElementariesKt中，增加一个方法
      * 这个方法名字同扩展方法的名字，比如这里是expandedMethod
-     * 让其参数是扩展的类的对象
+     * 让其参数是扩展的类的对象，叫做receiver
      * 让其实现是等效的操作扩展的类的对象
      *
      * 调用扩展方法时实际上调用的是这个插入到字节码中的方法
-     * 扩展方法不可以有参数
+     *
+     * 如果扩展方法声明在包级，那就是静态的，跟普通的包级方法一样
+     * 如果扩展方法声明在类中，那就是非静态的，跟普通的类中的方法一样
      * */
-    fun Int.expandedMethod(): Int {
-        return this + 2
+    fun Int.expandedMethod(): String {
+        return this.toString()
     }
 
     /**
      * 属性扩展：在现有的类上增加一个属性，比如这里在Int类型上增加一个属性expandedProperty
      * 声明属性时必须声明getter和setter方法，表示这个属性被读写时会执行的动作
-     * 其原理与扩展方法类似，也是在属性扩展所处的类中，比如这里是KotlinElementariesKt中，增加一个静态getter方法，一个静态setter方法
      *
-     * 读写扩展属性时实际上调用的是这两个插入到字节码中的静态getter和setter方法
-     * [扩展属性在字节码中没有属性来对应，仅仅由生成的静态getter和setter方法来支持读写功能]
+     * 读写扩展属性时实际上调用的是这两个插入到字节码中的getter和setter方法
+     * [扩展属性在字节码中没有属性来对应，仅仅由生成的getter和setter方法来支持读写功能]
+     *
+     * 如果扩展属性声明在包级，那就是静态的，跟普通的包级属性一样
+     * 如果扩展属性声明在类中，那就是非静态的，跟普通的类中的属性一样
      * */
     var Int.expandedProperty:Int
         get() {return 1}

@@ -11,6 +11,8 @@ package com.lilong.kotlintest
  * */
 fun main(args: Array<String>) {
     var a = methodThatThrows()
+    // 下面这一行不可能执行到，另外编译器也不允许，因为Nothing是所有类的子类，这里会出现overload resolution ambiguity
+//    println(a)
 }
 
 /**
