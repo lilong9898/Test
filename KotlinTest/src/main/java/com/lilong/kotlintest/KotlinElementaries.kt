@@ -304,8 +304,8 @@ class KotlinElementaries {
      * 如果扩展方法声明在包级，那就是静态的，跟普通的包级方法一样
      * 如果扩展方法声明在类中，那就是非静态的，跟普通的类中的方法一样
      * */
-    fun Int.expandedMethod(): String {
-        return this.toString()
+    fun Int.expandedMethod(): Int {
+        return this
     }
 
     /**
