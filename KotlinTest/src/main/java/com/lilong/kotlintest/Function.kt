@@ -1,13 +1,26 @@
 package com.lilong.kotlintest
 
 /**
- * lambda表达式，匿名函数，闭包这三个概念很像，但不一样
+ * kotlin中，function(函数)也是一种数据类型，地位跟类的类型是一样的，所以function可以作为函数的参数和返回值
  *
- * lambda表达式：一对大括号和其中所有内容，{params -> code}
+ * function数据类型有三种具体实现：
+ * (1) lambda表达式：一对大括号和其中所有内容，{params -> code}
+ * (2) 匿名函数：fun(params) : returnType {return code}
+ * (3) 类::方法名 表示提取某个类的某个方法作为function型数据
+ *
+ * 匿名函数，闭包这三个概念很像，但不一样
+ *
+ * lambda表达式：
  * 匿名函数：    fun(params): return type{code}，比起lambda表达式，它可以在code部分使用return关键字
  * 闭包：       = lambda表达式+其直接引用的外部的变量
  * */
 
+fun main(args: Array<String>) {
+    testLambda()
+    testDoubleColon()
+}
+
+//------------------------------------Lambda------------------------------------------
 /**
  * 无参数，无返回值的lambda表达式
  * () -> Unit为其类型，可以省略不写，由编译器根据lambda表达式体中的情况来推断
@@ -45,8 +58,7 @@ val lambdaMultipleParamsWithReturn: (arg1: Int, arg2: Int) -> Int = { arg1, arg2
     arg1 + arg2
 }
 
-fun main(args: Array<String>) {
-
+fun testLambda() {
     // 可用invoke函数来执行lambda
     lambdaNoParamsNoReturn.invoke()
     println()
@@ -86,13 +98,30 @@ fun main(args: Array<String>) {
     /**
      * 可以在fun中定义fun，但后面这个fun会被视作lambda表达式而非方法
      * */
-    fun useTrailingLambda(arg1: String, arg2: () -> Unit){
+    fun useTrailingLambda(arg1: String, arg2: () -> Unit) {
         println(arg1)
         arg2()
     }
 
-    useTrailingLambda("a", { println("lambda body")})
+    useTrailingLambda("a", { println("lambda body") })
 
     /** 尾随lambda：当lambda表达式是最后一个参数时，可以被移到括号外面*/
-    useTrailingLambda("a") { println("lambda body")}
+    useTrailingLambda("a") { println("lambda body") }
+}
+
+
+//-----------------------------------::符号-----------------------------------
+fun method3(): String {
+    return "method3"
+}
+
+fun testDoubleColon() {
+    /** method3作为function型数据被打印，打出来的是fun method3() : kotlin.Unit*/
+    println(::method3)
+    /** method3作为function型数据，被调用，打印出来的是这个方法的返回值method3 */
+    println(::method3.invoke())
+    /** 同样打印的也是这个方法的返回值method3*/
+    println(method3())
+    /** 错误*/
+//    println(method3)
 }
