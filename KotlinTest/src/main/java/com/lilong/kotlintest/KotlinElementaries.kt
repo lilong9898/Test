@@ -70,6 +70,7 @@ class KotlinElementaries {
     var variableB = "b"
 
     // lateinit关键字表示该变量在声明时不写初始值，到后面再写初始值
+    // lateinit修饰的必须是var类型的变量，不能是val型
     lateinit var lateinitVariable: String
 
     // 未指定类型的变量，可以赋值为null
