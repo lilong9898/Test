@@ -51,6 +51,11 @@ var Int.expandedPropertyPackageLevel: Int
     get() {return this - 2}
     set(value) {}
 
+/** 扩展属性也可以是针对本类的，这时不需要写类名.*/
+var expandedPropertyPackageLevelForThisClass : Int
+    get() = 2
+    set(value) = Unit
+
 class KotlinElementaries {
 
     /**

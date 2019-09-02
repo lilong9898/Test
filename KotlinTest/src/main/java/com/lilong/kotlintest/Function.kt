@@ -21,7 +21,7 @@ package com.lilong.kotlintest
  *
  * lambda表达式：
  * 匿名函数：    fun(params): return type{code}，比起lambda表达式，它可以在code部分使用return关键字
- * 闭包：       = lambda表达式+其直接引用的外部的变量
+ * 闭包：       = lambda表达式+其直接引用的外部的变量(这些变量可在lambda表达式中修改)
  * */
 
 fun main(args: Array<String>) {
@@ -83,6 +83,18 @@ val lambdaWithReceiver2: String.(String) -> Unit = { param ->
     println(this + param)
 }
 
+/**
+ * 参数可以带名字，仅仅起到注释作用，lambda表达式中的参数名字可以是不同的
+ * */
+val lambdaWithNamedParams : (arg1 : Int) -> Unit = { haha ->
+    haha + 1
+}
+
+/**
+ * function型数据加上?就是可空的function型，需要在类型声明上加()?
+ * */
+val nullableLambda : ((arg1 : Int) -> Unit)? = null
+
 fun testLambda() {
     println("------------------------test lambda--------------------------")
 
@@ -143,6 +155,7 @@ fun testLambda() {
 
     /** 同时带receiver和param的lambda : 第一个参数是receiver，后面的才是参数*/
     lambdaWithReceiver2("receiver string", "suffix")
+
 }
 
 //-----------------------------------匿名函数---------------------------------
