@@ -124,6 +124,7 @@ class KotlinElementaries {
          * */
         if (arg is Int) {
             arg.minus(3)
+            arg - 3
         }
 
         /**
