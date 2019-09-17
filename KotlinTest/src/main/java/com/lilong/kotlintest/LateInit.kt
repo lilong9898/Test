@@ -31,3 +31,15 @@ fun main(args: Array<String>) {
     println()
     println(d)
 }
+
+class Test2(){
+    lateinit var a:String
+    // 如果var变量可以在init块中被赋值，那它就不需是lateinit的
+//    init {
+//        a = "a"
+//    }
+    // 如果var变量可以在secondary constructor中被赋值，那它也是不需是lateinit的
+//    constructor(){
+//        a="a"
+//    }
+}
