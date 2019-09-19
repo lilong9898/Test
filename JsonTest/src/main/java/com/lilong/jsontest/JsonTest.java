@@ -10,11 +10,10 @@ public class JsonTest {
 
     private static String str1 = "{a: \"a data\", b: \"b data\"}";
 
-    // 数据中缺少一项，得到的数据类中相应的项会变成null
+    // 数据中缺少一项，
+    // 如果数据类是static的，则得到的数据类中相应的项为原值
+    // 如果不是，则得到的数据类中相应的项会变成null
     private static String str2 = "{b: \"b data\"}";
-
-    // 数据中有一项是null，得到的数据类中相应的项会变成null
-    private static String str3 = "{a: null, b: \"b data\"}";
 
     public static void main(String[] args) {
         Gson gson = new GsonBuilder().create();
@@ -24,13 +23,13 @@ public class JsonTest {
 
         Data data2 = gson.fromJson(str2, Data.class);
         System.out.println(data2.toString());
-
-        Data data3 = gson.fromJson(str3, Data.class);
-        System.out.println(data3.toString());
     }
 
-    class Data {
+    static class Data {
 
+        public Data(){
+
+        }
         public String a = "";
         public String b = "";
 
