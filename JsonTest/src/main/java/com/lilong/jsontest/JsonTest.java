@@ -27,9 +27,6 @@ public class JsonTest {
 
     static class Data {
 
-        public Data(){
-
-        }
         public String a = "";
         public String b = "";
 
