@@ -1,9 +1,12 @@
 package com.zhangyue.asynctasktest;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -22,12 +25,14 @@ import android.widget.TextView;
  */
 public class MainActivity extends Activity {
 
-    private static final String TAG = "ATest";
+    static final String TAG = "ATest";
 
     private Button btnStartAsyncTask;
     private TextView tvResult;
     private CustomAsyncTask asyncTask;
     private int taskNumber = 0;
+
+    private MenuItem menuItemJumpToCancelTest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +48,22 @@ public class MainActivity extends Activity {
                 asyncTask.execute();
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        menuItemJumpToCancelTest = menu.findItem(R.id.menuItemCancelTest);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item == menuItemJumpToCancelTest) {
+            Intent intent = new Intent(this, CancelTestActivity.class);
+            startActivity(intent);
+        }
+        return true;
     }
 
     class CustomAsyncTask extends AsyncTask<Void, Void, Void> {
