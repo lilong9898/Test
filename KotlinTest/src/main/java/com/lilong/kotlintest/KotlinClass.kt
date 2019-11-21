@@ -31,6 +31,9 @@ fun main(args: Array<String>) {
 
     // 测试对象声明
     testObjectDeclaration()
+
+    // 测试 init 块
+    testInitBlock()
 }
 
 /**
@@ -313,4 +316,26 @@ object anonymousClassObj {
 
 fun testObjectDeclaration(){
     anonymousClassObj.method()
+}
+
+private fun testInitBlock(){
+    Child()
+}
+
+// java 中的子类不继承父类的构造函数，但是必须调用父类的构造函数
+// 如果父类有无参构造函数，则子类中对它的调用可以是隐式的（由编译器自动添加调用父类的无参构造函数），显式的（代码中写 super())
+// 如果父类无无参构造函数，则子类必须显式调用它的有参构造函数(代码中写 super(xxx, yyy....))
+// kotlin 也是一样，只是构造函数的声明改到了类签名中，实现改到了 init 块中
+// 所以调 Child()，会先隐式的调父类 Parent 的构造函数，也就会调到 Parent 的 init 块
+// 然后再调自己的构造函数，也就会调到 Child 的 init 块
+open class Parent() {
+    init {
+        println("code in parent class init block")
+    }
+}
+
+class Child(): Parent() {
+    init {
+        println("code in child class init block")
+    }
 }
