@@ -14,8 +14,16 @@ import java.util.concurrent.Executors
 
 /**
  * Created by lilong on 21/11/2019.
+ *
+ * ---------------- 关于[Lifecycle]-------------------
+ *  在26.1.0或更高版本的 support 包上，[FragmentActivity] 是[SupportActivity] 的子类
+ *   而[SupportActivity] 实现了[LifecycleOwner] 接口，且在 onCreate 中调用了[ReportFragment.injectIfNeededIn] 方法
+ *   在 activity 上添加一个无 UI 的[ReportFragment]来感知宿主 activity 的声明周期， 然后通过观察者模式， 发送消息到所有[LifecycleObserver]上
+ *   [ClassesInfoCache]会在运行时找出[LifecycleObserver]实现类中所有带[OnLifecycleEvent]注解的方法，并通知它们
+ *
+ * ---------------- 关于asyncTask 和 executorService 的关闭问题----------------
  * [AsyncTask.cancel]和[ExecutorService.shutdown]都无法停止已经在运行的工作线程
- * 
+ *
  */
 class SecondActivity : FragmentActivity(), LifecycleObserver {
 
