@@ -11,10 +11,18 @@ import kotlin.coroutines.Continuation
  * (1) js引擎不支持多线程，所以kotlin协程运行在js引擎上，协程都是运行在同一线程内的，所以无线程切换，通过编译器自动添加控制代码来实现代码切换
  * (2) java/android平台支持多线程，所以kotlin协程运行在这些平台上，是通过线程池执行的，本质上是很多[Continuation]运行在[ForkJoinPool]上
  * (3) java/android 平台上的协程，具体是运行在什么线程上，有什么生命周期，取决于 CoroutineScope
- * (4) 相同CoroutineScope的两个协程，它们的调用关系决定了它们的相对生命周期：父协程会等子协程执行完才执行完
+ * (4) 相同CoroutineScope的两个协程，它们的调用关系决定了它们的相对生命周期：父协程会等子协程执行完才执行完，另外父子一方的 cancel 也会触发另一方的cancel
  *     不同CoroutineScope 的两个协程，生命周期则没关系
  * (5) CoroutineScope 中的 CoroutineContext 中的 Dispatcher 决定了协程运行在什么线程上
  *     相同CoroutineScope，意味着相同CoroutineContext，意味着相同 Dispatcher，意味着运行在相同的线程或线程池上
+ * (6) coroutine 的核心在于 suspend能力， 即让一个方法暂停执行，让另一个方法在这个线程上执行
+ *     基于此，coroutine能做到让两个方法分散成片段，让这些片段轮番在同一个线程上执行，看起来两个方法像是在一个线程上并行执行
+ *     在代码上通过 suspend 函数来支持
+ *     在编译器通过生成 Continuation 的字节码来支持，每个 suspend 点两侧的代码被放入到不同的 Continuation 里，并且会生成状态机来记录上一个 Continuation 执行到哪里了
+ *     在底层通过ForkJoinPool 上运行 Continuation 支持
+ *
+ *     传统的线程，一个线程上的所有方法，必须执行完一个再执行另一个
+ *     因为没有编译器支持，一个方法的代码不可能被 suspend
  *
  * */
 fun main() {

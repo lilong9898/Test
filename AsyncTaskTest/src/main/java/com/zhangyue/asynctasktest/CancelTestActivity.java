@@ -1,11 +1,12 @@
 package com.zhangyue.asynctasktest;
 
 import android.app.Activity;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+
+import org.greenrobot.eventbus.EventBus;
 
 import static com.zhangyue.asynctasktest.MainActivity.TAG;
 
@@ -41,12 +42,18 @@ public class CancelTestActivity extends Activity {
                 // 但如果 asyncTask 的 thread不是处在特殊状态（wait, join, sleep)，又没在代码中检测过 interrupted 状态，它也不会终止
                 // cancel 只能让没开始的 task 不执行（所有 task 都在全局的单线程线程池上排队等待执行），已经开始了的 不执行 onPostExecute
                 // 但已经开始的工作线程，无法停止
-                task.cancel(mayInterruptIfRunning);
+//                task.cancel(mayInterruptIfRunning);
+                EventBus.getDefault().post(new CancellableAsyncTask.CancellationEvent(100));
             }
         });
     }
 
-    private static class CustomAsyncTask extends AsyncTask<Void, Void, Void> {
+    private static class CustomAsyncTask extends CancellableAsyncTask<Void, Void, Void> {
+
+        @Override
+        public int getTaskId() {
+            return 100;
+        }
 
         private int taskNumber;
 

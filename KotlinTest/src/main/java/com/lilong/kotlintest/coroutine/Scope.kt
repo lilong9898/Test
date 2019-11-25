@@ -11,7 +11,10 @@ fun main() {
 //    testParellelism()
 //    testDaemonNature()
 //    testScopeLifeCycle()
-    testContext()
+//    testContext()
+//    testContextAddOperator()
+//    testRetrieveJobFromContext()
+    testParentCancelLeadToChildCancel()
 }
 
 fun testCustomScope() {
@@ -115,5 +118,50 @@ fun testContext() = runBlocking {
     }
     withContext(Dispatchers.IO) {
         println("coroutine #3($this) has context of $coroutineContext")
+    }
+}
+
+// coroutine 的 debug 开关，在 IDE 的 edit configuration 里的 vmoptions
+// 写入-Dkotlinx.coroutines.debug=on 就可以在打印coroutine名字时，自动打印出一个唯一标识
+fun testContextAddOperator() = runBlocking {
+    // CoroutineName 可以向名字中加入自定义的字符串
+    launch(Dispatchers.IO + CoroutineName("a")) {
+        println("coroutine ($this) runs in thread ${Thread.currentThread().name}")
+    }
+}
+
+fun testRetrieveJobFromContext() = runBlocking {
+    var job: Job? = null
+    launch {
+        job = coroutineContext[Job]
+        repeat(10) {
+            delay(1000)
+            println("coroutine $this step $it done")
+        }
+    }
+    launch {
+        delay(4000)
+        // 获取到的其它协程的 job，可以用它来取消那个协程
+        job?.cancel()
+    }
+}
+
+fun testParentCancelLeadToChildCancel() = runBlocking {
+    var job: Job? = null
+    launch {
+        job = coroutineContext[Job]
+        repeat(10) {
+            launch {
+                repeat(10) {
+                    delay(1000)
+                    println("coroutine $this step $it done")
+                }
+            }
+        }
+    }
+    launch {
+        delay(4000)
+        // 获取到的其它协程的 job，可以用它来取消那个协程
+        job?.cancel()
     }
 }
