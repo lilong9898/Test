@@ -60,7 +60,7 @@ public class MainActivity extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item == menuItemJumpToCancelTest) {
-            Intent intent = new Intent(this, CancelTestActivity.class);
+            Intent intent = new Intent(this, TestAsyncTaskScopeActivity.class);
             startActivity(intent);
         }
         return true;
