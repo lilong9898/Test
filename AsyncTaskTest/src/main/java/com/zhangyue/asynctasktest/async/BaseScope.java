@@ -26,8 +26,9 @@ public abstract class BaseScope<AsyncOp> {
             AsyncOp op = iterator.next();
             cancel(op);
         }
-        Log.i(TAG, "scope " + this + "cancels its async ops");
+        Log.i(TAG, "scope " + this + " cancels its async ops");
         ops.clear();
+        Log.i(TAG, "scope " + this + " removes its async ops");
     }
 
     // 将传入的异步操作的引用保存下来，然后原样返回

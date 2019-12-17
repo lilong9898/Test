@@ -1,6 +1,5 @@
 package com.zhangyue.asynctasktest;
 
-import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,7 +15,7 @@ import static com.zhangyue.asynctasktest.MainActivity.TAG;
 /**
  * Created by lilong on 21/11/2019.
  */
-public class TestAsyncTaskScopeActivity extends Activity {
+public class TestAsyncTaskScopeActivity extends BaseTestActivity {
 
     private Button btnStartAsyncTask1;
     private Button btnStartAsyncTaskOnExecutor1;
@@ -120,12 +119,5 @@ public class TestAsyncTaskScopeActivity extends Activity {
             Log.i(TAG, "task " + taskNumber + " onCancelled end");
         }
 
-        private void sleep() {
-            try {
-                Thread.sleep(1000);
-            } catch (Exception e) {
-                Log.i(TAG, "interruptedException");
-            }
-        }
     }
 }

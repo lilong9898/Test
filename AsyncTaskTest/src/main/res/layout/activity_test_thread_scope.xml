@@ -10,13 +10,19 @@
         android:orientation="vertical">
 
         <Button
-            android:id="@+id/btnStartThread"
+            android:id="@+id/btnStartThreadScope1"
             style="@style/ButtonStyle"
-            android:text="startThread" />
+            android:text="startThreadScope1" />
 
         <Button
-            android:id="@+id/btnCancelThread"
+            android:id="@+id/btnStartThreadScope2"
             style="@style/ButtonStyle"
-            android:text="cancelThread" />
+            android:text="startThreadScope2" />
+
+        <Button
+            android:id="@+id/btnCancelThreadScope"
+            style="@style/ButtonStyle"
+            android:text="cancelThreadScope" />
+
     </LinearLayout>
 </RelativeLayout>

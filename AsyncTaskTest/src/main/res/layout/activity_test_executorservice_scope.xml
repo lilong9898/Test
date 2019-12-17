@@ -10,13 +10,18 @@
         android:orientation="vertical">
 
         <Button
-            android:id="@+id/btnStartExecutorService"
+            android:id="@+id/btnStartExecutorServiceScope1"
             style="@style/ButtonStyle"
-            android:text="startExecutorService" />
+            android:text="startExecutorServiceScope1" />
 
         <Button
-            android:id="@+id/btnCancelExecutorService"
+            android:id="@+id/btnStartExecutorServiceScope2"
             style="@style/ButtonStyle"
-            android:text="cancelExecutorService" />
+            android:text="startExecutorServiceScope2" />
+
+        <Button
+            android:id="@+id/btnCancelExecutorServiceScope"
+            style="@style/ButtonStyle"
+            android:text="cancelExecutorServiceScope" />
     </LinearLayout>
 </RelativeLayout>
