@@ -117,6 +117,9 @@ fun testParallel() = runBlocking {
 // 但是注意，withContext 是阻塞方式运行的，所以总时间等于两个withContext 的代码块的和
 // async-await 语法则是并行进行的
 // IDE会提示 async {...}.await()应当替换成withContext {...}，说明两者是等价的，进一步解释了 withContext 中的阻塞成分来自于内部的 await 操作
+// [注意] withContext 是 suspend function，它不启动新的协程，而只能出现在已有协程里，它只是在已有协程中规定一块代码的 Dispatcher
+// 而 launch/async 不是 suspend function，会启动新的协程，可以出现在任何地方
+// 这是本质的不同，所以 withContext 不属于 coroutine builder
 fun testWithContext() = runBlocking {
     val timeConsumed = measureTimeMillis {
         val result1 = withContext(Dispatchers.IO) {

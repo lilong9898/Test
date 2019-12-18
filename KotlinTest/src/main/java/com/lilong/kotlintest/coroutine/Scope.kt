@@ -14,7 +14,8 @@ fun main() {
 //    testContext()
 //    testContextAddOperator()
 //    testRetrieveJobFromContext()
-    testParentCancelLeadToChildCancel()
+//    testParentCancelLeadToChildCancel()
+    testParentCancelNotAffectingGlobalChildren()
 }
 
 fun testCustomScope() {
@@ -147,21 +148,36 @@ fun testRetrieveJobFromContext() = runBlocking {
 }
 
 fun testParentCancelLeadToChildCancel() = runBlocking {
-    var job: Job? = null
+    var job: Job? = coroutineContext[Job]
     launch {
-        job = coroutineContext[Job]
         repeat(10) {
-            launch {
-                repeat(10) {
-                    delay(1000)
-                    println("coroutine $this step $it done")
-                }
-            }
+            delay(1000)
+            println("coroutine $this step $it done")
         }
     }
     launch {
         delay(4000)
         // 获取到的其它协程的 job，可以用它来取消那个协程
         job?.cancel()
+    }
+}
+
+//fun testLocalScope
+fun testParentCancelNotAffectingGlobalChildren() = runBlocking {
+    val job = launch {
+        GlobalScope.launch {
+            repeat(10) {
+                delay(1000)
+                println("global scope coroutine $this step $it done")
+            }
+        }
+        repeat(10) {
+            delay(1000)
+            println("local scope coroutine $this step $it done")
+        }
+    }
+    launch {
+        delay(4000)
+        job.cancel()
     }
 }
