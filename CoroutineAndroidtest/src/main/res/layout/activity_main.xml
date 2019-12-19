@@ -27,6 +27,11 @@
             android:text="awaitDeferredFromAsync" />
 
         <Button
+            android:id="@+id/btnStartOuterLocalInnerGlobalByLaunch"
+            style="@style/Button"
+            android:text="startOuterLocalInnerGlobalByLaunch" />
+
+        <Button
             android:id="@+id/btnCancelCoroutine"
             style="@style/Button"
             android:text="cancelCoroutine" />

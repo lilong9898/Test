@@ -15,7 +15,9 @@ class MainActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         btnStartCoroutineByLaunch.setOnClickListener {
-            scope.launch {
+            // 注意，这里返回的 job 跟 scope 中的 job 不是同一个对象
+            // 前者是包含了后者之后新生成的 StandAloneCoroutine(继承 CoroutineScope)
+            val job = scope.launch {
                 try {
                     repeat(10) {
                         Log.i(TAG, "coroutine $this step $it")
@@ -30,6 +32,7 @@ class MainActivity : Activity() {
                     Log.i(TAG, "throwable $e")
                 }
             }
+            Log.i(TAG, "job = $job")
         }
         btnStartCoroutineByAsync.setOnClickListener {
             scope.launch {
@@ -50,8 +53,22 @@ class MainActivity : Activity() {
                 Log.i(TAG, deferredResult.await())
             }
         }
-
+        btnStartOuterLocalInnerGlobalByLaunch.setOnClickListener {
+            scope.launch {
+                repeat(10) {
+                    Log.i(TAG, "local scope coroutine $this step $it")
+                    delay(1_000)
+                }
+                GlobalScope.launch {
+                    repeat(10) {
+                        Log.i(TAG, "global scope coroutine $this step $it")
+                        delay(1_000)
+                    }
+                }
+            }
+        }
         btnCancelCoroutine.setOnClickListener {
+            // 某个 scope 被 cancel 之后，再调这个 scope 的 launch 或 async 来启动协程是无效的，没任何动作，也不抛出异常
             scope.cancel()
             Log.i(TAG, "coroutine scope is cancelled")
         }
