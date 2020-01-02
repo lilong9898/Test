@@ -96,6 +96,7 @@ public class MainActivity extends Activity {
     private LinearLayoutManager llm;
 
     private static final int DEFAULT_VIEW_TYPE = 0;
+    private Button btnTrigger;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +120,15 @@ public class MainActivity extends Activity {
                 adapter.reset();
                 adapter.notifyDataSetChanged();
                 swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+        btnTrigger = findViewById(R.id.btnTrigger);
+        btnTrigger.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                list.clear();
+//                adapter.notifyItemRangeRemoved(1, precount - 2);
+//                adapter.notifyDataSetChanged();
             }
         });
     }
