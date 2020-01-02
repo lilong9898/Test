@@ -5,8 +5,6 @@ package com.lilong.kotlintest.coroutine
  */
 
 fun main(){
-    val array = intArrayOf(1, 2, 3)
-    fun1(*array)
     /**
      *  上面这句，在字节码层面是
      *  fun1(Arrays.copyOf(array, array.length));
@@ -14,10 +12,10 @@ fun main(){
      * */
 }
 
-fun fun1(vararg array: Int){
-
+fun fun1(array: Array<out String>) {
+    fun2(*array)
 }
 
+fun fun2(vararg array: String) {
 
-
-
+}
