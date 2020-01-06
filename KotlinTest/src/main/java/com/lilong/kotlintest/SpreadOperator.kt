@@ -1,10 +1,11 @@
-package com.lilong.kotlintest.coroutine
+package com.lilong.kotlintest
 
 /**
  * Created by lilong on 02/01/2020.
  */
 
 fun main(){
+    fun1(1, 2)
     /**
      *  上面这句，在字节码层面是
      *  fun1(Arrays.copyOf(array, array.length));
@@ -12,10 +13,18 @@ fun main(){
      * */
 }
 
-fun fun1(array: Array<out String>) {
-    fun2(*array)
+val test = fun(){
+    println("adfasd")
 }
 
-fun fun2(vararg array: String) {
+fun fun1(vararg array: Int) {
+    val b = {
+        println("1111")
+    }
+    b.invoke()
+    test.invoke()
+}
 
+fun fun2(vararg array: Int) {
+    println()
 }
