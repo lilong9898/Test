@@ -44,6 +44,18 @@ class SecondActivity : FragmentActivity(), LifecycleObserver {
             executor.submit(runnable)
         }
         lifecycle.addObserver(this)
+        lifecycle.addObserver(LifeCycleAwareImpl())
+    }
+
+    private interface LifeCycleAwareInterface : LifecycleObserver {
+        @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+        fun onDestroy()
+    }
+
+    private class LifeCycleAwareImpl : LifeCycleAwareInterface {
+        override fun onDestroy() {
+            Log.i(TAG, "LifeCycleAwareImpl onDestroy")
+        }
     }
 
     private fun cancelAsyncTask() {
