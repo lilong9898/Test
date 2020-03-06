@@ -1,6 +1,6 @@
 package com.zhangyue.asynctasktest.async;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import java.util.concurrent.ExecutorService;
 

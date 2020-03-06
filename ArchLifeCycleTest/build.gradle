@@ -2,13 +2,12 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 android {
-    compileSdkVersion 29
-    buildToolsVersion "29.0.2"
+    compileSdkVersion rootProject.ext.compileSdkVersion
 
     defaultConfig {
         applicationId "com.lilong.archlifecycletest"
         minSdkVersion 21
-        targetSdkVersion 29
+        targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
     }
@@ -26,6 +25,5 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:${rootProject.ext.kotlin_version}"
     implementation "org.jetbrains.kotlin:kotlin-reflect:${rootProject.ext.kotlin_version}"
-    implementation "android.arch.lifecycle:common:1.1.0"
-    implementation rootProject.ext.designLib
+    implementation "androidx.legacy:legacy-support-v4:${project.androidxVersion}"
 }

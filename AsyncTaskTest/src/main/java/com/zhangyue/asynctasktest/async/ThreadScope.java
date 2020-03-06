@@ -1,6 +1,6 @@
 package com.zhangyue.asynctasktest.async;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * Created by lilong on 16/12/2019.

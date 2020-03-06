@@ -2,17 +2,6 @@ package com.lilong.recyclerviewtest;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.RecyclerView.Adapter;
-import android.support.v7.widget.RecyclerView.LayoutManager;
-import android.support.v7.widget.RecyclerView.RecycledViewPool;
-import android.support.v7.widget.RecyclerView.Recycler;
-import android.support.v7.widget.RecyclerView.ViewCacheExtension;
-import android.support.v7.widget.RecyclerView.ViewHolder;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,14 +9,28 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView.LayoutManager;
+import androidx.recyclerview.widget.RecyclerView.Recycler;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import java.util.ArrayList;
+
+import static androidx.recyclerview.widget.RecyclerView.Adapter;
+import static androidx.recyclerview.widget.RecyclerView.RecycledViewPool;
+import static androidx.recyclerview.widget.RecyclerView.State;
+import static androidx.recyclerview.widget.RecyclerView.ViewCacheExtension;
+import static androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 /**
  * {@link RecyclerView}
  *
  * 测量和布局：
  *      {@link RecyclerView#onMeasure(int, int)}交由{@link LayoutManager#onMeasure(int, int)}来具体执行
- *      {@link RecyclerView#onLayout(boolean, int, int, int, int)}交由{@link LayoutManager#onLayoutChildren(Recycler, RecyclerView.State)}来具体执行
+ *      {@link RecyclerView#onLayout(boolean, int, int, int, int)}交由{@link LayoutManager#onLayoutChildren(Recycler, State)}来具体执行
  *
  * LayoutManager的具体类型，默认的有三种：
  *      {@link LinearLayoutManager}
@@ -78,8 +81,8 @@ import java.util.ArrayList;
  *  局部刷新流程：
  *      {@link Adapter#notifyItemChanged(int)}为例：
  *      (1) {@link RecyclerView.RecyclerViewDataObserver#onItemRangeChanged(int, int, Object)}，其内部调用
- *          {@link android.support.v7.widget.AdapterHelper#onItemRangeChanged(int, int, Object)}，
- *          向ArrayList<UpdateOp> mPendingUpdates加入一个{@link android.support.v7.widget.AdapterHelper.UpdateOp}
+ *          {@link androidx.recyclerview.widget.AdapterHelper#onItemRangeChanged(int, int, Object)}，
+ *          向ArrayList<UpdateOp> mPendingUpdates加入一个{@link androidx.recyclerview.widget.AdapterHelper.UpdateOp}
  *      (2) {@link RecyclerView.RecyclerViewDataObserver#triggerUpdateProcessor()}，其内部调用requestLayout()
  *
  *  多级的复用缓存可以支持局部刷新，减少刷新过程中的重复工作

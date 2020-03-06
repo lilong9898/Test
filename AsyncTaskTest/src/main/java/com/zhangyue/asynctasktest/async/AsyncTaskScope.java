@@ -2,9 +2,10 @@ package com.zhangyue.asynctasktest.async;
 
 import android.os.AsyncTask;
 import android.os.Looper;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import android.util.Printer;
+
+import androidx.annotation.NonNull;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;

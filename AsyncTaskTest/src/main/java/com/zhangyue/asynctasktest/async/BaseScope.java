@@ -1,8 +1,9 @@
 package com.zhangyue.asynctasktest.async;
 
-import android.support.annotation.MainThread;
-import android.support.annotation.NonNull;
 import android.util.Log;
+
+import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
 
 import java.util.HashSet;
 import java.util.Iterator;

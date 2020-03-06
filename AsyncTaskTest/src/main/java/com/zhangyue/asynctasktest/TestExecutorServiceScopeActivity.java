@@ -1,10 +1,11 @@
 package com.zhangyue.asynctasktest;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+
+import androidx.annotation.Nullable;
 
 import com.zhangyue.asynctasktest.async.AsyncScope;
 

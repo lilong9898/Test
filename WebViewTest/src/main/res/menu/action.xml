@@ -4,5 +4,5 @@
     <item
         android:id="@+id/menuItemTestJs"
         android:title="Test JS"
-        app:showAsAction="always" />
+        android:showAsAction="always" />
 </menu>
