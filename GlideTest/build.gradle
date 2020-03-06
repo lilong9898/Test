@@ -26,5 +26,6 @@ dependencies {
     //    exclude group: "com.android.support"
     //}
     implementation('com.github.bumptech.glide:glide:4.8.0')
+    implementation "androidx.legacy:legacy-support-v4:${project.androidxVersion}"
     annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
 }

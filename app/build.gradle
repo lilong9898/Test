@@ -32,19 +32,19 @@ configurations {
 
 dependencies {
     // compile(新版叫api)和provided(新版叫compileOnly)是两种内置的configuration
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    provided fileTree(include: ['*.jar'], dir: 'external-jars')
+//    compile fileTree(include: ['*.jar'], dir: 'libs')
+//    provided fileTree(include: ['*.jar'], dir: 'external-jars')
     // 使用自定义的两种configuration
-    customCompile1 "android.arch.core:common:1.1.1"
-    customCompile2 "android.arch.core:runtime:1.1.1"
-    customCompile3 "android.arch.lifecycle:common:1.1.1"
-    customCompile4 "com.android.support:design:28.0.0"
+//    customCompile1 "android.arch.core:common:1.1.1"
+//    customCompile2 "android.arch.core:runtime:1.1.1"
+//    customCompile3 "android.arch.lifecycle:common:1.1.1"
+//    customCompile4 "com.android.support:design:28.0.0"
 }
 
 // configuration的dependencies方法不会触发依赖解析，所以返回的依赖信息只包括dependency{}块中直接规定的
-configurations.customCompile4.dependencies.each {Dependency dependency->
-    logger.lifecycle "${dependency.toString()}"
-}
+//configurations.customCompile4.dependencies.each {Dependency dependency->
+//    logger.lifecycle "${dependency.toString()}"
+//}
 
 // depencies块结束，意味着我们已经规定完了要使用那些依赖，后面可以通过configuration获取依赖解析结果
 // configuration的asPath方法可以看它所包括的依赖，在解析完后实际需要的aar包或jar包的地址，这些地址实际上是gradle缓存目录中的，因为gradle就是从自己的缓存目录里获取依赖的aar包或jar包用于构建的
@@ -52,12 +52,12 @@ configurations.customCompile4.dependencies.each {Dependency dependency->
 // 注意！asPath方法会因为下载依赖而阻塞！因为它会要求依赖解析/下载并返回结果
 // 如果asPath要输出的依赖在gradle缓存中没有，gradle需要去下载依赖，asPath方法会阻塞
 // 直到依赖下载完，会继续执行，所以，asPath总是能在依赖下载完解析完后输出结果
-logger.lifecycle "customCompile1's dependencies aar path :"
-logger.lifecycle "${configurations.customCompile1.asPath}"
-logger.lifecycle "customCompile2's dependencies aar path :"
-logger.lifecycle "${configurations.customCompile2.asPath}"
-logger.lifecycle "customCompile3's dependencies aar path :"
-logger.lifecycle "${configurations.customCompile3.asPath}"
+//logger.lifecycle "customCompile1's dependencies aar path :"
+//logger.lifecycle "${configurations.customCompile1.asPath}"
+//logger.lifecycle "customCompile2's dependencies aar path :"
+//logger.lifecycle "${configurations.customCompile2.asPath}"
+//logger.lifecycle "customCompile3's dependencies aar path :"
+//logger.lifecycle "${configurations.customCompile3.asPath}"
 // 因为customCompile1 和 customCompile2 这两个configuration只是自定义出来了，没继承自任何内置的configuration，所以虽然它们包括的依赖会被解析
 // 但是对构建过程[没有影响]，所以这两个configuration包括的依赖中的类，不会打到apk中去
 // 因为customCompile3是继承自内置的configuration : compile的，所以效果跟compile一样，其包括的依赖会打到apk中去

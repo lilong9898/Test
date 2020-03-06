@@ -1,6 +1,6 @@
 package com.lilong.gradle
 
-import com.lilong.gradle.plugin.DemoConfiguration
+
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 // 插件的两大作用：
@@ -10,7 +10,7 @@ class Demo implements Plugin<Project> {
 
     @Override
     void apply(Project project) {
-        new DemoConfiguration().apply(project)
+//        new DemoConfiguration().apply(project)
 //        new DemoShowLifeCycle().apply(project)
 //        new DemoShowInfo().apply(project)
 //        new DemoCreateExtension().apply(project)
