@@ -5,5 +5,10 @@ package com.lilong.androidunittest
  */
 class Calculator {
 
-    fun add(lhs: Int, rhs: Int) = lhs + rhs
+    fun add(lhs: Int, rhs: Int): Int {
+        return lhs + rhs
+    }
+
+    fun minus(lhs: Int, rhs: Int) = lhs - rhs
+
 }

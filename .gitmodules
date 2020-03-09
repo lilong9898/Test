@@ -1,0 +1,3 @@
+[submodule "PowermockExamples"]
+	path = PowermockExamples
+	url = git@github.com:powermock/powermock-examples-maven.git

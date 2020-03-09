@@ -10,7 +10,7 @@ import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 
 @RunWith(Parameterized::class)
-class ExampleUnitTest(private val lhs: Int, private val rhs: Int, private val expectedResult: Int) {
+class JUnitTest(private val lhs: Int, private val rhs: Int, private val expectedResult: Int) {
 
     companion object {
 
