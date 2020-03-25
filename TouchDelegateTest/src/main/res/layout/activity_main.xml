@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/container"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <View
+        android:id="@+id/v1Expand"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:background="@android:color/holo_green_light"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/v1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="@dimen/v1Expand"
+        android:background="@android:color/holo_green_dark"
+        android:gravity="center"
+        android:text="0"
+        android:textColor="@android:color/white"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="@+id/v1Expand"
+        app:layout_constraintLeft_toLeftOf="@id/v1Expand"
+        app:layout_constraintRight_toRightOf="@id/v1Expand"
+        app:layout_constraintTop_toTopOf="@id/v1Expand" />
+
+    <Button
+        android:id="@+id/btnV1Add"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="30dp"
+        android:gravity="center"
+        android:text="V1 ADD"
+        android:textSize="20sp"
+        app:layout_constraintLeft_toLeftOf="@id/v1Expand"
+        app:layout_constraintRight_toRightOf="@id/v1Expand"
+        app:layout_constraintTop_toBottomOf="@id/v1Expand" />
+
+    <Button
+        android:id="@+id/btnV1Remove"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="30dp"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:text="V1 REMOVE"
+        app:layout_constraintLeft_toLeftOf="@id/btnV1Add"
+        app:layout_constraintRight_toRightOf="@id/btnV1Add"
+        app:layout_constraintTop_toBottomOf="@id/btnV1Add" />
+
+    <View
+        android:id="@+id/v2Expand"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:background="@android:color/holo_blue_light"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="0.9"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/v2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="@dimen/v2Expand"
+        android:background="@android:color/holo_blue_dark"
+        android:gravity="center"
+        android:text="0"
+        android:textColor="@android:color/white"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="@id/v2Expand"
+        app:layout_constraintLeft_toLeftOf="@id/v2Expand"
+        app:layout_constraintRight_toRightOf="@id/v2Expand"
+        app:layout_constraintTop_toTopOf="@id/v2Expand" />
+
+    <Button
+        android:id="@+id/btnV2Add"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="30dp"
+        android:gravity="center"
+        android:text="V2 ADD"
+        android:textSize="20sp"
+        app:layout_constraintLeft_toLeftOf="@id/v2Expand"
+        app:layout_constraintRight_toRightOf="@id/v2Expand"
+        app:layout_constraintTop_toBottomOf="@id/v2Expand" />
+
+    <Button
+        android:id="@+id/btnV2Remove"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="30dp"
+        android:gravity="center"
+        android:textSize="20sp"
+        android:text="V2 REMOVE"
+        app:layout_constraintLeft_toLeftOf="@id/btnV2Add"
+        app:layout_constraintRight_toRightOf="@id/btnV2Add"
+        app:layout_constraintTop_toBottomOf="@id/btnV2Add" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
