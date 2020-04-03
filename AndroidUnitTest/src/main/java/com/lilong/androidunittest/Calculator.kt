@@ -32,4 +32,12 @@ class FCalculator {
     fun divide(lhs: Float, rhs: Float): Float {
         return lhs / rhs
     }
+
+    fun ignite(){
+    }
+
+    companion object {
+        fun staticMethod(){
+        }
+    }
 }

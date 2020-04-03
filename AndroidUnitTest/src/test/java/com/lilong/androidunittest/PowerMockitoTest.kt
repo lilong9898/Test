@@ -1,6 +1,7 @@
 package com.lilong.androidunittest
 
 import com.nhaarman.mockitokotlin2.*
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.ArgumentMatchers.*
@@ -23,6 +24,11 @@ class PowerMockitoTest {
     private lateinit var mockCalculator: FCalculator
 
     // 在使用 PowerMockRunner 时，无法使用 @Spy 注解
+
+    @Before
+    fun setUp(){
+        PowerMockito.mockStatic(FCalculator.Companion::class.java)
+    }
 
     @Test
     fun stubbing() {
@@ -117,5 +123,21 @@ class PowerMockitoTest {
         whenever(spiedCalculator.add(1, 2)).thenReturn(10)
         println(spiedCalculator.add(1, 2))  // return 10
         println(spiedCalculator.add(1, 5))  // return 6
+    }
+
+    @Test
+    fun testDoAnswer(){
+        whenever(mockCalculator.ignite()).doAnswer {
+            println("a")
+        }
+        mockCalculator.ignite()
+    }
+
+    @Test
+    fun testMockStatic(){
+        whenever(FCalculator.staticMethod()).doAnswer {
+            println("1")
+        }
+        FCalculator.staticMethod()
     }
 }
