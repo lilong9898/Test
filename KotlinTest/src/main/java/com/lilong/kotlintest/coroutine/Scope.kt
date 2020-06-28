@@ -15,7 +15,8 @@ fun main() {
 //    testContextAddOperator()
 //    testRetrieveJobFromContext()
 //    testParentCancelLeadToChildCancel()
-    testParentCancelNotAffectingGlobalChildren()
+//    testParentCancelNotAffectingGlobalChildren()
+    testCoroutineJob()
 }
 
 fun testCustomScope() {
@@ -181,3 +182,5 @@ fun testParentCancelNotAffectingGlobalChildren() = runBlocking {
         job.cancel()
     }
 }
+
+fun testCoroutineJob() = CoroutineContextTest().test()

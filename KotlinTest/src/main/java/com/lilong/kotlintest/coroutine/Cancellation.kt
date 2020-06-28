@@ -6,8 +6,9 @@ import kotlinx.coroutines.*
  * Created by lilong on 22/11/2019.
  */
 fun main() {
-    testCancellation()
+//    testCancellation()
 //    testCancellation2()
+    testCancellation3()
 }
 
 // cancel 有效，因为kotlinx.coroutines 包中的所有 suspend 函数会检测 cancel 状态，及时响应 cancel
@@ -47,4 +48,20 @@ fun testCancellation2() = runBlocking {
     println("cancel job !")
     job.cancelAndJoin()
     println("job $job is cancelled")
+}
+
+fun testCancellation3() = runBlocking {
+
+    val job = launch {
+        try {
+            println("1")
+            delay(3000)
+            println("2")
+        }catch (e: CancellationException){
+            println(e)
+        }
+    }
+
+    delay(1000)
+    job.cancel()
 }

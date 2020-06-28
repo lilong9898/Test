@@ -13,7 +13,7 @@ import kotlin.coroutines.Continuation
  * (3) java/android 平台上的协程，具体是运行在什么线程上，有什么生命周期，取决于 CoroutineScope
  * (4) 相同CoroutineScope的两个协程，它们的调用关系决定了它们的相对生命周期：父协程会等子协程执行完才执行完，另外父子一方的 cancel 也会触发另一方的cancel
  *     不同CoroutineScope 的两个协程，生命周期则没关系
- * (5) CoroutineScope 中的 CoroutineContext 中的 Dispatcher 决定了协程运行在什么线程上
+ * (5) CoroutineScope 中的 CoroutineContextTest 中的 Dispatcher 决定了协程运行在什么线程上
  *     相同CoroutineScope，意味着相同CoroutineContext，意味着相同 Dispatcher，意味着运行在相同的线程或线程池上
  * (6) coroutine 的核心在于 suspend能力， 即让一个方法暂停执行，让另一个方法在这个线程上执行
  *     基于此，coroutine能做到让两个方法分散成片段，让这些片段轮番在同一个线程上执行，看起来两个方法像是在一个线程上并行执行
