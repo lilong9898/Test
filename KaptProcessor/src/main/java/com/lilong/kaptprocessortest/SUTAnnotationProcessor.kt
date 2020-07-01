@@ -1,7 +1,11 @@
 package com.lilong.kaptprocessortest
 
 import com.lilong.kaptannotation.SUT
-import com.squareup.javapoet.*
+import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.ParameterSpec
+import com.squareup.kotlinpoet.asTypeName
+import java.io.File
 import java.io.IOException
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.ProcessingEnvironment
@@ -9,7 +13,6 @@ import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind.FIELD
-import javax.lang.model.element.Modifier
 import javax.lang.model.element.Modifier.FINAL
 import javax.lang.model.element.Modifier.PRIVATE
 import javax.lang.model.element.TypeElement
@@ -26,10 +29,12 @@ import javax.tools.Diagnostic.Kind.WARNING
 class SUTAnnotationProcessor : AbstractProcessor() {
 
     private lateinit var elementUtils: Elements
+    private lateinit var outputDir: File
 
     override fun init(processorEnv: ProcessingEnvironment) {
         super.init(processorEnv)
         elementUtils = processorEnv.elementUtils
+        outputDir = File(processingEnv.options[OUTPUT_DIR_OPTION_KEY])
     }
 
     override fun getSupportedAnnotationTypes(): MutableSet<String> {
@@ -39,6 +44,7 @@ class SUTAnnotationProcessor : AbstractProcessor() {
     override fun getSupportedSourceVersion(): SourceVersion = SourceVersion.latest()
 
     override fun process(annotations: Set<TypeElement>, roundEnv: RoundEnvironment): Boolean {
+
 
         val annotatedElements = roundEnv.getElementsAnnotatedWith(SUT::class.java)
 
@@ -57,7 +63,7 @@ class SUTAnnotationProcessor : AbstractProcessor() {
 
     private fun processAnnotatedTypeElement(typeElement: TypeElement) {
 
-        val typeSpecBuilder = createTypeSpecBuilder(typeElement)
+        val fileSpecBuilder = FileSpec.builder(getPackageName(typeElement), "BaseTest")
 
         for (element in typeElement.enclosedElements) {
 
@@ -67,30 +73,22 @@ class SUTAnnotationProcessor : AbstractProcessor() {
             }
 
             if (element is VariableElement) {
-                typeSpecBuilder.addMethod(element.buildSetterFunction())
-//                val fullJavaClassName = element.asType().asTypeName().toString()
-                // todo 未考虑内部类的情况
-//                val packageName = getPackageName(fullJavaClassName)
-//                val simpleClassName = getSimpleClassName(fullJavaClassName)
-//                fileSpecBuilder.addStaticImport(packageName, simpleClassName)
+                fileSpecBuilder.addFunction(buildSetterFunction(typeElement, element))
             }
         }
 
-        val typeSpec = typeSpecBuilder.build()
-        val javaFile = JavaFile.builder(getPackageName(typeElement), typeSpec).build()
         try {
-            javaFile.writeTo(processingEnv.filer)
+            fileSpecBuilder.build().writeTo(outputDir)
         } catch (e: IOException) {
             log(WARNING, "write file fails, exception = $e")
         }
     }
 
-    private fun createTypeSpecBuilder(typeElement: TypeElement): TypeSpec.Builder {
-        val originName = typeElement.qualifiedName.toString()
-        val packageName = getPackageName(typeElement)
-        return TypeSpec.classBuilder("BaseTest")
-                .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
-    }
+//    private fun createTypeSpecBuilder(typeElement: TypeElement): TypeSpec.Builder {
+//        val originName = typeElement.qualifiedName.toString()
+//        val packageName = getPackageName(typeElement)
+//        return TypeSpec.classBuilder("BaseTest")
+//    }
 
     private fun Element.isField() = this.kind == FIELD
 
@@ -98,17 +96,15 @@ class SUTAnnotationProcessor : AbstractProcessor() {
 
     private fun Element.isFinal() = this.modifiers.contains(FINAL)
 
-    private fun VariableElement.buildSetterFunction(): MethodSpec {
-        return MethodSpec.methodBuilder("set${capitalize(simpleName.toString())}")
-                .addParameter(buildSetterFunctionParameterSpec())
+    private fun buildSetterFunction(typeElement: TypeElement, variableElement: VariableElement): FunSpec {
+        return FunSpec.builder("set${capitalize(variableElement.simpleName.toString())}")
+                .receiver(typeElement.asType().asTypeName())
+                .addParameter(variableElement.buildSetterFunctionParameterSpec())
                 .build()
     }
 
     private fun VariableElement.buildSetterFunctionParameterSpec(): ParameterSpec {
-//        val javaClassFullName = asType().asTypeName().toString()
-//        val javaClass = Class.forName(javaClassFullName)
-//        log(WARNING, javaClass.toString())
-        return ParameterSpec.builder(TypeName.get(asType()), simpleName.toString()).build()
+        return ParameterSpec.builder(simpleName.toString(), asType().asTypeName()).build()
     }
 
     private fun Element.toTypeElementOrNull(): TypeElement? {
@@ -140,6 +136,6 @@ class SUTAnnotationProcessor : AbstractProcessor() {
     }
 
     companion object {
-        private const val KAPT_KOTLIN_GENERATED_OPTION_NAME = "kapt.kotlin.generated"
+        private const val OUTPUT_DIR_OPTION_KEY = "outputDir"
     }
 }
