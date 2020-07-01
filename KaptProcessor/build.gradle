@@ -4,7 +4,7 @@ apply plugin: 'kotlin'
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:${rootProject.ext.kotlin_version}"
-    implementation 'com.squareup:kotlinpoet:0.7.0'
+    implementation 'com.squareup:javapoet:1.9.0'
     // APT 中用到的 tools 类，用于编译时，不加会编译出错（虽然 ide 不会提示语法错误）
     compileOnly files(org.gradle.internal.jvm.Jvm.current().getToolsJar())
     implementation project(':KaptAnnotation')
