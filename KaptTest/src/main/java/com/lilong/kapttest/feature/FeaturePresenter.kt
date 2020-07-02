@@ -18,5 +18,13 @@ class FeaturePresenter {
 
     private var view: View? = null
 
+    private var array: IntArray? = null
+
+    private var array2: Array<Int>? = null
+
+    private var list = mutableListOf<String>()
+
+    private var list2 = mutableListOf<SomeComponent>()
+
     fun featureFunction(){}
 }

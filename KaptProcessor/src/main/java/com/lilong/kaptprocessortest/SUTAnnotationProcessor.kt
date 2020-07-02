@@ -70,7 +70,7 @@ class SUTAnnotationProcessor : AbstractProcessor() {
 
     private fun processAnnotatedTypeElement(typeElement: TypeElement) {
 
-        val fileSpecBuilder = FileSpec.builder(getPackageName(typeElement), "${typeElement.simpleName}GeneratedTestUtil")
+        val fileSpecBuilder = FileSpec.builder(typeElement.getPackageName(), "${typeElement.simpleName}GeneratedTestUtil")
 
         for (element in typeElement.enclosedElements) {
 
@@ -86,7 +86,7 @@ class SUTAnnotationProcessor : AbstractProcessor() {
         try {
             fileSpecBuilder.build().writeTo(outputDir)
         } catch (e: IOException) {
-            log(WARNING, "write file fails, exception = $e")
+            log("write file fails, exception = $e")
         }
     }
 
@@ -98,7 +98,7 @@ class SUTAnnotationProcessor : AbstractProcessor() {
 
     /** 给被测类的这个私有变量生成 setter */
     private fun buildSetterFunction(typeElement: TypeElement, variableElement: VariableElement): FunSpec {
-        return FunSpec.builder("set${capitalize(variableElement.simpleName.toString())}")
+        return FunSpec.builder("set${variableElement.simpleName.toString().capitalize()}")
                 .receiver(typeElement.asType().asTypeName())
                 .addCode(buildSetterFunctionBody(typeElement, variableElement))
                 .addParameter(buildSetterFunctionParameterSpec(variableElement))
@@ -107,7 +107,8 @@ class SUTAnnotationProcessor : AbstractProcessor() {
 
     /** 给被测类的这个私有变量生成 setter 时，生成参数的过程 */
     private fun buildSetterFunctionParameterSpec(variableElement: VariableElement): ParameterSpec {
-        return ParameterSpec.builder(variableElement.simpleName.toString(), variableElement.asType().asTypeName()).build()
+        val variableTypeName = variableElement.asType().asTypeName().toKotlinIfNeeded()
+        return ParameterSpec.builder(variableElement.simpleName.toString(), variableTypeName).build()
     }
 
     /** 给被测类的这个私有变量生成 setter 时，生成方法体的过程 */
@@ -119,36 +120,69 @@ class SUTAnnotationProcessor : AbstractProcessor() {
         return codeBlockBuilder.build()
     }
 
+    // region util
+
     /** 检测某个元素是否代表类/接口 */
     private fun Element.toTypeElementOrNull(): TypeElement? {
         if (this !is TypeElement) {
-            log(ERROR, "Invalid element type, class expected", this)
+            log("Invalid element type, class expected", ERROR, this)
             return null
         }
         return this
     }
 
-    /** 将一个字符串的首字母变成大写的 */
-    private fun capitalize(s: String?): String {
-        if (s.isNullOrEmpty()) {
-            return ""
-        }
-        val first = s[0]
-        return if (Character.isUpperCase(first)) {
-            s
-        } else {
-            Character.toUpperCase(first) + s.substring(1)
+    /** 获取一个元素所代表的类/接口的包名 */
+    private fun TypeElement.getPackageName(): String {
+        return elementUtils.getPackageOf(this).qualifiedName.toString()
+    }
+
+    /**
+     * 将一个类型转换成 kotlin 类型
+     * 注解处理器返回给我们的元素类型可能是 java 类型，而希望单测代码中使用的都是 kotlin 类型
+     */
+    private fun TypeName.toKotlinIfNeeded(): TypeName {
+        return when (this) {
+            is ClassName -> toKotlinIfNeeded()
+            is ParameterizedTypeName -> toKotlinIfNeeded()
+            else -> this
         }
     }
 
-    /** 获取一个类的包名 */
-    private fun getPackageName(type: TypeElement): String {
-        return elementUtils.getPackageOf(type).qualifiedName.toString()
+    /**
+     * 将不含类型参数的 java 类型转换成 kotlin 类型
+     * 某些 kotlin 类型，和是我们写的类，无法被 java 的类加载器加载，会引发异常
+     * 这也正好说明了他们不需转换，所以异常处理中就把他们原样返回
+     */
+    private fun ClassName.toKotlinIfNeeded(): ClassName {
+        try {
+            val kClass = Class.forName(this.canonicalName).kotlin
+            val kClassPackageName = kClass.qualifiedName?.substringBeforeLast(".") ?: return this
+            val kClassSimpleName = kClass.qualifiedName?.substringAfterLast(".") ?: return this
+            return ClassName(kClassPackageName, kClassSimpleName)
+        } catch (e: Exception) {
+            return this
+        }
     }
 
-    private fun log(kind: Kind, message: String, element: Element? = null) {
+    /**
+     * 将含有类型参数的 java 类型转换成 kotlin 类型
+     * 比如数组，集合
+     * 内部会分别转换类型本身和类型参数，然后再组装起来
+     */
+    private fun ParameterizedTypeName.toKotlinIfNeeded(): ParameterizedTypeName {
+        val typeArguments = typeArguments.map { it.toKotlinIfNeeded() }.toTypedArray()
+        return ParameterizedTypeName.get(rawType.toKotlinIfNeeded(), *typeArguments)
+    }
+
+    // endregion
+
+    // region log
+
+    private fun log(message: String, kind: Kind = WARNING, element: Element? = null) {
         processingEnv.messager.printMessage(kind, message, element)
     }
+
+    // endregion
 
     companion object {
         private const val OUTPUT_DIR_OPTION_KEY = "SUTAnnotationProcessorOutputDir"

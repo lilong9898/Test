@@ -7,8 +7,13 @@ import com.lilong.kapttest.component.SomeComponent
  */
 class FeaturePresenterTest {
 
-    fun test() {
-        val presenter = FeaturePresenter()
-        presenter.setComponent(SomeComponent())
+    companion object {
+
+        @JvmStatic
+        fun main(args: Array<String>) {
+            val presenter = FeaturePresenter()
+            presenter.setComponent(SomeComponent())
+            presenter.featureFunction()
+        }
     }
 }
