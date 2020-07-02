@@ -1,10 +1,7 @@
 package com.lilong.kaptprocessortest
 
 import com.lilong.kaptannotation.SUT
-import com.squareup.kotlinpoet.FileSpec
-import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.ParameterSpec
-import com.squareup.kotlinpoet.asTypeName
+import com.squareup.kotlinpoet.*
 import java.io.File
 import java.io.IOException
 import javax.annotation.processing.AbstractProcessor
@@ -23,8 +20,13 @@ import javax.tools.Diagnostic.Kind.ERROR
 import javax.tools.Diagnostic.Kind.WARNING
 
 /**
- * AbstractProcessor 的说明
- * https://docs.oracle.com/javase/7/docs/api/javax/annotation/processing/AbstractProcessor.html
+ * 这个注解处理器，可以在 test 目录下，给被测类的私有成员变量生成 setter
+ * (1) setter 内部通过反射来实际设置私有变量
+ * (2) setter 是被测类上的扩展方法
+ *
+ * 这样可以实现:
+ * (1) main 目录下的被测类，私有变量的可见性不变，还是私有的，无法从外部操作
+ * (2) test 目录下的被测类，可以通过生成的 setter 来操作私有变量
  */
 class SUTAnnotationProcessor : AbstractProcessor() {
 
@@ -34,6 +36,11 @@ class SUTAnnotationProcessor : AbstractProcessor() {
     override fun init(processorEnv: ProcessingEnvironment) {
         super.init(processorEnv)
         elementUtils = processorEnv.elementUtils
+        /*
+          在 build.gradle 中用一个 option key 设置上 option value
+          在注解处理器中用这个 option key 就可以获取到 option value
+          这种机制可以将 build.gradle 中才能确定的信息传递给注解处理器，比如项目的目录路径
+        */
         outputDir = File(processingEnv.options[OUTPUT_DIR_OPTION_KEY])
     }
 
@@ -63,11 +70,10 @@ class SUTAnnotationProcessor : AbstractProcessor() {
 
     private fun processAnnotatedTypeElement(typeElement: TypeElement) {
 
-        val fileSpecBuilder = FileSpec.builder(getPackageName(typeElement), "BaseTest")
+        val fileSpecBuilder = FileSpec.builder(getPackageName(typeElement), "${typeElement.simpleName}GeneratedTestUtil")
 
         for (element in typeElement.enclosedElements) {
 
-            log(WARNING, element.toString())
             if (!element.isField() || !element.isPrivate() || element.isFinal()) {
                 continue
             }
@@ -84,29 +90,36 @@ class SUTAnnotationProcessor : AbstractProcessor() {
         }
     }
 
-//    private fun createTypeSpecBuilder(typeElement: TypeElement): TypeSpec.Builder {
-//        val originName = typeElement.qualifiedName.toString()
-//        val packageName = getPackageName(typeElement)
-//        return TypeSpec.classBuilder("BaseTest")
-//    }
-
     private fun Element.isField() = this.kind == FIELD
 
     private fun Element.isPrivate() = this.modifiers.contains(PRIVATE)
 
     private fun Element.isFinal() = this.modifiers.contains(FINAL)
 
+    /** 给被测类的这个私有变量生成 setter */
     private fun buildSetterFunction(typeElement: TypeElement, variableElement: VariableElement): FunSpec {
         return FunSpec.builder("set${capitalize(variableElement.simpleName.toString())}")
                 .receiver(typeElement.asType().asTypeName())
-                .addParameter(variableElement.buildSetterFunctionParameterSpec())
+                .addCode(buildSetterFunctionBody(typeElement, variableElement))
+                .addParameter(buildSetterFunctionParameterSpec(variableElement))
                 .build()
     }
 
-    private fun VariableElement.buildSetterFunctionParameterSpec(): ParameterSpec {
-        return ParameterSpec.builder(simpleName.toString(), asType().asTypeName()).build()
+    /** 给被测类的这个私有变量生成 setter 时，生成参数的过程 */
+    private fun buildSetterFunctionParameterSpec(variableElement: VariableElement): ParameterSpec {
+        return ParameterSpec.builder(variableElement.simpleName.toString(), variableElement.asType().asTypeName()).build()
     }
 
+    /** 给被测类的这个私有变量生成 setter 时，生成方法体的过程 */
+    private fun buildSetterFunctionBody(typeElement: TypeElement, variableElement: VariableElement): CodeBlock {
+        val codeBlockBuilder = CodeBlock.builder()
+        codeBlockBuilder.addStatement("val field = this::class.java.getDeclaredField(\"%L\")", variableElement.simpleName)
+        codeBlockBuilder.addStatement("field.isAccessible = true")
+        codeBlockBuilder.addStatement("field.set(this, %L)", variableElement.simpleName)
+        return codeBlockBuilder.build()
+    }
+
+    /** 检测某个元素是否代表类/接口 */
     private fun Element.toTypeElementOrNull(): TypeElement? {
         if (this !is TypeElement) {
             log(ERROR, "Invalid element type, class expected", this)
@@ -115,6 +128,7 @@ class SUTAnnotationProcessor : AbstractProcessor() {
         return this
     }
 
+    /** 将一个字符串的首字母变成大写的 */
     private fun capitalize(s: String?): String {
         if (s.isNullOrEmpty()) {
             return ""
@@ -127,6 +141,7 @@ class SUTAnnotationProcessor : AbstractProcessor() {
         }
     }
 
+    /** 获取一个类的包名 */
     private fun getPackageName(type: TypeElement): String {
         return elementUtils.getPackageOf(type).qualifiedName.toString()
     }
@@ -136,6 +151,6 @@ class SUTAnnotationProcessor : AbstractProcessor() {
     }
 
     companion object {
-        private const val OUTPUT_DIR_OPTION_KEY = "outputDir"
+        private const val OUTPUT_DIR_OPTION_KEY = "SUTAnnotationProcessorOutputDir"
     }
 }

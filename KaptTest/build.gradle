@@ -25,7 +25,7 @@ android {
 
 kapt{
     arguments {
-        arg("outputDir", project.file("src/test/java").absolutePath)
+        arg("SUTAnnotationProcessorOutputDir", project.file("src/test/java").absolutePath)
     }
 }
 
