@@ -10,13 +10,14 @@ import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.Element
 import javax.lang.model.element.ElementKind.FIELD
+import javax.lang.model.element.ElementKind.METHOD
+import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.Modifier.FINAL
 import javax.lang.model.element.Modifier.PRIVATE
 import javax.lang.model.element.TypeElement
 import javax.lang.model.element.VariableElement
 import javax.lang.model.util.Elements
 import javax.tools.Diagnostic.Kind
-import javax.tools.Diagnostic.Kind.ERROR
 import javax.tools.Diagnostic.Kind.WARNING
 
 /**
@@ -52,17 +53,10 @@ class SUTAnnotationProcessor : AbstractProcessor() {
 
     override fun process(annotations: Set<TypeElement>, roundEnv: RoundEnvironment): Boolean {
 
-
         val annotatedElements = roundEnv.getElementsAnnotatedWith(SUT::class.java)
 
-        if (annotatedElements.isEmpty()) {
-            return false
-        }
-
-        for (element in annotatedElements) {
-
-            val typeElement = element.toTypeElementOrNull() ?: continue
-            processAnnotatedTypeElement(typeElement)
+        annotatedElements.filterIsInstance<TypeElement>().forEach {
+            processAnnotatedTypeElement(it)
         }
 
         return true
@@ -72,14 +66,28 @@ class SUTAnnotationProcessor : AbstractProcessor() {
 
         val fileSpecBuilder = FileSpec.builder(typeElement.getPackageName(), "${typeElement.simpleName}GeneratedTestUtil")
 
-        for (element in typeElement.enclosedElements) {
+        val methodNames = mutableSetOf<String>() // 这个类中所有方法的名字都存起来
 
-            if (!element.isField() || !element.isPrivate() || element.isFinal()) {
-                continue
-            }
+        typeElement.enclosedElements.filter {
+            it.isMethod() && it is ExecutableElement
+        }.forEach {
+            methodNames.add(it.simpleName.toString())
+        }
 
-            if (element is VariableElement) {
-                fileSpecBuilder.addFunction(buildSetterFunction(typeElement, element))
+        typeElement.enclosedElements.filter {
+            it.isField() && it.isPrivate() && (!it.isFinal()) && it is VariableElement
+        }.forEach {
+            it as VariableElement
+            val funSpec = buildSetterFunction(typeElement, it)
+
+            /*
+               如果类中已经有 setter 了，就不需再生成 setter
+               因为 kotlin 中的公有变量，字节码层面上是私有变量 + 自动生成的 getter/setter
+               所以检测元素的 Kind 是否为 PRIVATE 会不准，公有变量的 Kind 也是 PRIVATE，
+               但是它不应被注解处理器生成 setter，因为 kotlin 已经生成了
+             */
+            if (funSpec.name !in methodNames) {
+                fileSpecBuilder.addFunction(funSpec)
             }
         }
 
@@ -89,6 +97,8 @@ class SUTAnnotationProcessor : AbstractProcessor() {
             log("write file fails, exception = $e")
         }
     }
+
+    private fun Element.isMethod() = this.kind == METHOD
 
     private fun Element.isField() = this.kind == FIELD
 
@@ -122,15 +132,6 @@ class SUTAnnotationProcessor : AbstractProcessor() {
 
     // region util
 
-    /** 检测某个元素是否代表类/接口 */
-    private fun Element.toTypeElementOrNull(): TypeElement? {
-        if (this !is TypeElement) {
-            log("Invalid element type, class expected", ERROR, this)
-            return null
-        }
-        return this
-    }
-
     /** 获取一个元素所代表的类/接口的包名 */
     private fun TypeElement.getPackageName(): String {
         return elementUtils.getPackageOf(this).qualifiedName.toString()
@@ -144,13 +145,14 @@ class SUTAnnotationProcessor : AbstractProcessor() {
         return when (this) {
             is ClassName -> toKotlinIfNeeded()
             is ParameterizedTypeName -> toKotlinIfNeeded()
+            is LambdaTypeName -> toKotlinIfNeeded()
             else -> this
         }
     }
 
     /**
-     * 将不含类型参数的 java 类型转换成 kotlin 类型
-     * 某些 kotlin 类型，和是我们写的类，无法被 java 的类加载器加载，会引发异常
+     * 对于不含类型参数的类型，如果是 java 类型，就将它转换成 kotlin 类型
+     * 实测发现对于某些 kotlin 类型，和我们写的类，是无法被 java 的类加载器加载的，会引发异常
      * 这也正好说明了他们不需转换，所以异常处理中就把他们原样返回
      */
     private fun ClassName.toKotlinIfNeeded(): ClassName {
@@ -165,13 +167,20 @@ class SUTAnnotationProcessor : AbstractProcessor() {
     }
 
     /**
-     * 将含有类型参数的 java 类型转换成 kotlin 类型
+     * 对于含类型参数的类型，如果类型本身或者类型参数是 java 类型，就将他们转换成 kotlin 类型
      * 比如数组，集合
      * 内部会分别转换类型本身和类型参数，然后再组装起来
      */
     private fun ParameterizedTypeName.toKotlinIfNeeded(): ParameterizedTypeName {
         val typeArguments = typeArguments.map { it.toKotlinIfNeeded() }.toTypedArray()
         return ParameterizedTypeName.get(rawType.toKotlinIfNeeded(), *typeArguments)
+    }
+
+    private fun LambdaTypeName.toKotlinIfNeeded(): LambdaTypeName {
+        val receiver = receiver?.toKotlinIfNeeded()
+        val parameters = parameters
+        val returnType = returnType.toKotlinIfNeeded()
+        return LambdaTypeName.Companion.get(receiver, parameters, returnType)
     }
 
     // endregion

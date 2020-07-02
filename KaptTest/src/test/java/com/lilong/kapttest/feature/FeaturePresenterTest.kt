@@ -14,6 +14,7 @@ class FeaturePresenterTest {
             val presenter = FeaturePresenter()
             presenter.setComponent(SomeComponent())
             presenter.featureFunction()
+            presenter.setList(mutableListOf())
         }
     }
 }
