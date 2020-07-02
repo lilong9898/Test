@@ -15,6 +15,7 @@ class FeaturePresenterTest {
             presenter.setComponent(SomeComponent())
             presenter.featureFunction()
             presenter.setList(mutableListOf())
+            presenter.setCallback { _, _ -> Unit }
         }
     }
 }
