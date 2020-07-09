@@ -16,9 +16,23 @@ class FeaturePresenter {
 
     private var state = 0
 
+    private var isA: String? = null
+
+    private var isB: Boolean? = null
+
+    var isAPublic: String? = null
+
+    var isBPublic: Boolean? = null
+
+    private lateinit var lateinitComponent: SomeComponent
+
     private var component: SomeComponent? = null
 
     private var str: String? = null
+
+    private var str2: String = ""
+
+    private var str3: String? = null
 
     private var view: View? = null
 
@@ -37,7 +51,7 @@ class FeaturePresenter {
     private var list3: ArrayList<Number>? = null
 
     private var list4: ArrayList<out Number>? = null
-    
+
     private var inner: InnerClass? = null
 
     private var inner2: InnerClass2? = null
@@ -62,7 +76,9 @@ class FeaturePresenter {
 
     var publicVariable: Int? = null
 
-    fun featureFunction(){}
+    fun featureFunction(){
+        lateinitComponent.toString()
+    }
 
     class InnerClass
 
@@ -70,5 +86,10 @@ class FeaturePresenter {
 
     enum class Enum {
         A, B
+    }
+
+    companion object {
+        private var staticStr: String? = null
+        var publicStaticStr: String? = null
     }
 }

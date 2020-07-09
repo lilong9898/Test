@@ -88,6 +88,7 @@ class SUTAnnotationProcessor : AbstractProcessor() {
         typeElement.enclosedElements.filter {
             it.isField() && it.isPrivate() && (!it.isFinal()) && it is VariableElement
         }.forEach {
+            log("-----------------$it ${it.asType().asTypeName().nullable}")
             it as VariableElement
             val funSpec = buildSetterFunction(typeElement, it)
 

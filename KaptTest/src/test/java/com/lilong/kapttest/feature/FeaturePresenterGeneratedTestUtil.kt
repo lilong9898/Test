@@ -6,12 +6,49 @@ package com.lilong.kapttest.feature
 
 import android.view.View
 import com.lilong.kapttest.component.SomeComponent
-import java.util.*
+import java.util.ArrayList
+import kotlin.Array
+import kotlin.Boolean
+import kotlin.Int
+import kotlin.Number
+import kotlin.String
+import kotlin.Unit
+import kotlin.collections.List
 
 fun FeaturePresenter.setState(state: Int) {
     val field = this::class.java.getDeclaredField("state")
     field.isAccessible = true
     field.set(this, state)
+}
+
+fun FeaturePresenter.setIsA(isA: String) {
+    val field = this::class.java.getDeclaredField("isA")
+    field.isAccessible = true
+    field.set(this, isA)
+}
+
+fun FeaturePresenter.setIsB(isB: Boolean) {
+    val field = this::class.java.getDeclaredField("isB")
+    field.isAccessible = true
+    field.set(this, isB)
+}
+
+fun FeaturePresenter.setIsAPublic(isAPublic: String) {
+    val field = this::class.java.getDeclaredField("isAPublic")
+    field.isAccessible = true
+    field.set(this, isAPublic)
+}
+
+fun FeaturePresenter.setIsBPublic(isBPublic: Boolean) {
+    val field = this::class.java.getDeclaredField("isBPublic")
+    field.isAccessible = true
+    field.set(this, isBPublic)
+}
+
+fun FeaturePresenter.setLateinitComponent(lateinitComponent: SomeComponent) {
+    val field = this::class.java.getDeclaredField("lateinitComponent")
+    field.isAccessible = true
+    field.set(this, lateinitComponent)
 }
 
 fun FeaturePresenter.setComponent(component: SomeComponent) {
@@ -24,6 +61,18 @@ fun FeaturePresenter.setStr(str: String) {
     val field = this::class.java.getDeclaredField("str")
     field.isAccessible = true
     field.set(this, str)
+}
+
+fun FeaturePresenter.setStr2(str2: String) {
+    val field = this::class.java.getDeclaredField("str2")
+    field.isAccessible = true
+    field.set(this, str2)
+}
+
+fun FeaturePresenter.setStr3(str3: String) {
+    val field = this::class.java.getDeclaredField("str3")
+    field.isAccessible = true
+    field.set(this, str3)
 }
 
 fun FeaturePresenter.setView(view: View) {
@@ -144,4 +193,16 @@ fun FeaturePresenter.setAnonymousFun2(anonymousFun2: (Int) -> Int) {
     val field = this::class.java.getDeclaredField("anonymousFun2")
     field.isAccessible = true
     field.set(this, anonymousFun2)
+}
+
+fun FeaturePresenter.setStaticStr(staticStr: String) {
+    val field = this::class.java.getDeclaredField("staticStr")
+    field.isAccessible = true
+    field.set(this, staticStr)
+}
+
+fun FeaturePresenter.setPublicStaticStr(publicStaticStr: String) {
+    val field = this::class.java.getDeclaredField("publicStaticStr")
+    field.isAccessible = true
+    field.set(this, publicStaticStr)
 }
