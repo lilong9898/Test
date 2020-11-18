@@ -31,7 +31,7 @@ class MainActivity : Activity() {
                     // btnCancelCoroutine 被点击后，这里会收到 [JobCancellationException]
                     // 但即使不 catch，或者 catch了之后再抛出，也不会导致崩溃
                     // 只要是 CancellationException 和其子类在协程中抛出，都不会导致崩溃
-                    // 因为它由 coroutine 中默认的 uncaughtExceptionHanlder 处理了，见 CoroutineExceptionHandler 的注释
+                    // 因为它由 coroutine 中默认的 uncaughtExceptionHandler 处理了，见 CoroutineExceptionHandler 的注释
                     // 抛出其它异常都会导致崩溃
                     Log.i(TAG, "throwable $e")
                 }
@@ -45,7 +45,7 @@ class MainActivity : Activity() {
                         Log.i(TAG, "coroutine $this step $it")
                         delay(1_000)
                         // 与 launch 启动的协程不同，async 启动的协程中抛出异常，不会崩溃，需等到调 await 方法的时候才会崩溃
-                        val a = 1 / 0
+                        // val a = 1 / 0
                     }
                     "a"
                 }
@@ -59,15 +59,15 @@ class MainActivity : Activity() {
         }
         btnStartOuterLocalInnerGlobalByLaunch.setOnClickListener {
             scope.launch {
-                repeat(10) {
-                    Log.i(TAG, "local scope coroutine $this step $it")
-                    delay(1_000)
-                }
                 GlobalScope.launch {
                     repeat(10) {
                         Log.i(TAG, "global scope coroutine $this step $it")
                         delay(1_000)
                     }
+                }
+                repeat(10) {
+                    Log.i(TAG, "local scope coroutine $this step $it")
+                    delay(1_000)
                 }
             }
         }

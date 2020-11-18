@@ -114,6 +114,6 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
-        Log.i(TAG, getClass().getSimpleName() + "@" + Integer.toHexString(hashCode()) + "onHiddenChanged = " + hidden);
+        Log.i(TAG, getClass().getSimpleName() + "@" + Integer.toHexString(hashCode()) + " onHiddenChanged = " + hidden);
     }
 }

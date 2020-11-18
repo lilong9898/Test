@@ -1,5 +1,7 @@
+import com.lilong.gradle.Demo
+
 apply plugin: 'com.android.application'
-apply plugin: com.lilong.gradle.Demo
+apply plugin: Demo
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion

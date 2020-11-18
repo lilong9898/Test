@@ -63,6 +63,7 @@ public class AtomicTest {
         public void run() {
             integer.incrementAndGet();
             countDownLatch.countDown();
+            System.out.println("atomic integer = " + integer);
         }
     }
 
@@ -97,6 +98,7 @@ public class AtomicTest {
         public void run() {
             integer++;
             countDownLatch.countDown();
+            System.out.println("atomic integer = " + integer);
         }
     }
 }

@@ -92,6 +92,7 @@
                 style="@style/tvStyle"
                 android:layout_width="match_parent"
                 android:layout_marginTop="600dp"
+                app:layout_constraintLeft_toLeftOf="@id/tv5"
                 android:text="tv7"
                 app:layout_constraintTop_toTopOf="parent"/>
 

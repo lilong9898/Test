@@ -39,17 +39,17 @@ public class MainActivity extends Activity {
     /**
      * 图片url
      */
-    private static final String PIC_URL = "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1549002509627&di=da3dfaa2a01eeaf101cdecdf621348c0&imgtype=0&src=http%3A%2F%2Fnews.mydrivers.com%2FImg%2F20100828%2F09595250.jpg";
+    private static final String PIC_URL = "https://www.w3school.com.cn/i/eg_tulip.jpg";
 
     /**
      * 占位符url
      */
-    private static final String PLACEHOLDER_URL = "https://ss1.bdstatic.com/70cFuXSh_Q1YnxGkpoWK1HF6hhy/it/u=353642393,1838413956&fm=26&gp=0.jpg";
+    private static final String PLACEHOLDER_URL = "http://via.placeholder.com/502.png";
 
     /**
      * 错误符url
      */
-    private static final String ERROR_URL = "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1549697044&di=1662217bfa8e0e3e2e8453ce60277b05&imgtype=jpg&er=1&src=http%3A%2F%2Fwww.missyuan.net%2Fuploads%2Fallimg%2F120801%2F205515I54-0.jpg";
+    private static final String ERROR_URL = "http://via.placeholder.com/503.png";
 
     /**
      * 检查应用是否被授予了某项权限
@@ -126,8 +126,8 @@ public class MainActivity extends Activity {
      * 测试不同的glide用法
      */
     private void testGlide() {
-//        testGlideSimple();
-        testGlideWithPlaceholderAndErrorPic();
+        testGlideSimple();
+//        testGlideWithPlaceholderAndErrorPic();
 //        testGlideFromSDCard();
 //        testGlideFromDrawable();
 //        testGlideFromAssets();

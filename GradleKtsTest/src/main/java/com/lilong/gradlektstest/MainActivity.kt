@@ -1,4 +1,4 @@
-package com.lilong.dependencytest
+package com.lilong.gradlektstest
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity

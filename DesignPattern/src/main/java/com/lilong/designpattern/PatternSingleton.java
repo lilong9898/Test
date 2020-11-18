@@ -48,12 +48,7 @@ class HungrySingleton {
  * 使用DoubleCheckLock模式,节省不必要的上锁,用volatile关键字避免多线程下各个线程的寄存器与内存不一致的问题
  * */
 class LazySingleton {
-
-    private static volatile LazySingleton mSingleton;
-
-    private LazySingleton() {
-    }
-
+    private static LazySingleton mSingleton;
     public static LazySingleton getInstance() {
         if (mSingleton == null) {
             synchronized (LazySingleton.class) {

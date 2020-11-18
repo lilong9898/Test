@@ -71,6 +71,7 @@ public class MainActivity extends Activity {
         bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.raw, options);
         int outWidth = options.outWidth;
         int outHeight = options.outHeight;
+        Log.i(TAG, "--------------------InJustDecodeBounds------------------");
         Log.i(TAG, "bitmap = " + bitmap + ", outWidth = " + outWidth + ", outHeight = " + outHeight);
         options = new Options();
         options.inSampleSize = 16;
